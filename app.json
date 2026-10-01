@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "ShopKart",
+    "slug": "shopkart",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "android": {
+      "package": "com.ahmed4642.shopkart"
+    }
+  }
+}
