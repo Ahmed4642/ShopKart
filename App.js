@@ -822,7 +822,8 @@ export default function App() {
         
   );
 }
-  return (
+  }
+return (
     <SafeAreaView style={styles.container}>
       {activeTab === "Home" && renderHome()}
       {activeTab === "Categories" && renderCategories()}
