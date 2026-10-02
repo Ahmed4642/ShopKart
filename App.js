@@ -16,13 +16,21 @@ import {
 const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "gfP0HM8qYhTNswhp";
 
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+<TouchableOpacity
+  style={styles.accountOption}
+  onPress={() => Alert.alert("My Orders", "Orders section coming soon")}
+>
+  <Text style={styles.accountOptionText}>📅 My Orders</Text>
+  <Text style={styles.arrow}>›</Text>
+</TouchableOpacity>
 
-const DEMO_PRODUCTS = [
-  {
+<TouchableOpacity
+  style={styles.accountOption}
+  onPress={() => Alert.alert("Seller", "Seller registration coming soon")}
+>
+  <Text style={styles.accountOptionText}>🏪 Become a Seller</Text>
+  <Text style={styles.arrow}>›</Text>
+</TouchableOpacity>
     id: "demo-1",
     name: "Smartphone",
     price: 19999,
