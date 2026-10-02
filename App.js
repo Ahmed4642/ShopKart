@@ -816,9 +816,10 @@ export default function App() {
             👨‍💼 Admin Panel
           </Text>
 
-          <View st
-        }
-      >
+          <TouchableOpacity style={styles.accountOption}>
+        <Text style={styles.accountOptionText}>📅 Become a Seller</Text>
+<Text style={styles.arrow}>›</Text>
+      
         <Text style={styles.accountOptionText}>🏪  Become a Seller</Text>
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
