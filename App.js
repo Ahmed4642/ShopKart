@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import {
   SafeAreaView,
@@ -9,354 +9,814 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co/rest/v1/";
-const SUPABASE_PUBLISHABLE_KEY ="gfP0HM8qYhTNswhp";
+
+// Keep your existing Supabase values here
+const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "gfP0HM8qYhTNswhp";
 
 const supabase = createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY
 );
 
-const PRODUCTS = [
+const DEMO_PRODUCTS = [
   {
-    id: "1",
-    icon: "📱",
+    id: "demo-1",
     name: "Smartphone",
     price: 19999,
     category: "Mobiles",
+    icon: "📱",
   },
   {
-    id: "2",
-    icon: "🎧",
+    id: "demo-2",
     name: "Wireless Headphones",
     price: 1999,
     category: "Audio",
+    icon: "🎧",
   },
   {
-    id: "3",
-    icon: "⌚",
+    id: "demo-3",
     name: "Smart Watch",
     price: 2499,
     category: "Electronics",
+    icon: "⌚",
   },
   {
-    id: "4",
-    icon: "👟",
-    name: "Running Shoes",
-    price: 3499,
+    id: "demo-4",
+    name: "Men's Fashion",
+    price: 1499,
     category: "Fashion",
-  },
-  {
-    id: "5",
     icon: "👕",
-    name: "Men's T-Shirt",
-    price: 799,
-    category: "Fashion",
   },
   {
-    id: "6",
-    icon: "💻",
-    name: "Laptop",
-    price: 54999,
-    category: "Electronics",
+    id: "demo-5",
+    name: "Home Decor",
+    price: 999,
+    category: "Home",
+    icon: "🏠",
   },
 ];
 
 const CATEGORIES = [
-  "All",
-  "Mobiles",
-  "Fashion",
-  "Home",
-  "Electronics",
-  "Audio",
+  { name: "All", icon: "🛍️" },
+  { name: "Mobiles", icon: "📱" },
+  { name: "Fashion", icon: "👕" },
+  { name: "Home", icon: "🏠" },
+  { name: "Electronics", icon: "💻" },
+  { name: "Audio", icon: "🎧" },
 ];
 
 export default function App() {
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [cart, setCart] = useState([]);
-  const [activeTab, setActiveTab] = useState("Home");
+  const [screen, setScreen] = useState("home");
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
 
-  const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+
+  const [cart, setCart] = useState([]);
+  const [orders, setOrders] = useState([]);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+
+  const [shopName, setShopName] = useState("");
+  const [sellerPhone, setSellerPhone] = useState("");
+  const [sellerAddress, setSellerAddress] = useState("");
+
+  const [authMode, setAuthMode] = useState("login");
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const [commissionRate, setCommissionRate] = useState(10);
+
+  useEffect(() => {
+    loadSession();
+    loadProducts();
+    loadCommission();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+
+      if (session?.user) {
+        loadProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function loadSession() {
+    const { data } = await supabase.auth.getSession();
+
+    if (data?.session?.user) {
+      setUser(data.session.user);
+      await loadProfile(data.session.user.id);
+    }
+  }
+
+  async function loadProfile(userId) {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!error && data) {
+      setProfile(data);
+    }
+  }
+
+  async function loadProducts() {
+    setLoadingProducts(true);
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*");
+
+    if (!error && data && data.length > 0) {
+      setProducts(data);
+    } else {
+      setProducts(DEMO_PRODUCTS);
+    }
+
+    setLoadingProducts(false);
+  }
+
+  async function loadCommission() {
+    const { data } = await supabase
+      .from("marketplace_settings")
+      .select("commission_rate")
+      .limit(1)
+      .maybeSingle();
+
+    if (data?.commission_rate != null) {
+      setCommissionRate(Number(data.commission_rate));
+    }
+  }
+
+  const visibleProducts = useMemo(() => {
+    const q = search.trim().toLowerCase();
+
+    return products.filter((p) => {
+      const productCategory =
+        p.category || p.category_name || "";
 
       const matchesCategory =
-        selectedCategory === "All" ||
-        product.category === selectedCategory;
+        category === "All" ||
+        String(productCategory).toLowerCase() ===
+          category.toLowerCase();
 
-      return matchesSearch && matchesCategory;
+      const matchesSearch =
+        !q ||
+        String(p.name || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(productCategory)
+          .toLowerCase()
+          .includes(q);
+
+      return matchesCategory && matchesSearch;
     });
-  }, [search, selectedCategory]);
+  }, [products, search, category]);
 
-  const addToCart = (product) => {
-    setCart((currentCart) => [...currentCart, product]);
-    Alert.alert("Added to Cart", `${product.name} cart mein add ho gaya.`);
-  };
+  const cartTotal = useMemo(() => {
+    return cart.reduce(
+      (sum, item) => sum + Number(item.price || 0) * item.qty,
+      0
+    );
+  }, [cart]);
 
-  const cartTotal = cart.reduce((total, item) => total + item.price, 0);
+  function addToCart(product) {
+    setCart((old) => {
+      const exists = old.find((x) => x.id === product.id);
 
-  const renderHome = () => (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}
-    >
-      {/* Header */}
+      if (exists) {
+        return old.map((x) =>
+          x.id === product.id
+            ? { ...x, qty: x.qty + 1 }
+            : x
+        );
+      }
+
+      return [...old, { ...product, qty: 1 }];
+    });
+
+    Alert.alert("Cart", "Product cart mein add ho gaya.");
+  }
+
+  function removeFromCart(id) {
+    setCart((old) =>
+      old
+        .map((x) =>
+          x.id === id ? { ...x, qty: x.qty - 1 } : x
+        )
+        .filter((x) => x.qty > 0)
+    );
+  }
+
+  async function login() {
+    if (!email || !password) {
+      Alert.alert("Login", "Email aur password enter karo.");
+      return;
+    }
+
+    setAuthLoading(true);
+
+    const { data, error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+    setAuthLoading(false);
+
+    if (error) {
+      Alert.alert("Login failed", error.message);
+      return;
+    }
+
+    setUser(data.user);
+    await loadProfile(data.user.id);
+    setScreen("home");
+
+    Alert.alert("Success", "Login successful.");
+  }
+
+  async function signup() {
+    if (!email || !password) {
+      Alert.alert("Signup", "Email aur password enter karo.");
+      return;
+    }
+
+    setAuthLoading(true);
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      setAuthLoading(false);
+      Alert.alert("Signup failed", error.message);
+      return;
+    }
+
+    if (data.user) {
+      await supabase.from("profiles").upsert({
+        id: data.user.id,
+        full_name: fullName || null,
+        role: "customer",
+      });
+
+      setUser(data.user);
+      await loadProfile(data.user.id);
+    }
+
+    setAuthLoading(false);
+
+    Alert.alert(
+      "Signup",
+      "Account create ho gaya. Agar email confirmation enabled hai to email confirm karo."
+    );
+
+    setScreen("home");
+  }
+
+  async function logout() {
+    await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
+    setScreen("home");
+  }
+
+  async function registerSeller() {
+    if (!user) {
+      setScreen("auth");
+      return;
+    }
+
+    if (!shopName || !sellerPhone) {
+      Alert.alert(
+        "Seller",
+        "Shop name aur phone number enter karo."
+      );
+      return;
+    }
+
+    const { error } = await supabase.from("sellers").insert({
+      user_id: user.id,
+      shop_name: shopName,
+      phone: sellerPhone,
+      address: sellerAddress || null,
+      status: "pending",
+      commission_rate: 10,
+    });
+
+    if (error) {
+      Alert.alert("Seller registration", error.message);
+      return;
+    }
+
+    Alert.alert(
+      "Application submitted",
+      "Seller application admin approval ke liye bhej di gayi hai."
+    );
+
+    setShopName("");
+    setSellerPhone("");
+    setSellerAddress("");
+    setScreen("account");
+  }
+
+  function checkout() {
+    if (!user) {
+      Alert.alert(
+        "Login required",
+        "Order place karne ke liye pehle login karo."
+      );
+      setScreen("auth");
+      return;
+    }
+
+    if (cart.length === 0) {
+      Alert.alert("Cart empty", "Pehle product cart mein add karo.");
+      return;
+    }
+
+    const commission =
+      (cartTotal * commissionRate) / 100;
+
+    const sellerAmount = cartTotal - commission;
+
+    const newOrder = {
+      id: "ORDER-" + Date.now(),
+      items: cart,
+      total: cartTotal,
+      commission,
+      sellerAmount,
+      status: "Pending",
+      createdAt: new Date().toLocaleString(),
+    };
+
+    setOrders((old) => [newOrder, ...old]);
+    setCart([]);
+    setScreen("orders");
+
+    Alert.alert(
+      "Order created",
+      `Total: ₹${cartTotal}\nMarketplace commission: ₹${commission.toFixed(
+        2
+      )}\nSeller amount: ₹${sellerAmount.toFixed(2)}`
+    );
+  }
+
+  function Header() {
+    return (
       <View style={styles.header}>
-        <Text style={styles.logo}>
-          Shop<Text style={styles.logoYellow}>Kart</Text>
-        </Text>
+        <View>
+          <Text style={styles.logo}>ShopKart</Text>
+          <Text style={styles.subtitle}>
+            Multi-Vendor Marketplace
+          </Text>
+        </View>
 
         <TouchableOpacity
           style={styles.cartButton}
-          onPress={() => setActiveTab("Cart")}
+          onPress={() => setScreen("cart")}
         >
-          <Text style={styles.cartIcon}>🛒</Text>
-
-          {cart.length > 0 && (
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>{cart.length}</Text>
-            </View>
-          )}
+          <Text style={styles.cartText}>
+            🛒 {cart.length}
+          </Text>
         </TouchableOpacity>
       </View>
+    );
+  }
 
-      {/* Search */}
-      <TextInput
-        style={styles.search}
-        placeholder="Search for products..."
-        placeholderTextColor="#777"
-        value={search}
-        onChangeText={setSearch}
-      />
-
-      {/* Banner */}
-      <View style={styles.banner}>
-        <Text style={styles.bannerTitle}>Big Deals</Text>
-        <Text style={styles.bannerText}>Big Savings</Text>
-        <Text style={styles.bannerSmall}>Up to 70% Off</Text>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setSelectedCategory("All")}
-        >
-          <Text style={styles.buttonText}>Shop Now</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Categories */}
-      <Text style={styles.sectionTitle}>Categories</Text>
-
+  function Home() {
+    return (
       <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoryScroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
       >
-        {CATEGORIES.map((category) => (
-          <TouchableOpacity
-            key={category}
-            style={[
-              styles.category,
-              selectedCategory === category && styles.categoryActive,
-            ]}
-            onPress={() => setSelectedCategory(category)}
-          >
-            <Text
-              style={[
-                styles.categoryText,
-                selectedCategory === category &&
-                  styles.categoryTextActive,
-              ]}
-            >
-              {category === "All" ? "🛍️ All" : category}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+        <Header />
 
-      {/* Products */}
-      <Text style={styles.sectionTitle}>
-        {selectedCategory === "All"
-          ? "Top Deals"
-          : selectedCategory}
-      </Text>
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search products..."
+          placeholderTextColor="#777"
+          style={styles.search}
+        />
 
-      {filteredProducts.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>🔍</Text>
-          <Text style={styles.emptyTitle}>Product nahi mila</Text>
-          <Text style={styles.emptyText}>
-            Search ya category change karke dekho.
+        <View style={styles.banner}>
+          <Text style={styles.bannerTitle}>
+            Big Deals. Big Savings.
+          </Text>
+          <Text style={styles.bannerText}>
+            ShopKart par best products discover karo.
           </Text>
         </View>
-      ) : (
-        <View style={styles.products}>
-          {filteredProducts.map((product) => (
-            <View style={styles.product} key={product.id}>
-              <TouchableOpacity
-                onPress={() =>
-                  Alert.alert(
-                    product.name,
-                    `Category: ${product.category}\nPrice: ₹${product.price.toLocaleString(
-                      "en-IN"
-                    )}`
-                  )
-                }
-              >
-                <View style={styles.productImageBox}>
-                  <Text style={styles.productImage}>
-                    {product.icon}
-                  </Text>
-                </View>
 
+        <Text style={styles.sectionTitle}>Categories</Text>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
+          {CATEGORIES.map((c) => (
+            <TouchableOpacity
+              key={c.name}
+              style={[
+                styles.category,
+                category === c.name && styles.categoryActive,
+              ]}
+              onPress={() => setCategory(c.name)}
+            >
+              <Text style={styles.categoryIcon}>
+                {c.icon}
+              </Text>
+              <Text
+                style={[
+                  styles.categoryText,
+                  category === c.name &&
+                    styles.categoryTextActive,
+                ]}
+              >
+                {c.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        <View style={styles.rowBetween}>
+          <Text style={styles.sectionTitle}>
+            {category === "All"
+              ? "Top Deals"
+              : category}
+          </Text>
+
+          {loadingProducts && (
+            <ActivityIndicator size="small" />
+          )}
+        </View>
+
+        {visibleProducts.length === 0 ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>
+              Product nahi mila
+            </Text>
+            <Text style={styles.emptyText}>
+              Search ya category change karke dekho.
+            </Text>
+          </View>
+        ) : (
+          visibleProducts.map((p) => (
+            <View style={styles.product} key={p.id}>
+              <Text style={styles.productIcon}>
+                {p.icon || "🛍️"}
+              </Text>
+
+              <View style={styles.productInfo}>
                 <Text style={styles.productName}>
-                  {product.name}
+                  {p.name || "Product"}
                 </Text>
 
                 <Text style={styles.productCategory}>
-                  {product.category}
+                  {p.category ||
+                    p.category_name ||
+                    "General"}
                 </Text>
 
                 <Text style={styles.price}>
-                  ₹{product.price.toLocaleString("en-IN")}
+                  ₹{Number(p.price || 0).toLocaleString("en-IN")}
                 </Text>
-              </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => addToCart(product)}
-              >
-                <Text style={styles.addText}>Add to Cart</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-      )}
-    </ScrollView>
-  );
-
-  const renderCart = () => (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}
-    >
-      <Text style={styles.pageTitle}>🛒 My Cart</Text>
-
-      {cart.length === 0 ? (
-        <View style={styles.emptyCart}>
-          <Text style={styles.emptyCartIcon}>🛒</Text>
-          <Text style={styles.emptyTitle}>Your cart is empty</Text>
-          <Text style={styles.emptyText}>
-            Products add karo aur yahan order dekho.
-          </Text>
-
-          <TouchableOpacity
-            style={styles.shopButton}
-            onPress={() => setActiveTab("Home")}
-          >
-            <Text style={styles.shopButtonText}>Continue Shopping</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <>
-          {cart.map((item, index) => (
-            <View style={styles.cartItem} key={`${item.id}-${index}`}>
-              <Text style={styles.cartItemIcon}>{item.icon}</Text>
-
-              <View style={styles.cartItemInfo}>
-                <Text style={styles.cartItemName}>{item.name}</Text>
-                <Text style={styles.cartItemPrice}>
-                  ₹{item.price.toLocaleString("en-IN")}
-                </Text>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={() => addToCart(p)}
+                >
+                  <Text style={styles.addButtonText}>
+                    Add to Cart
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
-          ))}
+          ))
+        )}
+      </ScrollView>
+    );
+  }
 
-          <View style={styles.totalBox}>
-            <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalPrice}>
-              ₹{cartTotal.toLocaleString("en-IN")}
+  function Cart() {
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>🛒 My Cart</Text>
+
+        {cart.length === 0 ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>
+              Cart empty hai
+            </Text>
+
+            <TouchableOpacity
+              style={styles.primary}
+              onPress={() => setScreen("home")}
+            >
+              <Text style={styles.primaryText}>
+                Shopping Start Karo
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            {cart.map((item) => (
+              <View style={styles.cartItem} key={item.id}>
+                <Text style={styles.productIcon}>
+                  {item.icon || "🛍️"}
+                </Text>
+
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.productName}>
+                    {item.name}
+                  </Text>
+
+                  <Text style={styles.price}>
+                    ₹
+                    {Number(item.price).toLocaleString(
+                      "en-IN"
+                    )}
+                  </Text>
+
+                  <View style={styles.qtyRow}>
+                    <TouchableOpacity
+                      style={styles.qtyButton}
+                      onPress={() =>
+                        removeFromCart(item.id)
+                      }
+                    >
+                      <Text>−</Text>
+                    </TouchableOpacity>
+
+                    <Text style={styles.qty}>
+                      {item.qty}
+                    </Text>
+
+                    <TouchableOpacity
+                      style={styles.qtyButton}
+                      onPress={() => addToCart(item)}
+                    >
+                      <Text>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            ))}
+
+            <View style={styles.totalBox}>
+              <Text style={styles.totalLabel}>
+                Total
+              </Text>
+
+              <Text style={styles.total}>
+                ₹{cartTotal.toLocaleString("en-IN")}
+              </Text>
+
+              <Text style={styles.commissionInfo}>
+                Marketplace commission: {commissionRate}%
+              </Text>
+
+              <TouchableOpacity
+                style={styles.primary}
+                onPress={checkout}
+              >
+                <Text style={styles.primaryText}>
+                  Proceed to Checkout
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      </ScrollView>
+    );
+  }
+
+  function Orders() {
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>📦 My Orders</Text>
+
+        {orders.length === 0 ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>
+              Abhi koi order nahi hai
             </Text>
           </View>
+        ) : (
+          orders.map((order) => (
+            <View style={styles.order} key={order.id}>
+              <Text style={styles.orderId}>
+                {order.id}
+              </Text>
 
-          <TouchableOpacity
-            style={styles.checkoutButton}
-            onPress={() =>
-              Alert.alert(
-                "Checkout",
-                "Next step mein real payment system connect karenge."
-              )
-            }
-          >
-            <Text style={styles.checkoutText}>Proceed to Checkout</Text>
-          </TouchableOpacity>
-        </>
-      )}
-    </ScrollView>
-  );
+              <Text>
+                Date: {order.createdAt}
+              </Text>
 
-  const renderCategories = () => (
-    <ScrollView contentContainerStyle={styles.scrollContent}>
-      <Text style={styles.pageTitle}>📦 Categories</Text>
+              <Text>
+                Status: {order.status}
+              </Text>
 
-      {CATEGORIES.filter((item) => item !== "All").map((category) => (
+              <Text style={styles.orderTotal}>
+                ₹{order.total.toLocaleString("en-IN")}
+              </Text>
+
+              <Text style={styles.commissionInfo}>
+                Commission: ₹
+                {order.commission.toFixed(2)}
+              </Text>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    );
+  }
+
+  function Auth() {
+    return (
+      <ScrollView
+        style={styles.page}
+        contentContainerStyle={styles.authContainer}
+      >
+        <Text style={styles.pageTitle}>
+          {authMode === "login"
+            ? "🔐 Login"
+            : "📝 Create Account"}
+        </Text>
+
+        {authMode === "signup" && (
+          <TextInput
+            value={fullName}
+            onChangeText={setFullName}
+            placeholder="Full Name"
+            placeholderTextColor="#777"
+            style={styles.input}
+          />
+        )}
+
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email"
+          placeholderTextColor="#777"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          style={styles.input}
+        />
+
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          placeholderTextColor="#777"
+          secureTextEntry
+          style={styles.input}
+        />
+
         <TouchableOpacity
-          key={category}
-          style={styles.largeCategory}
-          onPress={() => {
-            setSelectedCategory(category);
-            setActiveTab("Home");
-          }}
+          style={styles.primary}
+          onPress={
+            authMode === "login" ? login : signup
+          }
+          disabled={authLoading}
         >
-          <Text style={styles.largeCategoryIcon}>
-            {category === "Mobiles"
-              ? "📱"
-              : category === "Fashion"
-              ? "👕"
-              : category === "Electronics"
-              ? "💻"
-              : category === "Audio"
-              ? "🎧"
-              : "🏠"}
+          <Text style={styles.primaryText}>
+            {authLoading
+              ? "Please wait..."
+              : authMode === "login"
+              ? "Login"
+              : "Create Account"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() =>
+            setAuthMode(
+              authMode === "login"
+                ? "signup"
+                : "login"
+            )
+          }
+        >
+          <Text style={styles.link}>
+            {authMode === "login"
+              ? "New user? Create account"
+              : "Already have account? Login"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  }
+
+  function Seller() {
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>
+          🏪 Become a Seller
+        </Text>
+
+        {!user ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>
+              Seller banne ke liye login karo
+            </Text>
+
+            <TouchableOpacity
+              style={styles.primary}
+              onPress={() => setScreen("auth")}
+            >
+              <Text style={styles.primaryText}>
+                Login
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <Text style={styles.infoBox}>
+              ShopKart marketplace commission:{" "}
+              {commissionRate}%
+            </Text>
+
+            <TextInput
+              value={shopName}
+              onChangeText={setShopName}
+              placeholder="Shop Name"
+              placeholderTextColor="#777"
+              style={styles.input}
+            />
+
+            <TextInput
+              value={sellerPhone}
+              onChangeText={setSellerPhone}
+              placeholder="Phone Number"
+              placeholderTextColor="#777"
+              keyboardType="phone-pad"
+              style={styles.input}
+            />
+
+            <TextInput
+              value={sellerAddress}
+              onChangeText={setSellerAddress}
+              placeholder="Shop Address"
+              placeholderTextColor="#777"
+              style={styles.input}
+            />
+
+            <TouchableOpacity
+              style={styles.primary}
+              onPress={registerSeller}
+            >
+              <Text style={styles.primaryText}>
+                Submit Seller Application
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </ScrollView>
+    );
+  }
+
+  function Admin() {
+    if (!user) {
+      return (
+        <View style={styles.page}>
+          <Text style={styles.pageTitle}>
+            👨‍💼 Admin Panel
+          </Text>
+          <Text style={styles.emptyText}>
+            Admin panel ke liye login required hai.
+          </Text>
+        </View>
+      );
+    }
+
+    if (profile?.role !== "admin") {
+      return (
+        <View style={styles.page}>
+          <Text style={styles.pageTitle}>
+            👨‍💼 Admin Panel
           </Text>
 
-          <Text style={styles.largeCategoryText}>{category}</Text>
-
-          <Text style={styles.arrow}>›</Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  );
-
-  const renderAccount = () => (
-    <ScrollView contentContainerStyle={styles.scrollContent}>
-      <Text style={styles.pageTitle}>👤 Account</Text>
-
-      <View style={styles.accountCard}>
-        <Text style={styles.accountIcon}>👤</Text>
-        <Text style={styles.accountTitle}>Welcome to ShopKart</Text>
-        <Text style={styles.accountText}>
-          Login aur signup system next step mein connect karenge.
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        style={styles.accountOption}
-        onPress={() =>
-          Alert.alert("My Orders", "Orders section next step mein banega.")
-        }
-      >
-        <Text style={styles.accountOptionText}>📦  My Orders</Text>
-        <Text style={styles.arrow}>›</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.accountOption}
-        onPress={() =>
-          Alert.alert("Seller", "Seller registration next step mein banega.")
+          <View st
         }
       >
         <Text style={styles.accountOptionText}>🏪  Become a Seller</Text>
