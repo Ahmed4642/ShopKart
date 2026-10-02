@@ -818,7 +818,8 @@ export default function App() {
         <Text style={styles.accountOptionText}>🏪  Become a Seller</Text>
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
+        </ScrollView>
   );
 
   return (
