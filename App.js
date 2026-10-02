@@ -823,107 +823,18 @@ export default function App() {
   );
 }
   }
+
 return (
-    <SafeAreaView style={styles.container}>
-      {activeTab === "Home" && renderHome()}
-      {activeTab === "Categories" && renderCategories()}
-      {activeTab === "Cart" && renderCart()}
-      {activeTab === "Account" && renderAccount()}
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottom}>
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => setActiveTab("Home")}
-        >
-          <Text
-            style={[
-              styles.navIcon,
-              activeTab === "Home" && styles.navActive,
-            ]}
-          >
-            🏠
-          </Text>
-          <Text
-            style={[
-              styles.nav,
-              activeTab === "Home" && styles.navActive,
-            ]}
-          >
-            Home
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => setActiveTab("Categories")}
-        >
-          <Text
-            style={[
-              styles.navIcon,
-              activeTab === "Categories" && styles.navActive,
-            ]}
-          >
-            📦
-          </Text>
-          <Text
-            style={[
-              styles.nav,
-              activeTab === "Categories" && styles.navActive,
-            ]}
-          >
-            Categories
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => setActiveTab("Cart")}
-        >
-          <Text
-            style={[
-              styles.navIcon,
-              activeTab === "Cart" && styles.navActive,
-            ]}
-          >
-            🛒
-          </Text>
-          <Text
-            style={[
-              styles.nav,
-              activeTab === "Cart" && styles.navActive,
-            ]}
-          >
-            Cart
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => setActiveTab("Account")}
-        >
-          <Text
-            style={[
-              styles.navIcon,
-              activeTab === "Account" && styles.navActive,
-            ]}
-          >
-            👤
-          </Text>
-          <Text
-            style={[
-              styles.nav,
-              activeTab === "Account" && styles.navActive,
-            ]}
-          >
-            Account
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
+  <SafeAreaView style={styles.container}>
+    {screen === "home" && <Home />}
+    {screen === "cart" && <Cart />}
+    {screen === "orders" && <Orders />}
+    {screen === "auth" && <Auth />}
+    {screen === "seller" && <Seller />}
+    {screen === "admin" && <Admin />}
+  </SafeAreaView>
+);
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
