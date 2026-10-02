@@ -11,11 +11,14 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-
 // Keep your existing Supabase values here
 const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "gfP0HM8qYhTNswhp";
 
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 const PRODUCTS = [
   {
     id: "demo-1",
