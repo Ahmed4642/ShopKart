@@ -819,9 +819,9 @@ export default function App() {
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
     </View>
-        </ScrollView>
+        
   );
-
+}
   return (
     <SafeAreaView style={styles.container}>
       {activeTab === "Home" && renderHome()}
