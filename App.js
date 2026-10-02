@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 import {
   SafeAreaView,
   View,
@@ -9,6 +10,13 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
+const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co/rest/v1/";
+const SUPABASE_PUBLISHABLE_KEY ="gfP0HM8qYhTNswhp";
+
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
 const PRODUCTS = [
   {
