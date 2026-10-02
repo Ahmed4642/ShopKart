@@ -141,7 +141,7 @@ export default function App() {
     if (!error && data && data.length > 0) {
       setProducts(data);
     } else {
-      setProducts(DEMO_PRODUCTS);
+      setProducts(PRODUCTS);
     }
 
     setLoadingProducts(false);
