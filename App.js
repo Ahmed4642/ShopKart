@@ -793,7 +793,6 @@ export default function App() {
     );
   }
 
-  function Admin() {
     function Categories() {
     return (
       <ScrollView style={styles.page}>
