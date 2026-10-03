@@ -794,15 +794,162 @@ export default function App() {
   }
 
   function Admin() {
+    function Categories() {
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>📂 Categories</Text>
+
+        {CATEGORIES.filter((c) => c.name !== "All").map((c) => (
+          <TouchableOpacity
+            key={c.name}
+            style={styles.largeCategory}
+            onPress={() => {
+              setCategory(c.name);
+              setScreen("home");
+            }}
+          >
+            <Text style={styles.largeCategoryIcon}>
+              {c.icon}
+            </Text>
+
+            <Text style={styles.largeCategoryText}>
+              {c.name}
+            </Text>
+
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    );
+  }
+
+  function Account() {
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>👤 My Account</Text>
+
+        {!user ? (
+          <>
+            <View style={styles.accountCard}>
+              <Text style={styles.accountIcon}>👤</Text>
+
+              <Text style={styles.accountTitle}>
+                Welcome to ShopKart
+              </Text>
+
+              <Text style={styles.accountText}>
+                Login ya Signup karke shopping experience
+                start karo.
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.accountOption}
+              onPress={() => {
+                setAuthMode("login");
+                setScreen("auth");
+              }}
+            >
+              <Text style={styles.accountOptionText}>
+                🔐 Login
+              </Text>
+              <Text style={styles.arrow}>›</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.accountOption}
+              onPress={() => {
+                setAuthMode("signup");
+                setScreen("auth");
+              }}
+            >
+              <Text style={styles.accountOptionText}>
+                📝 Create Account
+              </Text>
+              <Text style={styles.arrow}>›</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <View style={styles.accountCard}>
+              <Text style={styles.accountIcon}>👤</Text>
+
+              <Text style={styles.accountTitle}>
+                {profile?.full_name || "ShopKart User"}
+              </Text>
+
+              <Text style={styles.accountText}>
+                {user.email || ""}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.accountOption}
+              onPress={() => setScreen("orders")}
+            >
+              <Text style={styles.accountOptionText}>
+                📦 My Orders
+              </Text>
+              <Text style={styles.arrow}>›</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.accountOption}
+              onPress={() => setScreen("seller")}
+            >
+              <Text style={styles.accountOptionText}>
+                🏪 Become a Seller
+              </Text>
+              <Text style={styles.arrow}>›</Text>
+            </TouchableOpacity>
+
+            {profile?.role === "admin" && (
+              <TouchableOpacity
+                style={styles.accountOption}
+                onPress={() => setScreen("admin")}
+              >
+                <Text style={styles.accountOptionText}>
+                  👨‍💼 Admin Panel
+                </Text>
+                <Text style={styles.arrow}>›</Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              style={styles.accountOption}
+              onPress={logout}
+            >
+              <Text style={styles.accountOptionText}>
+                🚪 Logout
+              </Text>
+              <Text style={styles.arrow}>›</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </ScrollView>
+    );
+  }
+
+  function Admin() {
     if (!user) {
       return (
         <View style={styles.page}>
           <Text style={styles.pageTitle}>
             👨‍💼 Admin Panel
           </Text>
+
           <Text style={styles.emptyText}>
             Admin panel ke liye login required hai.
           </Text>
+
+          <TouchableOpacity
+            style={styles.primary}
+            onPress={() => setScreen("auth")}
+          >
+            <Text style={styles.primaryText}>
+              Login
+            </Text>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -814,30 +961,172 @@ export default function App() {
             👨‍💼 Admin Panel
           </Text>
 
-          <TouchableOpacity style={styles.accountOption}>
-        <Text style={styles.accountOptionText}>📅 Become a Seller</Text>
-<Text style={styles.arrow}>›</Text>
-      
-        <Text style={styles.accountOptionText}>🏪  Become a Seller</Text>
-        <Text style={styles.arrow}>›</Text>
-      </TouchableOpacity>
-    </View>
-        
-  );
-}
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>
+              Access Denied
+            </Text>
+
+            <Text style={styles.emptyText}>
+              Sirf admin account is panel ko access kar
+              sakta hai.
+            </Text>
+          </View>
+        </View>
+      );
+    }
+
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>
+          👨‍💼 Admin Panel
+        </Text>
+
+        <View style={styles.accountCard}>
+          <Text style={styles.accountIcon}>⚙️</Text>
+
+          <Text style={styles.accountTitle}>
+            ShopKart Admin
+          </Text>
+
+          <Text style={styles.accountText}>
+            Marketplace commission: {commissionRate}%
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.accountOption}
+          onPress={() => Alert.alert(
+            "Admin",
+            "Seller management next step me connect hoga."
+          )}
+        >
+          <Text style={styles.accountOptionText}>
+            🏪 Manage Sellers
+          </Text>
+          <Text style={styles.arrow}>›</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.accountOption}
+          onPress={() => Alert.alert(
+            "Admin",
+            "Product management next step me connect hoga."
+          )}
+        >
+          <Text style={styles.accountOptionText}>
+            🛍️ Manage Products
+          </Text>
+          <Text style={styles.arrow}>›</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.accountOption}
+          onPress={() => Alert.alert(
+            "Commission",
+            `Current marketplace commission: ${commissionRate}%`
+          )}
+        >
+          <Text style={styles.accountOptionText}>
+            💰 Commission: {commissionRate}%
+          </Text>
+          <Text style={styles.arrow}>›</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
   }
 
-return (
-  <SafeAreaView style={styles.container}>
-    {screen === "home" && <Home />}
-    {screen === "cart" && <Cart />}
-    {screen === "orders" && <Orders />}
-    {screen === "auth" && <Auth />}
-    {screen === "seller" && <Seller />}
-    {screen === "admin" && <Admin />}
-  </SafeAreaView>
-);
-}
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={{ flex: 1 }}>
+        {screen === "home" && <Home />}
+        {screen === "categories" && <Categories />}
+        {screen === "cart" && <Cart />}
+        {screen === "orders" && <Orders />}
+        {screen === "auth" && <Auth />}
+        {screen === "seller" && <Seller />}
+        {screen === "account" && <Account />}
+        {screen === "admin" && <Admin />}
+      </View>
+
+      <View style={styles.bottom}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setScreen("home")}
+        >
+          <Text style={styles.navIcon}>🏠</Text>
+          <Text
+            style={[
+              styles.nav,
+              screen === "home" && styles.navActive,
+            ]}
+          >
+            Home
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setScreen("categories")}
+        >
+          <Text style={styles.navIcon}>📂</Text>
+          <Text
+            style={[
+              styles.nav,
+              screen === "categories" && styles.navActive,
+            ]}
+          >
+            Categories
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setScreen("cart")}
+        >
+          <Text style={styles.navIcon}>🛒</Text>
+          <Text
+            style={[
+              styles.nav,
+              screen === "cart" && styles.navActive,
+            ]}
+          >
+            Cart
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setScreen("orders")}
+        >
+          <Text style={styles.navIcon}>📦</Text>
+          <Text
+            style={[
+              styles.nav,
+              screen === "orders" && styles.navActive,
+            ]}
+          >
+            Orders
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => setScreen("account")}
+        >
+          <Text style={styles.navIcon}>👤</Text>
+          <Text
+            style={[
+              styles.nav,
+              screen === "account" && styles.navActive,
+            ]}
+          >
+            Account
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+                }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
