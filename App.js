@@ -650,80 +650,114 @@ export default function App() {
   }
 
   function Auth() {
-    return (
-      <ScrollView
-        style={styles.page}
-        contentContainerStyle={styles.authContainer}
-      >
-        <Text style={styles.pageTitle}>
-          {authMode === "login"
-            ? "🔐 Login"
-            : "📝 Create Account"}
-        </Text>
+  const [showPassword, setShowPassword] = useState(false);
 
-        {authMode === "signup" && (
-          <TextInput
-            value={fullName}
-            onChangeText={setFullName}
-            placeholder="Full Name"
-            placeholderTextColor="#777"
-            style={styles.input}
-          />
-        )}
+  async function handleGoogleLogin() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
 
+    if (error) {
+      Alert.alert("Google Login", error.message);
+    }
+  }
+
+  return (
+    <ScrollView
+      style={styles.page}
+      contentContainerStyle={styles.authContainer}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={styles.pageTitle}>
+        {authMode === "login"
+          ? "🔐 Login"
+          : "📝 Create Account"}
+      </Text>
+
+      {authMode === "signup" && (
         <TextInput
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email"
+          value={fullName}
+          onChangeText={setFullName}
+          placeholder="Full Name"
           placeholderTextColor="#777"
-          autoCapitalize="none"
-          keyboardType="email-address"
           style={styles.input}
+          autoCorrect={false}
         />
+      )}
 
+      <TextInput
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Email"
+        placeholderTextColor="#777"
+        autoCapitalize="none"
+        autoCorrect={false}
+        keyboardType="email-address"
+        style={styles.input}
+        returnKeyType="next"
+      />
+
+      <View style={styles.passwordRow}>
         <TextInput
           value={password}
           onChangeText={setPassword}
           placeholder="Password"
           placeholderTextColor="#777"
-          secureTextEntry
-          style={styles.input}
+          secureTextEntry={!showPassword}
+          style={styles.passwordInput}
+          autoCapitalize="none"
+          autoCorrect={false}
         />
 
         <TouchableOpacity
-          style={styles.primary}
-          onPress={
-            authMode === "login" ? login : signup
-          }
-          disabled={authLoading}
+          style={styles.passwordToggle}
+          onPress={() => setShowPassword((old) => !old)}
         >
-          <Text style={styles.primaryText}>
-            {authLoading
-              ? "Please wait..."
-              : authMode === "login"
-              ? "Login"
-              : "Create Account"}
-          </Text>
+          <Text>{showPassword ? "🙈" : "👁️"}</Text>
         </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity
-          onPress={() =>
-            setAuthMode(
-              authMode === "login"
-                ? "signup"
-                : "login"
-            )
-          }
-        >
-          <Text style={styles.link}>
-            {authMode === "login"
-              ? "New user? Create account"
-              : "Already have account? Login"}
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
-    );
-  }
+      <TouchableOpacity
+        style={styles.primary}
+        onPress={authMode === "login" ? login : signup}
+        disabled={authLoading}
+      >
+        <Text style={styles.primaryText}>
+          {authLoading
+            ? "Please wait..."
+            : authMode === "login"
+            ? "Login"
+            : "Create Account"}
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={styles.orText}>OR</Text>
+
+      <TouchableOpacity
+        style={styles.googleButton}
+        onPress={handleGoogleLogin}
+      >
+        <Text style={styles.googleButtonText}>
+          🔵 Continue with Google
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() =>
+          setAuthMode(
+            authMode === "login" ? "signup" : "login"
+          )
+        }
+      >
+        <Text style={styles.link}>
+          {authMode === "login"
+            ? "New user? Create Account"
+            : "Already have an account? Login"}
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
 
   function Seller() {
     return (
@@ -1127,6 +1161,87 @@ export default function App() {
   );
                 }
 const styles = StyleSheet.create({
+    authContainer: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+
+  input: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    height: 50,
+    marginBottom: 12,
+    fontSize: 15,
+  },
+
+  passwordRow: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 10,
+    height: 50,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    paddingHorizontal: 15,
+    fontSize: 15,
+  },
+
+  passwordToggle: {
+    paddingHorizontal: 15,
+  },
+
+  primary: {
+    backgroundColor: "#1769E0",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 5,
+  },
+
+  primaryText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+
+  orText: {
+    textAlign: "center",
+    marginVertical: 15,
+    color: "#777777",
+    fontWeight: "600",
+  },
+
+  googleButton: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#DADADA",
+    paddingVertical: 13,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  googleButtonText: {
+    color: "#222222",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+
+  link: {
+    textAlign: "center",
+    color: "#1769E0",
+    fontWeight: "700",
+    marginTop: 18,
+    paddingBottom: 10,
+  },
   container: {
     flex: 1,
     backgroundColor: "#F7F8FA",
