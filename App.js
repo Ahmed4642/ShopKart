@@ -13,7 +13,7 @@ import {
 } from "react-native";
 // Keep your existing Supabase values here
 const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = sb_publishable_4dR2ryPZxL8cjNula-kePQ_lYrwSi49
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_4dR2ryPZxL8cjNula-kePQ_lYrwSi49";
 
 const supabase = createClient(
   SUPABASE_URL,
