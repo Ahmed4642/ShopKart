@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator,
+  ActivityIndicator,BackHandler,
 } from "react-native";
 // Keep your existing Supabase values here
 const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co";
@@ -68,6 +68,24 @@ const CATEGORIES = [
 
 export default function App() {
   const [screen, setScreen] = useState("home");
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (screen === "home") {
+        return false;
+      }
+
+      setScreen("home");
+      return true;
+    };
+
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      onBackPress
+    );
+
+    return () => subscription.remove();
+  }, [screen]);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
 
