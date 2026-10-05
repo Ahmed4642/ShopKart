@@ -767,7 +767,7 @@ const [productDescription, setProductDescription] = useState("");
 }
 
   function Seller() {
-  function Seller() {
+  
   async function loadSellerData() {
     if (!user) return;
 
