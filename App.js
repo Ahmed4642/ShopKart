@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 import {
   SafeAreaView,
@@ -17,7 +18,15 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_4dR2ryPZxL8cjNula-kePQ_lYrwSi49
 
 const supabase = createClient(
   SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      storage: AsyncStorage,
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+    },
+  }
 );
 const PRODUCTS = [
   {
@@ -675,7 +684,7 @@ const [productDescription, setProductDescription] = useState("");
   }
 
   function Auth() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [setShowPassword] = useState(false);
 
   async function handleGoogleLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
