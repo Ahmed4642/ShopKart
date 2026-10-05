@@ -92,7 +92,14 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(false);
 
   const [commissionRate, setCommissionRate] = useState(10);
-
+const [seller, setSeller] = useState(null);
+const [sellerProducts, setSellerProducts] = useState([]);
+const [sellerLoading, setSellerLoading] = useState(false);
+const [productName, setProductName] = useState("");
+const [productPrice, setProductPrice] = useState("");
+const [productCategory, setProductCategory] = useState("");
+const [productStock, setProductStock] = useState("");
+const [productDescription, setProductDescription] = useState("");
   useEffect(() => {
     loadSession();
     loadProducts();
@@ -760,72 +767,312 @@ export default function App() {
 }
 
   function Seller() {
+  function Seller() {
+  async function loadSellerData() {
+    if (!user) return;
+
+    setSellerLoading(true);
+
+    const { data, error } = await supabase
+      .from("sellers")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!error) {
+      setSeller(data || null);
+
+      if (data?.id) {
+        const { data: productData } = await supabase
+          .from("products")
+          .select("*")
+          .eq("seller_id", data.id)
+          .order("created_at", { ascending: false });
+
+        setSellerProducts(productData || []);
+      }
+    }
+
+    setSellerLoading(false);
+  }
+
+  useEffect(() => {
+    if (screen === "seller" && user) {
+      loadSellerData();
+    }
+  }, [screen, user]);
+
+  async function addProduct() {
+    if (!seller || seller.status !== "approved") {
+      Alert.alert(
+        "Seller Approval",
+        "Product add karne ke liye seller account approve hona zaroori hai."
+      );
+      return;
+    }
+
+    if (!productName || !productPrice || !productStock) {
+      Alert.alert(
+        "Missing Information",
+        "Product name, price aur stock bharna zaroori hai."
+      );
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("products")
+      .insert({
+        seller_id: seller.id,
+        name: productName,
+        price: Number(productPrice),
+        category: productCategory || "Other",
+        stock: Number(productStock),
+        description: productDescription || null,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      Alert.alert("Product Error", error.message);
+      return;
+    }
+
+    setSellerProducts((old) => [data, ...old]);
+
+    setProductName("");
+    setProductPrice("");
+    setProductCategory("");
+    setProductStock("");
+    setProductDescription("");
+
+    Alert.alert("Success", "Product successfully add ho gaya.");
+  }
+
+  if (!user) {
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>🏪 Seller Center</Text>
+
+        <View style={styles.empty}>
+          <Text style={styles.emptyTitle}>
+            Seller banne ke liye login karo
+          </Text>
+
+          <TouchableOpacity
+            style={styles.primary}
+            onPress={() => setScreen("auth")}
+          >
+            <Text style={styles.primaryText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }
+
+  if (sellerLoading) {
+    return (
+      <View style={styles.page}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.emptyText}>
+          Seller information load ho rahi hai...
+        </Text>
+      </View>
+    );
+  }
+
+  if (!seller) {
     return (
       <ScrollView style={styles.page}>
         <Text style={styles.pageTitle}>
           🏪 Become a Seller
         </Text>
 
-        {!user ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>
-              Seller banne ke liye login karo
-            </Text>
+        <Text style={styles.infoBox}>
+          ShopKart marketplace commission: {commissionRate}%
+        </Text>
 
-            <TouchableOpacity
-              style={styles.primary}
-              onPress={() => setScreen("auth")}
-            >
-              <Text style={styles.primaryText}>
-                Login
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <>
-            <Text style={styles.infoBox}>
-              ShopKart marketplace commission:{" "}
-              {commissionRate}%
-            </Text>
+        <TextInput
+          value={shopName}
+          onChangeText={setShopName}
+          placeholder="Shop Name"
+          placeholderTextColor="#777"
+          style={styles.input}
+        />
 
-            <TextInput
-              value={shopName}
-              onChangeText={setShopName}
-              placeholder="Shop Name"
-              placeholderTextColor="#777"
-              style={styles.input}
-            />
+        <TextInput
+          value={sellerPhone}
+          onChangeText={setSellerPhone}
+          placeholder="Phone Number"
+          placeholderTextColor="#777"
+          keyboardType="phone-pad"
+          style={styles.input}
+        />
 
-            <TextInput
-              value={sellerPhone}
-              onChangeText={setSellerPhone}
-              placeholder="Phone Number"
-              placeholderTextColor="#777"
-              keyboardType="phone-pad"
-              style={styles.input}
-            />
+        <TextInput
+          value={sellerAddress}
+          onChangeText={setSellerAddress}
+          placeholder="Shop Address"
+          placeholderTextColor="#777"
+          style={styles.input}
+        />
 
-            <TextInput
-              value={sellerAddress}
-              onChangeText={setSellerAddress}
-              placeholder="Shop Address"
-              placeholderTextColor="#777"
-              style={styles.input}
-            />
-
-            <TouchableOpacity
-              style={styles.primary}
-              onPress={registerSeller}
-            >
-              <Text style={styles.primaryText}>
-                Submit Seller Application
-              </Text>
-            </TouchableOpacity>
-          </>
-        )}
+        <TouchableOpacity
+          style={styles.primary}
+          onPress={registerSeller}
+        >
+          <Text style={styles.primaryText}>
+            Submit Seller Application
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     );
   }
+
+  if (seller.status !== "approved") {
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>
+          🏪 Seller Center
+        </Text>
+
+        <View style={styles.accountCard}>
+          <Text style={styles.accountIcon}>⏳</Text>
+
+          <Text style={styles.accountTitle}>
+            Application {seller.status || "pending"}
+          </Text>
+
+          <Text style={styles.accountText}>
+            Admin approval ke baad aap products add kar sakenge.
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.accountOption}
+          onPress={loadSellerData}
+        >
+          <Text style={styles.accountOptionText}>
+            🔄 Check Approval Status
+          </Text>
+
+          <Text style={styles.arrow}>›</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.page}>
+      <Text style={styles.pageTitle}>
+        🏪 Seller Dashboard
+      </Text>
+
+      <View style={styles.accountCard}>
+        <Text style={styles.accountIcon}>🏪</Text>
+
+        <Text style={styles.accountTitle}>
+          {seller.shop_name}
+        </Text>
+
+        <Text style={styles.accountText}>
+          Status: Approved
+        </Text>
+
+        <Text style={styles.accountText}>
+          Commission: {seller.commission_rate || commissionRate}%
+        </Text>
+      </View>
+
+      <Text style={styles.sectionTitle}>
+        ➕ Add New Product
+      </Text>
+
+      <TextInput
+        value={productName}
+        onChangeText={setProductName}
+        placeholder="Product Name"
+        placeholderTextColor="#777"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={productPrice}
+        onChangeText={setProductPrice}
+        placeholder="Price"
+        placeholderTextColor="#777"
+        keyboardType="numeric"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={productCategory}
+        onChangeText={setProductCategory}
+        placeholder="Category"
+        placeholderTextColor="#777"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={productStock}
+        onChangeText={setProductStock}
+        placeholder="Stock Quantity"
+        placeholderTextColor="#777"
+        keyboardType="numeric"
+        style={styles.input}
+      />
+
+      <TextInput
+        value={productDescription}
+        onChangeText={setProductDescription}
+        placeholder="Product Description"
+        placeholderTextColor="#777"
+        multiline
+        style={styles.input}
+      />
+
+      <TouchableOpacity
+        style={styles.primary}
+        onPress={addProduct}
+      >
+        <Text style={styles.primaryText}>
+          ➕ Add Product
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={styles.sectionTitle}>
+        🛍️ My Products
+      </Text>
+
+      {sellerProducts.length === 0 ? (
+        <View style={styles.empty}>
+          <Text style={styles.emptyTitle}>
+            Abhi koi product nahi hai
+          </Text>
+        </View>
+      ) : (
+        sellerProducts.map((product) => (
+          <View key={product.id} style={styles.cartItem}>
+            <Text style={styles.cartItemIcon}>🛍️</Text>
+
+            <View style={styles.cartItemInfo}>
+              <Text style={styles.cartItemName}>
+                {product.name}
+              </Text>
+
+              <Text style={styles.cartItemPrice}>
+                ₹{product.price}
+              </Text>
+
+              <Text>
+                Stock: {product.stock}
+              </Text>
+            </View>
+          </View>
+        ))
+      )}
+    </ScrollView>
+  );
+}
 
     function Categories() {
     return (
