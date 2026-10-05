@@ -1130,112 +1130,111 @@ const [productDescription, setProductDescription] = useState("");
   }
 
   function Account() {
-    return (
-      <ScrollView style={styles.page}>
-        <Text style={styles.pageTitle}>👤 My Account</Text>
+  return (
+    <ScrollView
+      style={styles.page}
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
+      <Text style={styles.pageTitle}>👤 My Account</Text>
 
-        {!user ? (
-          <>
-            <View style={styles.accountCard}>
-              <Text style={styles.accountIcon}>👤</Text>
+      {!user ? (
+        <>
+          <View style={styles.accountCard}>
+            <Text style={styles.accountIcon}>👤</Text>
 
-              <Text style={styles.accountTitle}>
-                Welcome to ShopKart
-              </Text>
+            <Text style={styles.accountTitle}>
+              Welcome to ShopKart
+            </Text>
 
-              <Text style={styles.accountText}>
-                Login ya Signup karke shopping experience
-                start karo.
-              </Text>
-            </View>
+            <Text style={styles.accountText}>
+              Login ya Signup karke shopping experience start karo.
+            </Text>
+          </View>
 
+          <TouchableOpacity
+            style={styles.accountOption}
+            onPress={() => {
+              setAuthMode("login");
+              setScreen("auth");
+            }}
+          >
+            <Text style={styles.accountOptionText}>🔐 Login</Text>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.accountOption}
+            onPress={() => {
+              setAuthMode("signup");
+              setScreen("auth");
+            }}
+          >
+            <Text style={styles.accountOptionText}>
+              📝 Create Account
+            </Text>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <View style={styles.accountCard}>
+            <Text style={styles.accountIcon}>👤</Text>
+
+            <Text style={styles.accountTitle}>
+              {profile?.full_name || "ShopKart User"}
+            </Text>
+
+            <Text style={styles.accountText}>
+              {user?.email || ""}
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.accountOption}
+            onPress={() => setScreen("orders")}
+          >
+            <Text style={styles.accountOptionText}>
+              📦 My Orders
+            </Text>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.accountOption}
+            onPress={() => setScreen("seller")}
+          >
+            <Text style={styles.accountOptionText}>
+              🏪 Become a Seller
+            </Text>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+
+          {profile?.role === "admin" && (
             <TouchableOpacity
               style={styles.accountOption}
-              onPress={() => {
-                setAuthMode("login");
-                setScreen("auth");
-              }}
+              onPress={() => setScreen("admin")}
             >
               <Text style={styles.accountOptionText}>
-                🔐 Login
+                👨‍💼 Admin Panel
               </Text>
               <Text style={styles.arrow}>›</Text>
             </TouchableOpacity>
+          )}
 
-            <TouchableOpacity
-              style={styles.accountOption}
-              onPress={() => {
-                setAuthMode("signup");
-                setScreen("auth");
-              }}
-            >
-              <Text style={styles.accountOptionText}>
-                📝 Create Account
-              </Text>
-              <Text style={styles.arrow}>›</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            <View style={styles.accountCard}>
-              <Text style={styles.accountIcon}>👤</Text>
-
-              <Text style={styles.accountTitle}>
-                {profile?.full_name || "ShopKart User"}
-              </Text>
-
-              <Text style={styles.accountText}>
-                {user.email || ""}
-              </Text>
-            </View>
-
-            <TouchableOpacity
-              style={styles.accountOption}
-              onPress={() => setScreen("orders")}
-            >
-              <Text style={styles.accountOptionText}>
-                📦 My Orders
-              </Text>
-              <Text style={styles.arrow}>›</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.accountOption}
-              onPress={() => setScreen("seller")}
-            >
-              <Text style={styles.accountOptionText}>
-                🏪 Become a Seller
-              </Text>
-              <Text style={styles.arrow}>›</Text>
-            </TouchableOpacity>
-
-            {profile?.role === "admin" && (
-              <TouchableOpacity
-                style={styles.accountOption}
-                onPress={() => setScreen("admin")}
-              >
-                <Text style={styles.accountOptionText}>
-                  👨‍💼 Admin Panel
-                </Text>
-                <Text style={styles.arrow}>›</Text>
-              </TouchableOpacity>
-            )}
-
-            <TouchableOpacity
-              style={styles.accountOption}
-              onPress={logout}
-            >
-              <Text style={styles.accountOptionText}>
-                🚪 Logout
-              </Text>
-              <Text style={styles.arrow}>›</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </ScrollView>
-    );
-  }
-
+          <TouchableOpacity
+            style={styles.accountOption}
+            onPress={logout}
+          >
+            <Text style={styles.accountOptionText}>
+              🚪 Logout
+            </Text>
+            <Text style={styles.arrow}>›</Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </ScrollView>
+  );
+}
   function Admin() {
     if (!user) {
       return (
