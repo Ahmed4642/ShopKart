@@ -1135,8 +1135,22 @@ const [productDescription, setProductDescription] = useState("");
       <Text style={styles.pageTitle}>👤 My Account</Text>
 
       <Text style={styles.accountText}>
-        Account screen working
+        Welcome to ShopKart
       </Text>
+
+      <TouchableOpacity
+        style={styles.accountOption}
+        onPress={() => {
+          setAuthMode("login");
+          setScreen("auth");
+        }}
+      >
+        <Text style={styles.accountOptionText}>
+          🔐 Login
+        </Text>
+
+        <Text style={styles.arrow}>›</Text>
+      </TouchableOpacity>
     </View>
   );
 }
