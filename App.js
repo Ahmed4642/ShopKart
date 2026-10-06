@@ -684,6 +684,7 @@ const [productDescription, setProductDescription] = useState("");
   }
 
   function Auth() {
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleGoogleLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
