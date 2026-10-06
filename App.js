@@ -269,7 +269,12 @@ const [productDescription, setProductDescription] = useState("");
         email,
         password,
       });
-
+Alert.alert(
+  "LOGIN DEBUG",
+  error
+    ? `Status: ${error.status || "N/A"}\nMessage: ${error.message}`
+    : `Login OK\nUser: ${data.user?.email || "No user"}`
+);
     setAuthLoading(false);
 
     if (error) {
