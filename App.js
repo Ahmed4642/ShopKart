@@ -135,16 +135,14 @@ const [productDescription, setProductDescription] = useState("");
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+  setUser(session?.user || null);
 
-      if (session?.user) {
-        loadProfile(session.user.id);
-      } else {
-        setProfile(null);
-      }
-    });
+  if (!session?.user) {
+    setProfile(null);
+  }
+});
 
-    return () => subscription.unsubscribe();
+return () => subscription.unsubscribe();
   }, []);
 
   async function loadSession() {
