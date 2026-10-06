@@ -264,17 +264,24 @@ const [productDescription, setProductDescription] = useState("");
 
     setAuthLoading(true);
 
-    const { data, error } =
-      await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-Alert.alert(
-  "LOGIN DEBUG",
-  error
-    ? `Status: ${error.status || "N/A"}\nMessage: ${error.message}`
-    : `Login OK\nUser: ${data.user?.email || "No user"}`
-);
+const { data, error } =
+  await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+setAuthLoading(false);
+
+if (error) {
+  Alert.alert("Login failed", error.message);
+  return;
+}
+
+setUser(data.user);
+await loadProfile(data.user.id);
+setScreen("home");
+
+Alert.alert("Success", "Login successful.");
     setAuthLoading(false);
 
     if (error) {
