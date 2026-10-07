@@ -255,44 +255,34 @@ return () => subscription.unsubscribe();
   }
 
   async function login() {
-    if (!email || !password) {
-      Alert.alert("Login", "Email aur password enter karo.");
-      return;
-    }
+  if (!email || !password) {
+    Alert.alert("Login", "Email aur password enter karo.");
+    return;
+  }
 
-    setAuthLoading(true);
+  setAuthLoading(true);
 
-const { data, error } =
-  await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const { data, error } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-setAuthLoading(false);
+  setAuthLoading(false);
 
-if (error) {
-  Alert.alert("Login failed", error.message);
-  return;
-}
+  if (error) {
+    Alert.alert("Login failed", error.message);
+    return;
+  }
 
-setUser(data.user);
-await loadProfile(data.user.id);
-setScreen("home");
-
-Alert.alert("Success", "Login successful.");
-    setAuthLoading(false);
-
-    if (error) {
-      Alert.alert("Login failed", error.message);
-      return;
-    }
-
+  if (data?.user) {
     setUser(data.user);
     await loadProfile(data.user.id);
     setScreen("home");
 
     Alert.alert("Success", "Login successful.");
   }
+}
 
   async function signup() {
     if (!email || !password) {
@@ -1412,7 +1402,46 @@ Alert.alert("Success", "Login successful.");
   );
                 }
 const styles = StyleSheet.create({
-    authContainer: {
+      page: {
+    flex: 1,
+    paddingBottom: 20,
+  },
+
+  qtyButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 8,
+    backgroundColor: "#F0F2F5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  qty: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginHorizontal: 15,
+  },
+
+  qtyRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+
+  commissionInfo: {
+    color: "#777777",
+    fontSize: 13,
+    marginTop: 6,
+  },
+
+  infoBox: {
+    backgroundColor: "#EAF2FF",
+    marginHorizontal: 18,
+    marginBottom: 15,
+    padding: 14,
+    borderRadius: 10,
+  },
+  authContainer: {
     padding: 20,
     paddingBottom: 40,
   },
