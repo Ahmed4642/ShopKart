@@ -1141,28 +1141,76 @@ Alert.alert("Success", "Login successful.");
   }
 
   function Account() {
+  if (!user) {
+    return (
+      <View style={styles.page}>
+        <Text style={styles.pageTitle}>👤 My Account</Text>
+
+        <Text style={styles.accountText}>
+          Welcome to ShopKart
+        </Text>
+
+        <TouchableOpacity
+          style={styles.accountOption}
+          onPress={() => {
+            setAuthMode("login");
+            setScreen("auth");
+          }}
+        >
+          <Text style={styles.accountOptionText}>
+            🔐 Login
+          </Text>
+
+          <Text style={styles.arrow}>›</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.page}>
+    <ScrollView
+      style={styles.page}
+      contentContainerStyle={{ paddingBottom: 30 }}
+    >
       <Text style={styles.pageTitle}>👤 My Account</Text>
 
       <Text style={styles.accountText}>
-        Welcome to ShopKart
+        Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}
+      </Text>
+
+      <Text style={styles.accountText}>
+        {user.email}
       </Text>
 
       <TouchableOpacity
         style={styles.accountOption}
-        onPress={() => {
-          setAuthMode("login");
-          setScreen("auth");
-        }}
+        onPress={() => setScreen("orders")}
       >
         <Text style={styles.accountOptionText}>
-          🔐 Login
+          📦 My Orders
         </Text>
-
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
-    </View>
+
+      <TouchableOpacity
+        style={styles.accountOption}
+        onPress={() => setScreen("seller")}
+      >
+        <Text style={styles.accountOptionText}>
+          🏪 Become a Seller
+        </Text>
+        <Text style={styles.arrow}>›</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.primary}
+        onPress={logout}
+      >
+        <Text style={styles.primaryText}>
+          Logout
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
   
