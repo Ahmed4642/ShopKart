@@ -358,13 +358,19 @@ if (!sellerTermsAccepted) {
   return;
 }
     const { error } = await supabase.from("sellers").insert({
-      user_id: user.id,
-      shop_name: shopName,
-      phone: sellerPhone,
-      address: sellerAddress || null,
-      status: "pending",
-      commission_rate: 10,
-    });
+  user_id: user.id,
+  shop_name: shopName,
+  phone: sellerPhone,
+  address: sellerAddress || null,
+  email: user.email || null,
+  pan: sellerPan || null,
+  gstin: sellerGstin || null,
+  bank_name: sellerBankName || null,
+  account_number: sellerAccountNumber || null,
+  ifsc: sellerIfsc || null,
+  status: "pending",
+  commission_rate: 10,
+});
 
     if (error) {
       Alert.alert("Seller registration", error.message);
@@ -377,9 +383,15 @@ if (!sellerTermsAccepted) {
     );
 
     setShopName("");
-    setSellerPhone("");
-    setSellerAddress("");
-    setScreen("account");
+setSellerPhone("");
+setSellerAddress("");
+setSellerPan("");
+setSellerGstin("");
+setSellerBankName("");
+setSellerAccountNumber("");
+setSellerIfsc("");
+setSellerTermsAccepted(false);
+setScreen("account");
   }
 
   function checkout() {
