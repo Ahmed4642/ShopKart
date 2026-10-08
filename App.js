@@ -1054,14 +1054,15 @@ if (!sellerTermsAccepted) {
     Main ShopKart Seller Terms & Conditions ko accept karta/karti hoon.
   </Text>
 </TouchableOpacity>
-        
-          style={styles.primary}
-          onPress={registerSeller}
-        >
-          <Text style={styles.primaryText}>
-            Submit Seller Application
-          </Text>
-        </TouchableOpacity>
+
+<TouchableOpacity
+  style={styles.primary}
+  onPress={registerSeller}
+>
+  <Text style={styles.primaryText}>
+    Submit Seller Application
+  </Text>
+</TouchableOpacity>
       </ScrollView>
     );
   }
