@@ -113,6 +113,12 @@ export default function App() {
 
   const [shopName, setShopName] = useState("");
   const [sellerPhone, setSellerPhone] = useState("");
+  const [sellerPan, setSellerPan] = useState("");
+const [sellerGstin, setSellerGstin] = useState("");
+  const [sellerBankName, setSellerBankName] = useState("");
+const [sellerAccountNumber, setSellerAccountNumber] = useState("");
+const [sellerIfsc, setSellerIfsc] = useState("");
+ const [sellerTermsAccepted, setSellerTermsAccepted] = useState(false);
   const [sellerAddress, setSellerAddress] = useState("");
 
   const [authMode, setAuthMode] = useState("login");
@@ -344,7 +350,13 @@ return () => subscription.unsubscribe();
       );
       return;
     }
-
+if (!sellerTermsAccepted) {
+  Alert.alert(
+    "Terms Required",
+    "Seller Terms & Conditions accept karo."
+  );
+  return;
+}
     const { error } = await supabase.from("sellers").insert({
       user_id: user.id,
       shop_name: shopName,
@@ -489,7 +501,18 @@ return () => subscription.unsubscribe();
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-        >
+        ><TouchableOpacity
+  style={styles.termsRow}
+  onPress={() => setSellerTermsAccepted(!sellerTermsAccepted)}
+>
+  <Text style={styles.checkbox}>
+    {sellerTermsAccepted ? "☑" : "☐"}
+  </Text>
+
+  <Text style={styles.termsText}>
+    Main ShopKart Seller Terms & Conditions ko accept karta/karti hoon.
+  </Text>
+</TouchableOpacity>
           {CATEGORIES.map((c) => (
             <TouchableOpacity
               key={c.name}
@@ -939,9 +962,7 @@ return () => subscription.unsubscribe();
           🏪 Become a Seller
         </Text>
 
-        <Text style={styles.infoBox}>
-          ShopKart marketplace commission: {commissionRate}%
-        </Text>
+        
 
         <TextInput
           value={shopName}
@@ -967,8 +988,73 @@ return () => subscription.unsubscribe();
           placeholderTextColor="#777"
           style={styles.input}
         />
+<TextInput
+  value={user?.email || ""}
+  editable={false}
+  placeholder="Email"
+  placeholderTextColor="#777"
+  style={styles.input}
+/>
 
-        <TouchableOpacity
+<TextInput
+  value={sellerPan}
+  onChangeText={setSellerPan}
+  placeholder="PAN Number"
+  placeholderTextColor="#777"
+  autoCapitalize="characters"
+  style={styles.input}
+/>
+
+<TextInput
+  value={sellerGstin}
+  onChangeText={setSellerGstin}
+  placeholder="GSTIN (Optional)"
+  placeholderTextColor="#777"
+  autoCapitalize="characters"
+  style={styles.input}
+/>
+
+<TextInput
+  value={sellerBankName}
+  onChangeText={setSellerBankName}
+  placeholder="Bank Name"
+  placeholderTextColor="#777"
+  style={styles.input}
+/>
+
+<TextInput
+  value={sellerAccountNumber}
+  onChangeText={setSellerAccountNumber}
+  placeholder="Bank Account Number"
+  placeholderTextColor="#777"
+  keyboardType="numeric"
+  style={styles.input}
+/>
+
+<TextInput
+  value={sellerIfsc}
+  onChangeText={setSellerIfsc}
+  placeholder="IFSC Code"
+  placeholderTextColor="#777"
+  autoCapitalize="characters"
+  style={styles.input}
+/>
+
+<TouchableOpacity
+  style={styles.termsRow}
+  onPress={() =>
+    setSellerTermsAccepted(!sellerTermsAccepted)
+  }
+>
+  <Text style={styles.checkbox}>
+    {sellerTermsAccepted ? "☑" : "☐"}
+  </Text>
+
+  <Text style={styles.termsText}>
+    Main ShopKart Seller Terms & Conditions ko accept karta/karti hoon.
+  </Text>
+</TouchableOpacity>
+        
           style={styles.primary}
           onPress={registerSeller}
         >
