@@ -458,7 +458,32 @@ return () => subscription.unsubscribe();
             ShopKart par best products discover karo.
           </Text>
         </View>
+        <TouchableOpacity
+          style={styles.sellerBanner}
+          onPress={() => setScreen("seller")}
+        >
+          <View style={styles.sellerBannerContent}>
+            <Text style={styles.sellerBannerIcon}>🏪</Text>
 
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sellerBannerTitle}>
+                Sell on ShopKart
+              </Text>
+
+              <Text style={styles.sellerBannerText}>
+                Apna business ShopKart par grow karein
+              </Text>
+            </View>
+
+            <Text style={styles.sellerBannerArrow}>›</Text>
+          </View>
+
+          <View style={styles.sellerBannerButton}>
+            <Text style={styles.sellerBannerButtonText}>
+              Become a Seller
+            </Text>
+          </View>
+        </TouchableOpacity>
         <Text style={styles.sectionTitle}>Categories</Text>
 
         <ScrollView
@@ -1499,7 +1524,57 @@ const styles = StyleSheet.create({
     color: "#777777",
     fontWeight: "600",
   },
+  sellerBanner: {
+    backgroundColor: "#FFF7E6",
+    marginHorizontal: 18,
+    marginVertical: 15,
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#FFD166",
+  },
 
+  sellerBannerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  sellerBannerIcon: {
+    fontSize: 32,
+    marginRight: 12,
+  },
+
+  sellerBannerTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#222222",
+  },
+
+  sellerBannerText: {
+    fontSize: 13,
+    color: "#666666",
+    marginTop: 4,
+  },
+
+  sellerBannerArrow: {
+    fontSize: 30,
+    color: "#1769E0",
+    marginLeft: 8,
+  },
+
+  sellerBannerButton: {
+    backgroundColor: "#1769E0",
+    paddingVertical: 11,
+    borderRadius: 9,
+    alignItems: "center",
+    marginTop: 14,
+  },
+
+  sellerBannerButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "800",
+  },
   googleButton: {
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
