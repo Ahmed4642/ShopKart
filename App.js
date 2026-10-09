@@ -1331,7 +1331,17 @@ function Auth() {
         </Text>
         <Text style={styles.arrow}>›</Text>
       </TouchableOpacity>
-
+      {profile?.role === "admin" && (
+        <TouchableOpacity
+          style={styles.accountOption}
+          onPress={() => setScreen("admin")}
+        >
+          <Text style={styles.accountOptionText}>
+            🛡️ Admin Panel
+          </Text>
+          <Text style={styles.arrow}>›</Text>
+        </TouchableOpacity>
+      )}
       <TouchableOpacity
         style={styles.primary}
         onPress={logout}
