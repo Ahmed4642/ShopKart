@@ -549,18 +549,7 @@ setScreen("account");
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-        ><TouchableOpacity
-  style={styles.termsRow}
-  onPress={() => setSellerTermsAccepted(!sellerTermsAccepted)}
->
-  <Text style={styles.checkbox}>
-    {sellerTermsAccepted ? "☑" : "☐"}
-  </Text>
-
-  <Text style={styles.termsText}>
-    Main ShopKart Seller Terms & Conditions ko accept karta/karti hoon.
-  </Text>
-</TouchableOpacity>
+        
           {CATEGORIES.map((c) => (
             <TouchableOpacity
               key={c.name}
