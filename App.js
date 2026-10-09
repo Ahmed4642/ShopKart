@@ -122,6 +122,7 @@ const [sellerIfsc, setSellerIfsc] = useState("");
   const [sellerAddress, setSellerAddress] = useState("");
 
   const [authMode, setAuthMode] = useState("login");
+  const [showPassword, setShowPassword] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
 
   const [commissionRate, setCommissionRate] = useState(10);
@@ -742,9 +743,50 @@ setScreen("account");
       </ScrollView>
     );
   }
+async function loadSellerData() {
+if (!user) return;
 
+setSellerLoading(true);
+
+try {
+const { data, error } = await supabase
+.from("sellers")
+.select("*")
+.eq("user_id", user.id)
+.maybeSingle();
+
+if (error) {
+  Alert.alert("Seller Error", error.message);
+  return;
+}
+
+setSeller(data || null);
+
+if (data?.id) {
+  const { data: productData, error: productError } = await supabase
+    .from("products")
+    .select("*")
+    .eq("seller_id", data.id)
+    .order("created_at", { ascending: false });
+
+  if (productError) {
+    Alert.alert("Products Error", productError.message);
+    return;
+  }
+
+  setSellerProducts(productData || []);
+} else {
+  setSellerProducts([]);
+}
+
+} catch (error) {
+Alert.alert("Seller Error", String(error));
+} finally {
+setSellerLoading(false);
+}
+}
   function Auth() {
-  const [showPassword, setShowPassword] = useState(false);
+  
 
   async function handleGoogleLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
