@@ -106,7 +106,7 @@ export default function App() {
 
   const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([]);
-
+const [sellerApplications, setSellerApplications] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -188,7 +188,42 @@ return () => subscription.unsubscribe();
 
     setLoadingProducts(false);
   }
+  async function loadSellerApplications() {
+    const { data, error } = await supabase
+      .from("sellers")
+      .select("id, user_id, shop_name, phone, address, status, created_at")
+      .order("created_at", { ascending: false });
 
+    if (error) {
+      Alert.alert(
+        "Seller Applications",
+        error.message
+      );
+      return;
+    }
+
+    setSellerApplications(data || []);
+  }
+  async function updateSellerStatus(sellerId, newStatus) {
+    const { error } = await supabase
+      .from("sellers")
+      .update({ status: newStatus })
+      .eq("id", sellerId);
+
+    if (error) {
+      Alert.alert("Error", error.message);
+      return;
+    }
+
+    Alert.alert(
+      "Success",
+      newStatus === "approved"
+        ? "Seller application approved!"
+        : "Seller application rejected!"
+    );
+
+    await loadSellerApplications();
+  }
   async function loadCommission() {
     const { data } = await supabase
       .from("marketplace_settings")
@@ -1353,7 +1388,93 @@ function Auth() {
     </ScrollView>
   );
 }
-  
+    function ManageSellers() {
+    if (!user || profile?.role !== "admin") {
+      return (
+        <View style={styles.page}>
+          <Text style={styles.pageTitle}>Access Denied</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setScreen("account")}
+          >
+            <Text style={styles.buttonText}>Back to Account</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    return (
+      <ScrollView style={styles.page}>
+        <Text style={styles.pageTitle}>🏪 Manage Sellers</Text>
+
+        <TouchableOpacity
+          style={styles.accountOption}
+          onPress={() => setScreen("admin")}
+        >
+          <Text style={styles.accountOptionText}>← Back to Admin Panel</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.accountOption}
+          onPress={loadSellerApplications}
+        >
+          <Text style={styles.accountOptionText}>🔄 Refresh Applications</Text>
+        </TouchableOpacity>
+
+        {sellerApplications.length === 0 ? (
+          <Text style={styles.accountText}>
+            No seller applications found.
+          </Text>
+        ) : (
+          sellerApplications.map((seller) => (
+            <View key={seller.id} style={styles.accountCard}>
+              <Text style={styles.accountTitle}>
+                {seller.shop_name}
+              </Text>
+
+              <Text style={styles.accountText}>
+                Phone: {seller.phone}
+              </Text>
+
+              <Text style={styles.accountText}>
+                Address: {seller.address || "Not provided"}
+              </Text>
+
+              <Text style={styles.accountText}>
+                Status: {seller.status}
+              </Text>
+
+              {seller.status === "pending" && (
+                <View>
+                  <TouchableOpacity
+                    style={styles.accountOption}
+                    onPress={() =>
+                      updateSellerStatus(seller.id, "approved")
+                    }
+                  >
+                    <Text style={styles.accountOptionText}>
+                      ✅ Approve Seller
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.accountOption}
+                    onPress={() =>
+                      updateSellerStatus(seller.id, "rejected")
+                    }
+                  >
+                    <Text style={styles.accountOptionText}>
+                      ❌ Reject Seller
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          ))
+        )}
+      </ScrollView>
+    );
+              }
   function Admin() {
     if (!user) {
       return (
@@ -1418,17 +1539,17 @@ function Auth() {
         </View>
 
         <TouchableOpacity
-          style={styles.accountOption}
-          onPress={() => Alert.alert(
-            "Admin",
-            "Seller management next step me connect hoga."
-          )}
-        >
-          <Text style={styles.accountOptionText}>
-            🏪 Manage Sellers
-          </Text>
-          <Text style={styles.arrow}>›</Text>
-        </TouchableOpacity>
+  style={styles.accountOption}
+  onPress={() => {
+    setScreen("manageSellers");
+    loadSellerApplications();
+  }}
+>
+  <Text style={styles.accountOptionText}>
+    🏪 Manage Sellers
+  </Text>
+  <Text style={styles.arrow}>›</Text>
+</TouchableOpacity>
 
         <TouchableOpacity
           style={styles.accountOption}
@@ -1468,6 +1589,7 @@ function Auth() {
 {screen === "orders" && Orders()}
 {screen === "auth" && Auth()}
 {screen === "seller" && Seller()}
+{screen === "manageSellers" && <ManageSellers />}
 {screen === "account" && Account()}
 {screen === "admin" && Admin()}
       </View>
