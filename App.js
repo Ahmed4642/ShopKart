@@ -785,7 +785,12 @@ Alert.alert("Seller Error", String(error));
 setSellerLoading(false);
 }
 }
-  function Auth() {
+  useEffect(() => {
+  if (screen === "seller" && user) {
+    loadSellerData();
+  }
+}, [screen, user]);
+function Auth() {
   
 
   async function handleGoogleLogin() {
@@ -897,39 +902,8 @@ setSellerLoading(false);
 
   function Seller() {
   
-  async function loadSellerData() {
-    if (!user) return;
+  
 
-    setSellerLoading(true);
-
-    const { data, error } = await supabase
-      .from("sellers")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (!error) {
-      setSeller(data || null);
-
-      if (data?.id) {
-        const { data: productData } = await supabase
-          .from("products")
-          .select("*")
-          .eq("seller_id", data.id)
-          .order("created_at", { ascending: false });
-
-        setSellerProducts(productData || []);
-      }
-    }
-
-    setSellerLoading(false);
-  }
-
-  useEffect(() => {
-    if (screen === "seller" && user) {
-      loadSellerData();
-    }
-  }, [screen, user]);
 
   async function addProduct() {
     if (!seller || seller.status !== "approved") {
@@ -1478,14 +1452,14 @@ setSellerLoading(false);
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1 }}>
-        {screen === "home" && <Home />}
-        {screen === "categories" && <Categories />}
-        {screen === "cart" && <Cart />}
-        {screen === "orders" && <Orders />}
-        {screen === "auth" && <Auth />}
-        {screen === "seller" && <Seller />}
-        {screen === "account" && <Account />}
-        {screen === "admin" && <Admin />}
+        {screen === "home" && Home()}
+{screen === "categories" && Categories()}
+{screen === "cart" && Cart()}
+{screen === "orders" && Orders()}
+{screen === "auth" && Auth()}
+{screen === "seller" && Seller()}
+{screen === "account" && Account()}
+{screen === "admin" && Admin()}
       </View>
 
       <View style={styles.bottom}>
