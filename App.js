@@ -549,7 +549,7 @@ setScreen("account");
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-        
+          >
           {CATEGORIES.map((c) => (
             <TouchableOpacity
               key={c.name}
