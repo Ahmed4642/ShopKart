@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from "expo-auth-session";
 import { createClient } from "@supabase/supabase-js";
 import {
   SafeAreaView,
@@ -818,13 +820,74 @@ function Auth() {
   
 
   async function handleGoogleLogin() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
+try {
+const redirectTo = AuthSession.makeRedirectUri({
+scheme: "shopkart",
+path: "auth/callback",
+});
 
-    if (error) {
-      Alert.alert("Google Login", error.message);
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo,
+      skipBrowserRedirect: true,
+    },
+  });
+
+  if (error) {
+    Alert.alert("Google Login", error.message);
+    return;
+  }
+
+  if (!data?.url) {
+    Alert.alert("Google Login", "Login URL nahi mila.");
+    return;
+  }
+
+  const result = await WebBrowser.openAuthSessionAsync(
+    data.url,
+    redirectTo
+  );
+
+  if (result.type === "success" && result.url) {
+    const callbackUrl = new URL(result.url);
+    const params = new URLSearchParams(
+      callbackUrl.hash.substring(1)
+    );
+
+    const accessToken = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
+    const errorMessage = params.get("error_description");
+
+    if (errorMessage) {
+      Alert.alert("Google Login", errorMessage);
+      return;
     }
+
+    if (accessToken && refreshToken) {
+      const { error: sessionError } =
+        await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+      if (sessionError) {
+        Alert.alert("Google Login", sessionError.message);
+      }
+    } else {
+      Alert.alert(
+        "Google Login",
+        "Login session nahi mili. Redirect settings check karni hongi."
+      );
+    }
+  }
+} catch (error) {
+  Alert.alert(
+    "Google Login",
+    error?.message || "Login karte waqt error aaya."
+  );
+}
+
   }
 
   return (
