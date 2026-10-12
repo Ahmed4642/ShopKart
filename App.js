@@ -840,7 +840,7 @@ path: "auth/callback",
   }
 
   if (!data?.url) {
-    Alert.alert("Google Login", "Login URL nahi mila.");
+    Alert.alert("Google Login", "Google login URL nahi mila.");
     return;
   }
 
@@ -849,42 +849,59 @@ path: "auth/callback",
     redirectTo
   );
 
-  if (result.type === "success" && result.url) {
-    const callbackUrl = new URL(result.url);
-    const params = new URLSearchParams(
-      callbackUrl.hash.substring(1)
+  if (result.type !== "success" || !result.url) {
+    return;
+  }
+
+  const callbackUrl = new URL(result.url);
+  const code = callbackUrl.searchParams.get("code");
+
+  if (code) {
+    const { error: sessionError } =
+      await supabase.auth.exchangeCodeForSession(code);
+
+    if (sessionError) {
+      Alert.alert("Google Login", sessionError.message);
+    }
+
+    return;
+  }
+
+  const params = new URLSearchParams(
+    callbackUrl.hash.substring(1)
+  );
+
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token");
+  const errorMessage =
+    params.get("error_description") ||
+    callbackUrl.searchParams.get("error_description");
+
+  if (errorMessage) {
+    Alert.alert("Google Login", errorMessage);
+    return;
+  }
+
+  if (accessToken && refreshToken) {
+    const { error: sessionError } =
+      await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+
+    if (sessionError) {
+      Alert.alert("Google Login", sessionError.message);
+    }
+  } else {
+    Alert.alert(
+      "Google Login",
+      "Login session nahi mili. Redirect settings check karni hongi."
     );
-
-    const accessToken = params.get("access_token");
-    const refreshToken = params.get("refresh_token");
-    const errorMessage = params.get("error_description");
-
-    if (errorMessage) {
-      Alert.alert("Google Login", errorMessage);
-      return;
-    }
-
-    if (accessToken && refreshToken) {
-      const { error: sessionError } =
-        await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-
-      if (sessionError) {
-        Alert.alert("Google Login", sessionError.message);
-      }
-    } else {
-      Alert.alert(
-        "Google Login",
-        "Login session nahi mili. Redirect settings check karni hongi."
-      );
-    }
   }
 } catch (error) {
   Alert.alert(
     "Google Login",
-    error?.message || "Login karte waqt error aaya."
+    error?.message || "Google login mein error aaya."
   );
 }
 
