@@ -842,92 +842,121 @@ function Auth() {
   
 
   async function handleGoogleLogin() {
-try {
-const redirectTo = AuthSession.makeRedirectUri({
-scheme: "shopkart",
-path: "auth/callback",
-});
+  try {
+    const redirectTo = AuthSession.makeRedirectUri({
+      scheme: "shopkart",
+      path: "auth/callback",
+    });
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo,
-      skipBrowserRedirect: true,
-    },
-  });
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo,
+        skipBrowserRedirect: true,
+      },
+    });
 
-  if (error) {
-    Alert.alert("Google Login", error.message);
-    return;
-  }
-
-  if (!data?.url) {
-    Alert.alert("Google Login", "Google login URL nahi mila.");
-    return;
-  }
-
-  const result = await WebBrowser.openAuthSessionAsync(
-    data.url,
-    redirectTo
-  );
-
-  if (result.type !== "success" || !result.url) {
-    return;
-  }
-
-  const callbackUrl = new URL(result.url);
-  const code = callbackUrl.searchParams.get("code");
-
-  if (code) {
-    const { error: sessionError } =
-      await supabase.auth.exchangeCodeForSession(code);
-
-    if (sessionError) {
-      Alert.alert("Google Login", sessionError.message);
+    if (error) {
+      Alert.alert("Google Login Failed", error.message);
+      return;
     }
 
-    return;
-  }
+    if (!data?.url) {
+      Alert.alert("Google Login", "Google login URL nahi mila.");
+      return;
+    }
 
-  const params = new URLSearchParams(
-    callbackUrl.hash.substring(1)
-  );
+    const result = await WebBrowser.openAuthSessionAsync(
+      data.url,
+      redirectTo
+    );
 
-  const accessToken = params.get("access_token");
-  const refreshToken = params.get("refresh_token");
-  const errorMessage =
-    params.get("error_description") ||
-    callbackUrl.searchParams.get("error_description");
+    if (result.type !== "success" || !result.url) {
+      Alert.alert(
+        "Google Login",
+        "Login complete nahi hua. Dobara try karein."
+      );
+      return;
+    }
 
-  if (errorMessage) {
-    Alert.alert("Google Login", errorMessage);
-    return;
-  }
+    const callbackUrl = new URL(result.url);
+    const code = callbackUrl.searchParams.get("code");
 
-  if (accessToken && refreshToken) {
-    const { error: sessionError } =
-      await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
+    if (code) {
+      const { error: sessionError } =
+        await supabase.auth.exchangeCodeForSession(code);
+
+      if (sessionError) {
+        Alert.alert("Google Login Failed", sessionError.message);
+        return;
+      }
+    } else {
+      const params = new URLSearchParams(
+        callbackUrl.hash.substring(1)
+      );
+
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+
+      const errorMessage =
+        params.get("error_description") ||
+        callbackUrl.searchParams.get("error_description");
+
+      if (errorMessage) {
+        Alert.alert("Google Login Failed", errorMessage);
+        return;
+      }
+
+      if (!accessToken || !refreshToken) {
+        Alert.alert(
+          "Google Login",
+          "Login session nahi mili. Redirect settings check karein."
+        );
+        return;
+      }
+
+      const { error: sessionError } =
+        await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+      if (sessionError) {
+        Alert.alert("Google Login Failed", sessionError.message);
+        return;
+      }
+    }
+
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
 
     if (sessionError) {
-      Alert.alert("Google Login", sessionError.message);
+      Alert.alert("Session Error", sessionError.message);
+      return;
     }
-  } else {
+
+    const currentUser = sessionData?.session?.user;
+
+    if (!currentUser) {
+      Alert.alert(
+        "Google Login",
+        "Login session verify nahi ho saki. Dobara try karein."
+      );
+      return;
+    }
+
+    setUser(currentUser);
+
+    await loadProfile(currentUser.id);
+
+    setScreen("account");
+  } catch (error) {
     Alert.alert(
-      "Google Login",
-      "Login session nahi mili. Redirect settings check karni hongi."
+      "Google Login Failed",
+      error?.message || "Google login mein error aaya."
     );
   }
-} catch (error) {
-  Alert.alert(
-    "Google Login",
-    error?.message || "Google login mein error aaya."
-  );
 }
-
-  }
 
   return (
     <ScrollView
