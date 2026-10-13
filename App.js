@@ -842,7 +842,9 @@ function Auth() {
   
 
   async function handleGoogleLogin() {
-  try {
+setAuthLoading(true);
+
+try {
     const redirectTo = AuthSession.makeRedirectUri({
       scheme: "shopkart",
       path: "auth/callback",
@@ -950,11 +952,13 @@ function Auth() {
     await loadProfile(currentUser.id);
 
     setScreen("account");
-  } catch (error) {
+    } catch (error) {
     Alert.alert(
       "Google Login Failed",
       error?.message || "Google login mein error aaya."
     );
+  } finally {
+    setAuthLoading(false);
   }
 }
 
