@@ -382,10 +382,19 @@ const [productDescription, setProductDescription] = useState("");
   }
 
   async function logout() {
-    await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
-    setScreen("home");
+const { error } = await supabase.auth.signOut();
+
+if (error) {
+Alert.alert("Logout Failed", error.message);
+return;
+}
+
+setUser(null);
+setProfile(null);
+setAuthMode("login");
+setScreen("home");
+
+Alert.alert("Logout", "Aap successfully logout ho gaye hain.");
   }
 
   async function registerSeller() {
