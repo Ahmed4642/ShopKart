@@ -136,22 +136,35 @@ const [productPrice, setProductPrice] = useState("");
 const [productCategory, setProductCategory] = useState("");
 const [productStock, setProductStock] = useState("");
 const [productDescription, setProductDescription] = useState("");
-  useEffect(() => {
+    useEffect(() => {
     loadSession();
     loadProducts();
     loadCommission();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-  setUser(session?.user || null);
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      const currentUser = session?.user || null;
 
-  if (!session?.user) {
-    setProfile(null);
-  }
-});
+      setUser(currentUser);
 
-return () => subscription.unsubscribe();
+      if (!currentUser) {
+        setProfile(null);
+        return;
+      }
+
+      if (
+        event === "SIGNED_IN" ||
+        event === "INITIAL_SESSION" ||
+        event === "TOKEN_REFRESHED"
+      ) {
+        setTimeout(() => {
+          loadProfile(currentUser.id);
+        }, 0);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   async function loadSession() {
