@@ -1576,118 +1576,620 @@ contentContainerStyle={{ paddingBottom: 30 }}
 
         <Text style={styles.accountText}>
           Email cannot be changed here.
+function Account() {
+  if (!user) {
+    return (
+      <ScrollView
+        style={{ flex: 1, backgroundColor: "#F5F7FB" }}
+        contentContainerStyle={{ padding: 20, flexGrow: 1 }}
+      >
+        <Text
+          style={{
+            fontSize: 27,
+            fontWeight: "800",
+            color: "#172033",
+            marginTop: 20,
+          }}
+        >
+          My Account
         </Text>
 
-        <TouchableOpacity
-          style={styles.primary}
-          disabled={profileSaving}
-          onPress={saveProfile}
+        <View
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: 22,
+            padding: 24,
+            marginTop: 25,
+            alignItems: "center",
+            elevation: 2,
+          }}
         >
-          <Text style={styles.primaryText}>
-            {profileSaving ? "Saving..." : "💾 Save Profile"}
+          <View
+            style={{
+              width: 78,
+              height: 78,
+              borderRadius: 39,
+              backgroundColor: "#E8F0FF",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 15,
+            }}
+          >
+            <Text style={{ fontSize: 35 }}>👤</Text>
+          </View>
+
+          <Text
+            style={{
+              fontSize: 21,
+              fontWeight: "800",
+              color: "#172033",
+            }}
+          >
+            Welcome to ShopKart
           </Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.accountOption}
-          onPress={() => setEditProfile(false)}
-        >
-          <Text style={styles.accountOptionText}>
-            Cancel
+          <Text
+            style={{
+              color: "#7A8498",
+              fontSize: 14,
+              textAlign: "center",
+              marginTop: 8,
+              lineHeight: 21,
+            }}
+          >
+            Login to manage your profile, orders and shopping activities.
           </Text>
-        </TouchableOpacity>
-      </>
-    )}
-  </View>
 
-  <TouchableOpacity
-    style={styles.accountOption}
-    onPress={() => setScreen("orders")}
-  >
-    <Text style={styles.accountOptionText}>
-      📦 My Orders
-    </Text>
-    <Text style={styles.arrow}>›</Text>
-  </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setAuthMode("login");
+              setScreen("auth");
+            }}
+            style={{
+              backgroundColor: "#172033",
+              paddingVertical: 14,
+              paddingHorizontal: 35,
+              borderRadius: 12,
+              marginTop: 22,
+            }}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 15,
+                fontWeight: "700",
+              }}
+            >
+              Login to ShopKart
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }
 
-  <TouchableOpacity
-    style={styles.accountOption}
-    onPress={() => setScreen("seller")}
-  >
-    <Text style={styles.accountOptionText}>
-      🏪 Become a Seller
-    </Text>
-    <Text style={styles.arrow}>›</Text>
-  </TouchableOpacity>
+  const displayName =
+    profile?.full_name?.trim() || "ShopKart Customer";
 
-  <TouchableOpacity
-    style={styles.accountOption}
-    onPress={() => {
-      Alert.alert(
-        "Saved Addresses",
-        "Address management will be added after the address database is configured."
-      );
-    }}
-  >
-    <Text style={styles.accountOptionText}>
-      🏠 Saved Addresses
-    </Text>
-    <Text style={styles.arrow}>›</Text>
-  </TouchableOpacity>
+  const initial = displayName.charAt(0).toUpperCase();
 
-  <TouchableOpacity
-    style={styles.accountOption}
-    onPress={() => {
-      Alert.alert(
-        "Help & Support",
-        "Please contact ShopKart support for assistance."
-      );
-    }}
-  >
-    <Text style={styles.accountOptionText}>
-      🎧 Help & Support
-    </Text>
-    <Text style={styles.arrow}>›</Text>
-  </TouchableOpacity>
-
-  <TouchableOpacity
-    style={styles.accountOption}
-    onPress={() => {
-      Alert.alert(
-        "Privacy & Security",
-        "Your account email is managed by your login provider."
-      );
-    }}
-  >
-    <Text style={styles.accountOptionText}>
-      🔐 Privacy & Security
-    </Text>
-    <Text style={styles.arrow}>›</Text>
-  </TouchableOpacity>
-
-  {profile?.role === "admin" && (
+  const menuRow = (
+    icon,
+    title,
+    subtitle,
+    onPress,
+    showArrow = true
+  ) => (
     <TouchableOpacity
-      style={styles.accountOption}
-      onPress={() => setScreen("admin")}
+      onPress={onPress}
+      activeOpacity={0.75}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 16,
+        paddingHorizontal: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "#F0F2F6",
+      }}
     >
-      <Text style={styles.accountOptionText}>
-        🛡️ Admin Panel
-      </Text>
-      <Text style={styles.arrow}>›</Text>
+      <View
+        style={{
+          width: 43,
+          height: 43,
+          borderRadius: 13,
+          backgroundColor: "#F0F4FA",
+          alignItems: "center",
+          justifyContent: "center",
+          marginRight: 13,
+        }}
+      >
+        <Text style={{ fontSize: 21 }}>{icon}</Text>
+      </View>
+
+      <View style={{ flex: 1 }}>
+        <Text
+          style={{
+            color: "#202A3D",
+            fontSize: 15,
+            fontWeight: "700",
+          }}
+        >
+          {title}
+        </Text>
+
+        {!!subtitle && (
+          <Text
+            style={{
+              color: "#8791A3",
+              fontSize: 12,
+              marginTop: 4,
+              lineHeight: 17,
+            }}
+          >
+            {subtitle}
+          </Text>
+        )}
+      </View>
+
+      {showArrow && (
+        <Text
+          style={{
+            color: "#9AA3B2",
+            fontSize: 25,
+            marginLeft: 8,
+          }}
+        >
+          ›
+        </Text>
+      )}
     </TouchableOpacity>
-  )}
+  );
 
-  <TouchableOpacity
-    style={styles.primary}
-    onPress={logout}
-  >
-    <Text style={styles.primaryText}>
-      🚪 Logout
+  const sectionTitle = (title) => (
+    <Text
+      style={{
+        fontSize: 14,
+        fontWeight: "800",
+        color: "#69758B",
+        marginTop: 24,
+        marginBottom: 10,
+        marginLeft: 3,
+        letterSpacing: 0.5,
+      }}
+    >
+      {title.toUpperCase()}
     </Text>
-  </TouchableOpacity>
-</ScrollView>
+  );
 
-);
+  return (
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#F5F7FB" }}
+      contentContainerStyle={{
+        paddingHorizontal: 16,
+        paddingTop: 15,
+        paddingBottom: 35,
+      }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text
+        style={{
+          fontSize: 27,
+          fontWeight: "800",
+          color: "#172033",
+          marginBottom: 5,
+        }}
+      >
+        My Account
+      </Text>
+
+      <Text
+        style={{
+          fontSize: 13,
+          color: "#8791A3",
+          marginBottom: 18,
+        }}
+      >
+        Manage your ShopKart account
+      </Text>
+
+      {/* PROFILE CARD */}
+      <View
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: 20,
+          padding: 18,
+          elevation: 2,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              width: 65,
+              height: 65,
+              borderRadius: 33,
+              backgroundColor: "#172033",
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: 14,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 28,
+                fontWeight: "800",
+                color: "#FFFFFF",
+              }}
+            >
+              {initial}
+            </Text>
+          </View>
+
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "800",
+                color: "#172033",
+              }}
+              numberOfLines={2}
+            >
+              {displayName}
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#788397",
+                marginTop: 5,
+              }}
+              numberOfLines={2}
+            >
+              {user.email || "Email not available"}
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#788397",
+                marginTop: 4,
+              }}
+            >
+              📱 {profile?.phone || "Mobile number not added"}
+            </Text>
+          </View>
+        </View>
+
+        {!editProfile ? (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              setEditFullName(profile?.full_name || "");
+              setEditPhone(profile?.phone || "");
+              setEditProfile(true);
+            }}
+            style={{
+              marginTop: 18,
+              borderWidth: 1,
+              borderColor: "#DCE4F0",
+              borderRadius: 11,
+              paddingVertical: 12,
+              alignItems: "center",
+              backgroundColor: "#F8FAFD",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "700",
+                color: "#263B5E",
+              }}
+            >
+              ✏️  Edit Profile
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={{ marginTop: 20 }}>
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "700",
+                color: "#344054",
+                marginBottom: 7,
+              }}
+            >
+              Full Name
+            </Text>
+
+            <TextInput
+              style={{
+                borderWidth: 1,
+                borderColor: "#DCE3ED",
+                backgroundColor: "#FAFBFD",
+                borderRadius: 11,
+                paddingHorizontal: 13,
+                paddingVertical: 12,
+                fontSize: 15,
+                color: "#172033",
+                marginBottom: 15,
+              }}
+              placeholder="Enter your full name"
+              placeholderTextColor="#9AA3B2"
+              value={editFullName}
+              onChangeText={setEditFullName}
+              autoCapitalize="words"
+            />
+
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "700",
+                color: "#344054",
+                marginBottom: 7,
+              }}
+            >
+              Mobile Number
+            </Text>
+
+            <TextInput
+              style={{
+                borderWidth: 1,
+                borderColor: "#DCE3ED",
+                backgroundColor: "#FAFBFD",
+                borderRadius: 11,
+                paddingHorizontal: 13,
+                paddingVertical: 12,
+                fontSize: 15,
+                color: "#172033",
+                marginBottom: 12,
+              }}
+              placeholder="Enter mobile number"
+              placeholderTextColor="#9AA3B2"
+              value={editPhone}
+              onChangeText={setEditPhone}
+              keyboardType="phone-pad"
+              maxLength={15}
+            />
+
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#8791A3",
+                marginBottom: 16,
+              }}
+            >
+              Email: {user.email || "Not available"}
+            </Text>
+
+            <TouchableOpacity
+              disabled={profileSaving}
+              onPress={saveProfile}
+              style={{
+                backgroundColor: "#172033",
+                paddingVertical: 14,
+                borderRadius: 11,
+                alignItems: "center",
+                opacity: profileSaving ? 0.6 : 1,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 14,
+                  fontWeight: "800",
+                }}
+              >
+                {profileSaving ? "Saving..." : "Save Changes"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setEditProfile(false)}
+              style={{
+                paddingVertical: 13,
+                alignItems: "center",
+                marginTop: 5,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#69758B",
+                  fontSize: 14,
+                  fontWeight: "700",
+                }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+
+      {/* SHOPPING */}
+      {sectionTitle("My Shopping")}
+
+      <View
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: 17,
+          overflow: "hidden",
+          elevation: 1,
+        }}
+      >
+        {menuRow(
+          "📦",
+          "My Orders",
+          "Track and manage your orders",
+          () => setScreen("orders")
+        )}
+
+        {menuRow(
+          "🏠",
+          "Saved Addresses",
+          "Manage your delivery addresses",
+          () =>
+            Alert.alert(
+              "Saved Addresses",
+              "Address management will be added after the address database is configured."
+            ),
+          false
+        )}
+      </View>
+
+      {/* SELLER */}
+      {sectionTitle("Business")}
+
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={() => setScreen("seller")}
+        style={{
+          backgroundColor: "#172033",
+          borderRadius: 17,
+          padding: 19,
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 14,
+            backgroundColor: "#34435F",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 13,
+          }}
+        >
+          <Text style={{ fontSize: 25 }}>🏪</Text>
+        </View>
+
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: 16,
+              fontWeight: "800",
+            }}
+          >
+            Become a Seller
+          </Text>
+
+          <Text
+            style={{
+              color: "#CFD7E6",
+              fontSize: 12,
+              marginTop: 5,
+              lineHeight: 18,
+            }}
+          >
+            Start selling your products on ShopKart
+          </Text>
+        </View>
+
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontSize: 25,
+            marginLeft: 8,
+          }}
+        >
+          ›
+        </Text>
+      </TouchableOpacity>
+
+      {/* SUPPORT AND SECURITY */}
+      {sectionTitle("Support & Settings")}
+
+      <View
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: 17,
+          overflow: "hidden",
+          elevation: 1,
+        }}
+      >
+        {menuRow(
+          "🎧",
+          "Help & Support",
+          "Get help with your account and orders",
+          () =>
+            Alert.alert(
+              "Help & Support",
+              "Please contact ShopKart support for assistance."
+            )
+        )}
+
+        {menuRow(
+          "🔐",
+          "Privacy & Security",
+          "Your account and login information",
+          () =>
+            Alert.alert(
+              "Privacy & Security",
+              "Your account email is managed by your login provider."
+            )
+        )}
+
+        {profile?.role === "admin" &&
+          menuRow(
+            "🛡️",
+            "Admin Panel",
+            "Manage ShopKart marketplace",
+            () => setScreen("admin")
+          )}
+      </View>
+
+      {/* LOGOUT */}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() =>
+          Alert.alert(
+            "Logout",
+            "Are you sure you want to log out?",
+            [
+              { text: "Cancel", style: "cancel" },
+              { text: "Logout", style: "destructive", onPress: logout },
+            ]
+          )
+        }
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: 14,
+          borderWidth: 1,
+          borderColor: "#F0DADA",
+          paddingVertical: 15,
+          alignItems: "center",
+          marginTop: 23,
+        }}
+      >
+        <Text
+          style={{
+            color: "#C43D46",
+            fontSize: 15,
+            fontWeight: "800",
+          }}
+        >
+          🚪  Logout
+        </Text>
+      </TouchableOpacity>
+
+      <Text
+        style={{
+          color: "#A0A8B6",
+          textAlign: "center",
+          fontSize: 12,
+          marginTop: 22,
+        }}
+      >
+        ShopKart • Your Shopping Partner
+      </Text>
+    </ScrollView>
+  );
 }
     function ManageSellers() {
     if (!user || profile?.role !== "admin") {
