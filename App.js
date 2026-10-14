@@ -705,97 +705,318 @@ setScreen("account");
   }
 
   function Cart() {
-    return (
-      <ScrollView style={styles.page}>
-        <Text style={styles.pageTitle}>🛒 My Cart</Text>
+return (
+<ScrollView
+style={{ flex: 1, backgroundColor: "#F4F6FA" }}
+contentContainerStyle={{ padding: 16, paddingBottom: 30 }}
+>
+<Text
+style={{
+fontSize: 26,
+fontWeight: "800",
+color: "#172337",
+marginBottom: 6,
+}}
+>
+My Cart
+</Text>
 
-        {cart.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>
-              Cart empty hai
-            </Text>
+    <Text
+      style={{
+        fontSize: 14,
+        color: "#718096",
+        marginBottom: 20,
+      }}
+    >
+      Review your items before checkout
+    </Text>
 
-            <TouchableOpacity
-              style={styles.primary}
-              onPress={() => setScreen("home")}
+    {cart.length === 0 ? (
+      <View
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: 20,
+          padding: 28,
+          alignItems: "center",
+          marginTop: 10,
+          borderWidth: 1,
+          borderColor: "#E8EDF4",
+        }}
+      >
+        <View
+          style={{
+            width: 94,
+            height: 94,
+            borderRadius: 47,
+            backgroundColor: "#EEF4FF",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <Text style={{ fontSize: 46 }}>🛒</Text>
+        </View>
+
+        <Text
+          style={{
+            fontSize: 21,
+            fontWeight: "800",
+            color: "#172337",
+            marginBottom: 8,
+          }}
+        >
+          Cart is empty
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 14,
+            color: "#718096",
+            textAlign: "center",
+            lineHeight: 21,
+            marginBottom: 24,
+          }}
+        >
+          Looks like you haven't added anything to your cart yet.
+        </Text>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#2457D6",
+            paddingVertical: 14,
+            paddingHorizontal: 34,
+            borderRadius: 12,
+            minWidth: 170,
+            alignItems: "center",
+          }}
+          onPress={() => setScreen("home")}
+          activeOpacity={0.85}
+        >
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: 16,
+              fontWeight: "700",
+            }}
+          >
+            Shop Now
+          </Text>
+        </TouchableOpacity>
+      </View>
+    ) : (
+      <>
+        <View
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: 16,
+            padding: 16,
+            marginBottom: 16,
+            borderWidth: 1,
+            borderColor: "#E8EDF4",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: "800",
+              color: "#172337",
+              marginBottom: 14,
+            }}
+          >
+            Cart Items ({cart.length})
+          </Text>
+
+          {cart.map((item) => (
+            <View
+              key={item.id}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 14,
+                borderBottomWidth: 1,
+                borderBottomColor: "#EDF0F5",
+              }}
             >
-              <Text style={styles.primaryText}>
-                Shopping Start Karo
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <>
-            {cart.map((item) => (
-              <View style={styles.cartItem} key={item.id}>
-                <Text style={styles.productIcon}>
+              <View
+                style={{
+                  width: 68,
+                  height: 68,
+                  borderRadius: 14,
+                  backgroundColor: "#F1F5FA",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 13,
+                }}
+              >
+                <Text style={{ fontSize: 32 }}>
                   {item.icon || "🛍️"}
                 </Text>
+              </View>
 
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.productName}>
-                    {item.name}
-                  </Text>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "700",
+                    color: "#172337",
+                    marginBottom: 5,
+                  }}
+                >
+                  {item.name}
+                </Text>
 
-                  <Text style={styles.price}>
-                    ₹
-                    {Number(item.price).toLocaleString(
-                      "en-IN"
-                    )}
-                  </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "800",
+                    color: "#2457D6",
+                    marginBottom: 10,
+                  }}
+                >
+                  ₹{Number(item.price).toLocaleString("en-IN")}
+                </Text>
 
-                  <View style={styles.qtyRow}>
-                    <TouchableOpacity
-                      style={styles.qtyButton}
-                      onPress={() =>
-                        removeFromCart(item.id)
-                      }
-                    >
-                      <Text>−</Text>
-                    </TouchableOpacity>
-
-                    <Text style={styles.qty}>
-                      {item.qty}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 9,
+                      borderWidth: 1,
+                      borderColor: "#DCE3ED",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "#FFFFFF",
+                    }}
+                    onPress={() => removeFromCart(item.id)}
+                  >
+                    <Text style={{ fontSize: 19, color: "#172337" }}>
+                      −
                     </Text>
+                  </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={styles.qtyButton}
-                      onPress={() => addToCart(item)}
-                    >
-                      <Text>+</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontWeight: "700",
+                      color: "#172337",
+                      marginHorizontal: 16,
+                    }}
+                  >
+                    {item.qty}
+                  </Text>
+
+                  <TouchableOpacity
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 9,
+                      borderWidth: 1,
+                      borderColor: "#DCE3ED",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "#FFFFFF",
+                    }}
+                    onPress={() => addToCart(item)}
+                  >
+                    <Text style={{ fontSize: 19, color: "#172337" }}>
+                      +
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-            ))}
-
-            <View style={styles.totalBox}>
-              <Text style={styles.totalLabel}>
-                Total
-              </Text>
-
-              <Text style={styles.total}>
-                ₹{cartTotal.toLocaleString("en-IN")}
-              </Text>
-
-              <Text style={styles.commissionInfo}>
-                Marketplace commission: {commissionRate}%
-              </Text>
-
-              <TouchableOpacity
-                style={styles.primary}
-                onPress={checkout}
-              >
-                <Text style={styles.primaryText}>
-                  Proceed to Checkout
-                </Text>
-              </TouchableOpacity>
             </View>
-          </>
-        )}
-      </ScrollView>
-    );
-  }
+          ))}
+        </View>
+
+        <View
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: 16,
+            padding: 18,
+            borderWidth: 1,
+            borderColor: "#E8EDF4",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "800",
+              color: "#172337",
+              marginBottom: 18,
+            }}
+          >
+            Price Details
+          </Text>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 12,
+            }}
+          >
+            <Text style={{ fontSize: 14, color: "#718096" }}>
+              Items ({cart.length})
+            </Text>
+
+            <Text style={{ fontSize: 15, color: "#172337", fontWeight: "600" }}>
+              ₹{cartTotal.toLocaleString("en-IN")}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: "#EDF0F5",
+              paddingTop: 14,
+              marginTop: 4,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 20,
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "800", color: "#172337" }}>
+              Total Amount
+            </Text>
+
+            <Text style={{ fontSize: 19, fontWeight: "800", color: "#2457D6" }}>
+              ₹{cartTotal.toLocaleString("en-IN")}
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#2457D6",
+              paddingVertical: 16,
+              borderRadius: 12,
+              alignItems: "center",
+            }}
+            onPress={checkout}
+            activeOpacity={0.85}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 16,
+                fontWeight: "800",
+              }}
+            >
+              Proceed to Checkout →
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    )}
+  </ScrollView>
+);
+
+}
 
   function Orders() {
     return (
