@@ -110,6 +110,7 @@ const [editPhone, setEditPhone] = useState("");
   const [category, setCategory] = useState("All");
 
   const [cart, setCart] = useState([]);
+ const [wishlist, setWishlist] = useState([]);
   const [orders, setOrders] = useState([]);
 const [sellerApplications, setSellerApplications] = useState([]);
   const [email, setEmail] = useState("");
@@ -152,9 +153,10 @@ const [productDescription, setProductDescription] = useState("");
       setUser(currentUser);
 
       if (!currentUser) {
-        setProfile(null);
-        return;
-      }
+  setProfile(null);
+  setWishlist([]);
+  return;
+}
 
       if (
         event === "SIGNED_IN" ||
@@ -163,6 +165,7 @@ const [productDescription, setProductDescription] = useState("");
       ) {
         setTimeout(() => {
           loadProfile(currentUser.id);
+       loadWishlist(currentUser.id);
         }, 0);
       }
     });
@@ -190,7 +193,25 @@ const [productDescription, setProductDescription] = useState("");
       setProfile(data);
     }
   }
-async function saveProfile() {
+async function loadWishlist(userId) {
+const { data, error } = await supabase
+.from("wishlists")
+.select("product_id, products(*)")
+.eq("user_id", userId);
+
+if (error) {
+  Alert.alert("Wishlist", error.message);
+  return;
+}
+
+const savedProducts = (data || [])
+  .map((item) => item.products)
+  .filter(Boolean);
+
+setWishlist(savedProducts);
+
+}
+  async function saveProfile() {
   if (!user) {
     Alert.alert("Profile", "Please login first.");
     return;
@@ -346,7 +367,201 @@ async function saveProfile() {
 
     Alert.alert("Cart", "Product cart mein add ho gaya.");
   }
+async function toggleWishlist(product) {
+if (!user) {
+Alert.alert(
+"Login Required",
+"Wishlist use karne ke liye pehle login karo."
+);
+setScreen("auth");
+return;
+}
 
+if (
+  !product.id ||
+  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    String(product.id)
+  )
+) {
+  Alert.alert(
+    "Wishlist",
+    "Is product ko save karne ke liye pehle ise Supabase Products table mein add karna hoga."
+  );
+  return;
+}
+
+const { data: existing, error: findError } = await supabase
+  .from("wishlists")
+  .select("id")
+  .eq("user_id", user.id)
+  .eq("product_id", product.id)
+  .maybeSingle();
+
+if (findError) {
+  Alert.alert("Wishlist Error", findError.message);
+  return;
+}
+
+if (existing) {
+  const { error } = await supabase
+    .from("wishlists")
+    .delete()
+    .eq("id", existing.id);
+
+  if (error) {
+    Alert.alert("Wishlist Error", error.message);
+    return;
+  }
+
+  setWishlist((old) =>
+    old.filter((item) => item.id !== product.id)
+  );
+
+  Alert.alert("Wishlist", "Product Wishlist se remove ho gaya.");
+} else {
+  const { error } = await supabase
+    .from("wishlists")
+    .insert({
+      user_id: user.id,
+      product_id: product.id,
+    });
+
+  if (error) {
+    Alert.alert("Wishlist Error", error.message);
+    return;
+  }
+
+  setWishlist((old) => [...old, product]);
+
+  Alert.alert("Wishlist", "Product Wishlist mein save ho gaya.");
+}
+async function toggleWishlist(product) {
+if (!user) {
+Alert.alert(
+"Login Required",
+"Wishlist use karne ke liye pehle login karo."
+);
+setScreen("auth");
+return;
+}
+
+if (
+  !product.id ||
+  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    String(product.id)
+  )
+) {
+  Alert.alert(
+    "Wishlist",
+    "Is product ko save karne ke liye pehle ise Supabase Products table mein add karna hoga."
+  );
+  return;
+}
+
+const { data: existing, error: findError } = await supabase
+  .from("wishlists")
+  .select("id")
+  .eq("user_id", user.id)
+  .eq("product_id", product.id)
+  .maybeSingle();
+
+if (findError) {
+  Alert.alert("Wishlist Error", findError.message);
+  return;
+}
+
+if (existing) {
+  const { error } = await supabase
+    .from("wishlists")
+    .delete()
+    .eq("id", existing.id);
+
+  if (error) {
+    Alert.alert("Wishlist Error", error.message);
+    return;
+  }
+
+  setWishlist((old) =>
+    old.filter((item) => item.id !== product.id)
+  );
+
+  Alert.alert("Wishlist", "Product Wishlist se remove ho gaya.");
+} else {
+  const { error } = await supabase
+    .from("wishlists")
+    .insert({
+      user_id: user.id,
+      product_id: product.id,
+    });
+
+  if (error) {
+    Alert.alert("Wishlist Error", error.message);
+    return;
+  }
+
+  setWishlist((old) => [...old, product]);
+
+  Alert.alert("Wishlist", "Product Wishlist mein save ho gaya.");
+}
+async function toggleWishlist(product) { if (!user) { Alert.alert( "Login Required", "Wishlist use karne ke liye pehle login karo." ); setScreen("auth"); return; }
+if (
+  !product.id ||
+  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    String(product.id)
+  )
+) {
+  Alert.alert(
+    "Wishlist",
+    "Is product ko save karne ke liye pehle ise Supabase Products table mein add karna hoga."
+  );
+  return;
+}
+
+const { data: existing, error: findError } = await supabase
+  .from("wishlists")
+  .select("id")
+  .eq("user_id", user.id)
+  .eq("product_id", product.id)
+  .maybeSingle();
+
+if (findError) {
+  Alert.alert("Wishlist Error", findError.message);
+  return;
+}
+
+if (existing) {
+  const { error } = await supabase
+    .from("wishlists")
+    .delete()
+    .eq("id", existing.id);
+
+  if (error) {
+    Alert.alert("Wishlist Error", error.message);
+    return;
+  }
+
+  setWishlist((old) =>
+    old.filter((item) => item.id !== product.id)
+  );
+
+  Alert.alert("Wishlist", "Product Wishlist se remove ho gaya.");
+} else {
+  const { error } = await supabase
+    .from("wishlists")
+    .insert({
+      user_id: user.id,
+      product_id: product.id,
+    });
+
+  if (error) {
+    Alert.alert("Wishlist Error", error.message);
+    return;
+  }
+
+  setWishlist((old) => [...old, product]);
+
+  Alert.alert("Wishlist", "Product Wishlist mein save ho gaya.");
+}
   function removeFromCart(id) {
     setCart((old) =>
       old
@@ -696,7 +911,24 @@ setScreen("account");
                     Add to Cart
                   </Text>
                 </TouchableOpacity>
-              </View>
+             <TouchableOpacity
+  onPress={() => toggleWishlist(p)}
+  style={{
+    marginTop: 8,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    alignItems: "center",
+  }}
+>
+  <Text style={{ fontSize: 14, fontWeight: "700" }}>
+    {wishlist.some((item) => item.id === p.id)
+      ? "❤️ Saved to Wishlist"
+      : "♡ Add to Wishlist"}
+  </Text>
+</TouchableOpacity>
+                    </View>
             </View>
           ))
         )}
@@ -1069,12 +1301,7 @@ function Orders() {
 
       {/* New Wishlist Option */}
       <TouchableOpacity
-        onPress={() => {
-          Alert.alert(
-            "My Wishlist",
-            "Wishlist products feature will be added next."
-          );
-        }}
+        onPress={() => setScreen("wishlist")}
         style={{
           flexDirection: "row",
           alignItems: "center",
@@ -1105,7 +1332,105 @@ function Orders() {
     </ScrollView>
   );
 }
+function WishlistScreen() { return ( <ScrollView style={{ flex: 1, backgroundColor: "#F4F6FA" }} contentContainerStyle={{ padding: 18 }} > <Text style={{ fontSize: 26, fontWeight: "800", color: "#172337", marginBottom: 20, }} > 🛍️ My Wishlist 
+  {wishlist.length === 0 ? (
+    <View
+      style={{
+        backgroundColor: "#FFFFFF",
+        padding: 24,
+        borderRadius: 14,
+        alignItems: "center",
+      }}
+    >
+      <Text style={{ fontSize: 40 }}>♡</Text>
+      <Text
+        style={{
+          fontSize: 17,
+          fontWeight: "700",
+          color: "#172337",
+          marginTop: 10,
+        }}
+      >
+        Your Wishlist is Empty
+      </Text>
+      <Text
+        style={{
+          fontSize: 13,
+          color: "#718096",
+          marginTop: 6,
+          textAlign: "center",
+        }}
+      >
+        Home par jaakar apne favourite products save karein.
+      </Text>
 
+      <TouchableOpacity
+        onPress={() => setScreen("home")}
+        style={{
+          backgroundColor: "#2874F0",
+          paddingVertical: 12,
+          paddingHorizontal: 20,
+          borderRadius: 8,
+          marginTop: 18,
+        }}
+      >
+        <Text style={{ color: "#FFFFFF", fontWeight: "700" }}>
+          Explore Products
+        </Text>
+      </TouchableOpacity>
+    </View>
+  ) : (
+    wishlist.map((product) => (
+      <View
+        key={product.id}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "#FFFFFF",
+          padding: 14,
+          borderRadius: 14,
+          marginBottom: 12,
+        }}
+      >
+        <Text style={{ fontSize: 32 }}>
+          {product.icon || "🛍️"}
+        </Text>
+
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: "700",
+              color: "#172337",
+            }}
+          >
+            {product.name || "Product"}
+          </Text>
+
+          <Text
+            style={{
+              color: "#2874F0",
+              fontSize: 15,
+              fontWeight: "800",
+              marginTop: 4,
+            }}
+          >
+            ₹{Number(product.price || 0).toLocaleString("en-IN")}
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => toggleWishlist(product)}
+            style={{ marginTop: 8 }}
+          >
+            <Text style={{ color: "#D32F2F", fontWeight: "700" }}>
+              Remove from Wishlist
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    ))
+  )}
+</ScrollView>
 async function loadSellerData() {
 if (!user) return;
 
@@ -2558,6 +2883,7 @@ function Account() {
 {screen === "categories" && Categories()}
 {screen === "cart" && Cart()}
 {screen === "orders" && Orders()}
+{screen === "wishlist" && WishlistScreen()}
 {screen === "auth" && Auth()}
 {screen === "seller" && Seller()}
 {screen === "manageSellers" && <ManageSellers />}
