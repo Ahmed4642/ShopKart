@@ -203,32 +203,36 @@ async function saveProfile() {
 
   setProfileSaving(true);
 
-  const { data, error } = await supabase
-    .from("profiles")
-    .upsert(
-      {
-        id: user.id,
-        full_name: editFullName.trim(),
-        phone: editPhone.trim() || null,
-        email: user.email || null,
-        role: profile?.role || "customer",
-      },
-      { onConflict: "id" }
-    )
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          id: user.id,
+          full_name: editFullName.trim(),
+          phone: editPhone.trim() || null,
+          email: user.email || null,
+          role: profile?.role || "customer",
+        },
+        { onConflict: "id" }
+      )
+      .select()
+      .single();
 
-  setProfileSaving(false);
+    if (error) {
+      Alert.alert("Save Failed", error.message);
+      return;
+    }
 
-  if (error) {
-    Alert.alert("Save Failed", error.message);
-    return;
+    setProfile(data);
+    setEditProfile(false);
+
+    Alert.alert("Success", "Profile saved successfully.");
+  } catch (error) {
+    Alert.alert("Error", "Profile save nahi ho paya.");
+  } finally {
+    setProfileSaving(false);
   }
-
-  setProfile(data);
-  setEditProfile(false);
-
-  Alert.alert("Success", "Your profile has been saved.");
 }
   async function loadProducts() {
     setLoadingProducts(true);
@@ -1472,87 +1476,218 @@ try {
   }
 
   function Account() {
-  if (!user) {
-    return (
-      <View style={styles.page}>
-        <Text style={styles.pageTitle}>👤 My Account</Text>
+const [addresses] = useState([]);
+
+if (!user) {
+return (
+<View style={styles.page}>
+<Text style={styles.pageTitle}>👤 My Account</Text>
+
+    <Text style={styles.accountText}>
+      Welcome to ShopKart
+    </Text>
+
+    <TouchableOpacity
+      style={styles.accountOption}
+      onPress={() => {
+        setAuthMode("login");
+        setScreen("auth");
+      }}
+    >
+      <Text style={styles.accountOptionText}>
+        🔐 Login
+      </Text>
+      <Text style={styles.arrow}>›</Text>
+    </TouchableOpacity>
+  </View>
+);
+
+}
+
+return (
+<ScrollView
+style={styles.page}
+contentContainerStyle={{ paddingBottom: 30 }}
+>
+<Text style={styles.pageTitle}>👤 My Account</Text>
+
+  <View style={styles.accountCard}>
+    <Text style={styles.accountTitle}>
+      Profile Details
+    </Text>
+
+    <Text style={styles.accountText}>
+      📧 Email: {user.email || "Not available"}
+    </Text>
+
+    {!editProfile ? (
+      <>
+        <Text style={styles.accountText}>
+          👤 Full Name: {profile?.full_name || "Not added"}
+        </Text>
 
         <Text style={styles.accountText}>
-          Welcome to ShopKart
+          📱 Mobile: {profile?.phone || "Not added"}
+        </Text>
+
+        <Text style={styles.accountText}>
+          🏠 Saved Addresses: {addresses.length}
         </Text>
 
         <TouchableOpacity
-          style={styles.accountOption}
+          style={styles.primary}
           onPress={() => {
-            setAuthMode("login");
-            setScreen("auth");
+            setEditFullName(profile?.full_name || "");
+            setEditPhone(profile?.phone || "");
+            setEditProfile(true);
           }}
         >
-          <Text style={styles.accountOptionText}>
-            🔐 Login
+          <Text style={styles.primaryText}>
+            ✏️ Edit Profile
           </Text>
-
-          <Text style={styles.arrow}>›</Text>
         </TouchableOpacity>
-      </View>
-    );
-  }
-
-  return (
-    <ScrollView
-      style={styles.page}
-      contentContainerStyle={{ paddingBottom: 30 }}
-    >
-      <Text style={styles.pageTitle}>👤 My Account</Text>
-
-      <Text style={styles.accountText}>
-        Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}
-      </Text>
-
-      <Text style={styles.accountText}>
-        {user.email}
-      </Text>
-
-      <TouchableOpacity
-        style={styles.accountOption}
-        onPress={() => setScreen("orders")}
-      >
-        <Text style={styles.accountOptionText}>
-          📦 My Orders
+      </>
+    ) : (
+      <>
+        <Text style={styles.accountText}>
+          Full Name
         </Text>
-        <Text style={styles.arrow}>›</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.accountOption}
-        onPress={() => setScreen("seller")}
-      >
-        <Text style={styles.accountOptionText}>
-          🏪 Become a Seller
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your full name"
+          value={editFullName}
+          onChangeText={setEditFullName}
+          autoCapitalize="words"
+        />
+
+        <Text style={styles.accountText}>
+          Mobile Number
         </Text>
-        <Text style={styles.arrow}>›</Text>
-      </TouchableOpacity>
-      {profile?.role === "admin" && (
+
+        <TextInput
+          style={styles.input}
+          placeholder="Enter mobile number"
+          value={editPhone}
+          onChangeText={setEditPhone}
+          keyboardType="phone-pad"
+          maxLength={15}
+        />
+
+        <Text style={styles.accountText}>
+          Email cannot be changed here.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.primary}
+          disabled={profileSaving}
+          onPress={saveProfile}
+        >
+          <Text style={styles.primaryText}>
+            {profileSaving ? "Saving..." : "💾 Save Profile"}
+          </Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.accountOption}
-          onPress={() => setScreen("admin")}
+          onPress={() => setEditProfile(false)}
         >
           <Text style={styles.accountOptionText}>
-            🛡️ Admin Panel
+            Cancel
           </Text>
-          <Text style={styles.arrow}>›</Text>
         </TouchableOpacity>
-      )}
-      <TouchableOpacity
-        style={styles.primary}
-        onPress={logout}
-      >
-        <Text style={styles.primaryText}>
-          Logout
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
-  );
+      </>
+    )}
+  </View>
+
+  <TouchableOpacity
+    style={styles.accountOption}
+    onPress={() => setScreen("orders")}
+  >
+    <Text style={styles.accountOptionText}>
+      📦 My Orders
+    </Text>
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.accountOption}
+    onPress={() => setScreen("seller")}
+  >
+    <Text style={styles.accountOptionText}>
+      🏪 Become a Seller
+    </Text>
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.accountOption}
+    onPress={() => {
+      Alert.alert(
+        "Saved Addresses",
+        "Address management will be added after the address database is configured."
+      );
+    }}
+  >
+    <Text style={styles.accountOptionText}>
+      🏠 Saved Addresses
+    </Text>
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.accountOption}
+    onPress={() => {
+      Alert.alert(
+        "Help & Support",
+        "Please contact ShopKart support for assistance."
+      );
+    }}
+  >
+    <Text style={styles.accountOptionText}>
+      🎧 Help & Support
+    </Text>
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.accountOption}
+    onPress={() => {
+      Alert.alert(
+        "Privacy & Security",
+        "Your account email is managed by your login provider."
+      );
+    }}
+  >
+    <Text style={styles.accountOptionText}>
+      🔐 Privacy & Security
+    </Text>
+    <Text style={styles.arrow}>›</Text>
+  </TouchableOpacity>
+
+  {profile?.role === "admin" && (
+    <TouchableOpacity
+      style={styles.accountOption}
+      onPress={() => setScreen("admin")}
+    >
+      <Text style={styles.accountOptionText}>
+        🛡️ Admin Panel
+      </Text>
+      <Text style={styles.arrow}>›</Text>
+    </TouchableOpacity>
+  )}
+
+  <TouchableOpacity
+    style={styles.primary}
+    onPress={logout}
+  >
+    <Text style={styles.primaryText}>
+      🚪 Logout
+    </Text>
+  </TouchableOpacity>
+</ScrollView>
+
+);
 }
     function ManageSellers() {
     if (!user || profile?.role !== "admin") {
