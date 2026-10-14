@@ -99,7 +99,10 @@ export default function App() {
   }, [screen]);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-
+const [editProfile, setEditProfile] = useState(false);
+const [profileSaving, setProfileSaving] = useState(false);
+  const [editFullName, setEditFullName] = useState("");
+const [editPhone, setEditPhone] = useState("");
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
 
@@ -187,7 +190,46 @@ const [productDescription, setProductDescription] = useState("");
       setProfile(data);
     }
   }
+async function saveProfile() {
+  if (!user) {
+    Alert.alert("Profile", "Please login first.");
+    return;
+  }
 
+  if (!editFullName.trim()) {
+    Alert.alert("Profile", "Please enter your full name.");
+    return;
+  }
+
+  setProfileSaving(true);
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert(
+      {
+        id: user.id,
+        full_name: editFullName.trim(),
+        phone: editPhone.trim() || null,
+        email: user.email || null,
+        role: profile?.role || "customer",
+      },
+      { onConflict: "id" }
+    )
+    .select()
+    .single();
+
+  setProfileSaving(false);
+
+  if (error) {
+    Alert.alert("Save Failed", error.message);
+    return;
+  }
+
+  setProfile(data);
+  setEditProfile(false);
+
+  Alert.alert("Success", "Your profile has been saved.");
+}
   async function loadProducts() {
     setLoadingProducts(true);
 
