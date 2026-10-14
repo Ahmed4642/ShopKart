@@ -1388,98 +1388,73 @@ My Orders
         <View
           style={{
             backgroundColor: "#FFFFFF",
-            padding: 22,
-            borderRadius: 18,
+function Orders() {
+const iconOptions = [
+{ name: "Blue Box", icon: "📦", background: "#2457D6", color: "#FFFFFF" },
+{ name: "Outline Package", icon: "📦", background: "#FFFFFF", color: "#2457D6" },
+{ name: "Order Tracking", icon: "🚚", background: "#EAF2FF", color: "#2457D6" },
+{ name: "Premium Shopping", icon: "🛍️", background: "#172337", color: "#FFFFFF" },
+{ name: "Best Match", icon: "▣", background: "#2457D6", color: "#FFFFFF" },
+];
+
+return (
+  <ScrollView
+    style={{ flex: 1, backgroundColor: "#F4F6FA" }}
+    contentContainerStyle={{ padding: 18, paddingBottom: 35 }}
+  >
+    <Text style={{ fontSize: 26, fontWeight: "800", color: "#172337" }}>
+      Orders Icon Test
+    </Text>
+
+    <Text style={{ fontSize: 14, color: "#718096", marginTop: 7, marginBottom: 22 }}>
+      Choose your favourite ShopKart order icon
+    </Text>
+
+    {iconOptions.map((option) => (
+      <View
+        key={option.name}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "#FFFFFF",
+          padding: 16,
+          borderRadius: 16,
+          marginBottom: 13,
+          borderWidth: 1,
+          borderColor: "#E3E9F2",
+        }}
+      >
+        <View
+          style={{
+            width: 62,
+            height: 62,
+            borderRadius: 17,
+            backgroundColor: option.background,
             alignItems: "center",
-            marginTop: 8,
-            marginBottom: 20,
+            justifyContent: "center",
+            borderWidth: option.name === "Outline Package" ? 1 : 0,
+            borderColor: "#2457D6",
           }}
         >
-          <Text
-            style={{
-              fontSize: 14,
-              color: "#718096",
-              marginBottom: 15,
-            }}
-          >
-            LIVE PREVIEW
-          </Text>
-
-          <View
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: 28,
-              backgroundColor:
-                iconOptions[selectedOrderIcon].background,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 14,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 49,
-                color: iconOptions[selectedOrderIcon].color,
-                fontWeight: "800",
-              }}
-            >
-              {iconOptions[selectedOrderIcon].icon}
-            </Text>
-          </View>
-
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "800",
-              color: "#172337",
-            }}
-          >
-            {iconOptions[selectedOrderIcon].name}
-          </Text>
-
-          <Text
-            style={{
-              fontSize: 13,
-              color: "#718096",
-              marginTop: 6,
-              textAlign: "center",
-            }}
-          >
-            My Orders
+          <Text style={{ fontSize: 31, color: option.color, fontWeight: "800" }}>
+            {option.icon}
           </Text>
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() =>
-            Alert.alert(
-              "Selected Icon",
-              "Your choice: " +
-                iconOptions[selectedOrderIcon].name +
-                "\n\nPlease note the selected name. We will apply it to the final Orders design."
-            )
-          }
-          style={{
-            backgroundColor: "#2457D6",
-            paddingVertical: 16,
-            borderRadius: 13,
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: 16,
-              fontWeight: "800",
-            }}
-          >
-            Preview Selected Icon
+        <View style={{ marginLeft: 14, flex: 1 }}>
+          <Text style={{ fontSize: 16, fontWeight: "800", color: "#172337" }}>
+            {option.name}
           </Text>
-        </TouchableOpacity>
-      </ScrollView>
-    );
-  }
+          <Text style={{ fontSize: 12, color: "#718096", marginTop: 5 }}>
+            ShopKart Orders
+          </Text>
+        </View>
+      </View>
+    ))}
+  </ScrollView>
+);
+
+}
 async function loadSellerData() {
 if (!user) return;
 
