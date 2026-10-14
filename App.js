@@ -1068,7 +1068,7 @@ My Orders
             marginBottom: 22,
           }}
         >
-          <Text style={{ fontSize: 48 }}>📦</Text>
+          <Text st172337yle={{ fontSize: 48 }}>📦</Text>
         </View>
 
         <Text
@@ -1217,31 +1217,269 @@ My Orders
 
               <Text
                 style={{
-                  fontSize: 18,
+  function Orders() {
+    const [selectedOrderIcon, setSelectedOrderIcon] = useState(0);
+
+    const iconOptions = [
+      {
+        name: "Blue Box",
+        description: "Clean white parcel on blue",
+        icon: "📦",
+        background: "#2457D6",
+        color: "#FFFFFF",
+      },
+      {
+        name: "Outline Package",
+        description: "Simple and minimal style",
+        icon: "📦",
+        background: "#FFFFFF",
+        color: "#2457D6",
+      },
+      {
+        name: "Order Tracking",
+        description: "Parcel and delivery tracking",
+        icon: "🚚",
+        background: "#EAF2FF",
+        color: "#2457D6",
+      },
+      {
+        name: "Premium 3D Box",
+        description: "Bold shopping package style",
+        icon: "🛍️",
+        background: "#172337",
+        color: "#FFFFFF",
+      },
+      {
+        name: "Best Match",
+        description: "Modern ShopKart blue theme",
+        icon: "▣",
+        background: "#2457D6",
+        color: "#FFFFFF",
+      },
+    ];
+
+    return (
+      <ScrollView
+        style={{ flex: 1, backgroundColor: "#F4F6FA" }}
+        contentContainerStyle={{ padding: 18, paddingBottom: 35 }}
+      >
+        <Text
+          style={{
+            fontSize: 26,
+            fontWeight: "800",
+            color: "#172337",
+          }}
+        >
+          Orders Icon Test
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 14,
+            color: "#718096",
+            marginTop: 7,
+            marginBottom: 22,
+          }}
+        >
+          Choose your favourite ShopKart order icon
+        </Text>
+
+        {iconOptions.map((option, index) => (
+          <TouchableOpacity
+            key={option.name}
+            activeOpacity={0.8}
+            onPress={() => setSelectedOrderIcon(index)}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: "#FFFFFF",
+              padding: 15,
+              borderRadius: 16,
+              marginBottom: 13,
+              borderWidth: selectedOrderIcon === index ? 2 : 1,
+              borderColor:
+                selectedOrderIcon === index ? "#2457D6" : "#E3E9F2",
+            }}
+          >
+            <View
+              style={{
+                width: 62,
+                height: 62,
+                borderRadius: 17,
+                backgroundColor: option.background,
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: option.name === "Outline Package" ? 1 : 0,
+                borderColor: "#2457D6",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 31,
+                  color: option.color,
                   fontWeight: "800",
-                  color: "#2457D6",
                 }}
               >
-                ₹{Number(order.total || 0).toLocaleString("en-IN")}
+                {option.icon}
               </Text>
             </View>
 
-            <Text
+            <View style={{ flex: 1, marginLeft: 14 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "800",
+                  color: "#172337",
+                }}
+              >
+                {option.name}
+              </Text>
+
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: "#718096",
+                  marginTop: 5,
+                }}
+              >
+                {option.description}
+              </Text>
+
+              {selectedOrderIcon === index && (
+                <Text
+                  style={{
+                    color: "#2457D6",
+                    fontSize: 12,
+                    fontWeight: "800",
+                    marginTop: 6,
+                  }}
+                >
+                  ✓ SELECTED
+                </Text>
+              )}
+            </View>
+
+            <View
               style={{
-                fontSize: 12,
-                color: "#718096",
+                width: 22,
+                height: 22,
+                borderRadius: 11,
+                borderWidth: 2,
+                borderColor:
+                  selectedOrderIcon === index ? "#2457D6" : "#C8D1DF",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              Order ID: {String(order.id)}
+              {selectedOrderIcon === index && (
+                <View
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: "#2457D6",
+                  }}
+                />
+              )}
+            </View>
+          </TouchableOpacity>
+        ))}
+
+        <View
+          style={{
+            backgroundColor: "#FFFFFF",
+            padding: 22,
+            borderRadius: 18,
+            alignItems: "center",
+            marginTop: 8,
+            marginBottom: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#718096",
+              marginBottom: 15,
+            }}
+          >
+            LIVE PREVIEW
+          </Text>
+
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 28,
+              backgroundColor:
+                iconOptions[selectedOrderIcon].background,
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 14,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 49,
+                color: iconOptions[selectedOrderIcon].color,
+                fontWeight: "800",
+              }}
+            >
+              {iconOptions[selectedOrderIcon].icon}
             </Text>
           </View>
-        </View>
-      ))
-    )}
-  </ScrollView>
-);
 
-}
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "800",
+              color: "#172337",
+            }}
+          >
+            {iconOptions[selectedOrderIcon].name}
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 13,
+              color: "#718096",
+              marginTop: 6,
+              textAlign: "center",
+            }}
+          >
+            My Orders
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() =>
+            Alert.alert(
+              "Selected Icon",
+              "Your choice: " +
+                iconOptions[selectedOrderIcon].name +
+                "\n\nPlease note the selected name. We will apply it to the final Orders design."
+            )
+          }
+          style={{
+            backgroundColor: "#2457D6",
+            paddingVertical: 16,
+            borderRadius: 13,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: 16,
+              fontWeight: "800",
+            }}
+          >
+            Preview Selected Icon
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  }
 async function loadSellerData() {
 if (!user) return;
 
