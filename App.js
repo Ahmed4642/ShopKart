@@ -1019,45 +1019,229 @@ My Cart
 }
 
   function Orders() {
-    return (
-      <ScrollView style={styles.page}>
-        <Text style={styles.pageTitle}>📦 My Orders</Text>
+return (
+<ScrollView
+style={{ flex: 1, backgroundColor: "#F4F6FA" }}
+contentContainerStyle={{ padding: 16, paddingBottom: 30 }}
+>
+<Text
+style={{
+fontSize: 26,
+fontWeight: "800",
+color: "#172337",
+marginBottom: 6,
+}}
+>
+My Orders
+</Text>
 
-        {orders.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>
-              Abhi koi order nahi hai
-            </Text>
-          </View>
-        ) : (
-          orders.map((order) => (
-            <View style={styles.order} key={order.id}>
-              <Text style={styles.orderId}>
-                {order.id}
+    <Text
+      style={{
+        fontSize: 14,
+        color: "#718096",
+        marginBottom: 22,
+      }}
+    >
+      Track and manage your purchases
+    </Text>
+
+    {orders.length === 0 ? (
+      <View
+        style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: 20,
+          padding: 28,
+          alignItems: "center",
+          marginTop: 8,
+          borderWidth: 1,
+          borderColor: "#E8EDF4",
+        }}
+      >
+        <View
+          style={{
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            backgroundColor: "#EAF2FF",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 22,
+          }}
+        >
+          <Text style={{ fontSize: 48 }}>📦</Text>
+        </View>
+
+        <Text
+          style={{
+            fontSize: 21,
+            fontWeight: "800",
+            color: "#172337",
+            marginBottom: 9,
+            textAlign: "center",
+          }}
+        >
+          No orders yet
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 14,
+            color: "#718096",
+            textAlign: "center",
+            lineHeight: 22,
+            marginBottom: 25,
+          }}
+        >
+          Your orders will appear here once you make your first purchase.
+        </Text>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#2457D6",
+            paddingVertical: 14,
+            paddingHorizontal: 34,
+            borderRadius: 12,
+            minWidth: 170,
+            alignItems: "center",
+          }}
+          onPress={() => setScreen("home")}
+          activeOpacity={0.85}
+        >
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: 16,
+              fontWeight: "700",
+            }}
+          >
+            Order Now
+          </Text>
+        </TouchableOpacity>
+      </View>
+    ) : (
+      orders.map((order) => (
+        <View
+          key={order.id}
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: 16,
+            padding: 18,
+            marginBottom: 14,
+            borderWidth: 1,
+            borderColor: "#E8EDF4",
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                backgroundColor: "#EAF2FF",
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 12,
+              }}
+            >
+              <Text style={{ fontSize: 25 }}>📦</Text>
+            </View>
+
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "800",
+                  color: "#172337",
+                }}
+              >
+                Order #{String(order.id)}
               </Text>
 
-              <Text>
-                Date: {order.createdAt}
-              </Text>
-
-              <Text>
-                Status: {order.status}
-              </Text>
-
-              <Text style={styles.orderTotal}>
-                ₹{order.total.toLocaleString("en-IN")}
-              </Text>
-
-              <Text style={styles.commissionInfo}>
-                Commission: ₹
-                {order.commission.toFixed(2)}
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: "#718096",
+                  marginTop: 4,
+                }}
+              >
+                {order.createdAt
+                  ? `Placed on ${order.createdAt}`
+                  : "Order date unavailable"}
               </Text>
             </View>
-          ))
-        )}
-      </ScrollView>
-    );
-  }
+
+            <View
+              style={{
+                backgroundColor: "#E8F7EE",
+                paddingHorizontal: 10,
+                paddingVertical: 6,
+                borderRadius: 20,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#218348",
+                  fontSize: 12,
+                  fontWeight: "700",
+                }}
+              >
+                {order.status || "Processing"}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: "#EDF0F5",
+              paddingTop: 14,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 10,
+              }}
+            >
+              <Text style={{ fontSize: 14, color: "#718096" }}>
+                Order Total
+              </Text>
+
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "800",
+                  color: "#2457D6",
+                }}
+              >
+                ₹{Number(order.total || 0).toLocaleString("en-IN")}
+              </Text>
+            </View>
+
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#718096",
+              }}
+            >
+              Order ID: {String(order.id)}
+            </Text>
+          </View>
+        </View>
+      ))
+    )}
+  </ScrollView>
+);
+
+}
 async function loadSellerData() {
 if (!user) return;
 
