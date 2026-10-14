@@ -1476,7 +1476,7 @@ try {
   }
 
   function Account() {
-const [addresses] = useState([]);
+
 
 if (!user) {
 return (
@@ -1531,7 +1531,7 @@ contentContainerStyle={{ paddingBottom: 30 }}
         </Text>
 
         <Text style={styles.accountText}>
-          🏠 Saved Addresses: {addresses.length}
+          🏠 Saved Addresses
         </Text>
 
         <TouchableOpacity
