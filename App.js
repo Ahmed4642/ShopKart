@@ -367,201 +367,81 @@ setWishlist(savedProducts);
 
     Alert.alert("Cart", "Product cart mein add ho gaya.");
   }
-async function toggleWishlist(product) {
-if (!user) {
-Alert.alert(
-"Login Required",
-"Wishlist use karne ke liye pehle login karo."
-);
-setScreen("auth");
-return;
-}
+  async function toggleWishlist(product) {
+    if (!user) {
+      Alert.alert(
+        "Login Required",
+        "Wishlist use karne ke liye pehle login karo."
+      );
+      setScreen("auth");
+      return;
+    }
 
-if (
-  !product.id ||
-  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    String(product.id)
-  )
-) {
-  Alert.alert(
-    "Wishlist",
-    "Is product ko save karne ke liye pehle ise Supabase Products table mein add karna hoga."
-  );
-  return;
-}
+    if (
+      !product.id ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        String(product.id)
+      )
+    ) {
+      Alert.alert(
+        "Wishlist",
+        "Is product ko save karne ke liye pehle ise Supabase Products table mein add karna hoga."
+      );
+      return;
+    }
 
-const { data: existing, error: findError } = await supabase
-  .from("wishlists")
-  .select("id")
-  .eq("user_id", user.id)
-  .eq("product_id", product.id)
-  .maybeSingle();
+    const { data: existing, error: findError } = await supabase
+      .from("wishlists")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("product_id", product.id)
+      .maybeSingle();
 
-if (findError) {
-  Alert.alert("Wishlist Error", findError.message);
-  return;
-}
+    if (findError) {
+      Alert.alert("Wishlist Error", findError.message);
+      return;
+    }
 
-if (existing) {
-  const { error } = await supabase
-    .from("wishlists")
-    .delete()
-    .eq("id", existing.id);
+    if (existing) {
+      const { error } = await supabase
+        .from("wishlists")
+        .delete()
+        .eq("id", existing.id);
 
-  if (error) {
-    Alert.alert("Wishlist Error", error.message);
-    return;
+      if (error) {
+        Alert.alert("Wishlist Error", error.message);
+        return;
+      }
+
+      setWishlist((old) =>
+        old.filter((item) => item.id !== product.id)
+      );
+
+      Alert.alert(
+        "Wishlist",
+        "Product Wishlist se remove ho gaya."
+      );
+    } else {
+      const { error } = await supabase
+        .from("wishlists")
+        .insert({
+          user_id: user.id,
+          product_id: product.id,
+        });
+
+      if (error) {
+        Alert.alert("Wishlist Error", error.message);
+        return;
+      }
+
+      setWishlist((old) => [...old, product]);
+
+      Alert.alert(
+        "Wishlist",
+        "Product Wishlist mein save ho gaya."
+      );
+    }
   }
-
-  setWishlist((old) =>
-    old.filter((item) => item.id !== product.id)
-  );
-
-  Alert.alert("Wishlist", "Product Wishlist se remove ho gaya.");
-} else {
-  const { error } = await supabase
-    .from("wishlists")
-    .insert({
-      user_id: user.id,
-      product_id: product.id,
-    });
-
-  if (error) {
-    Alert.alert("Wishlist Error", error.message);
-    return;
-  }
-
-  setWishlist((old) => [...old, product]);
-
-  Alert.alert("Wishlist", "Product Wishlist mein save ho gaya.");
-}
-async function toggleWishlist(product) {
-if (!user) {
-Alert.alert(
-"Login Required",
-"Wishlist use karne ke liye pehle login karo."
-);
-setScreen("auth");
-return;
-}
-
-if (
-  !product.id ||
-  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    String(product.id)
-  )
-) {
-  Alert.alert(
-    "Wishlist",
-    "Is product ko save karne ke liye pehle ise Supabase Products table mein add karna hoga."
-  );
-  return;
-}
-
-const { data: existing, error: findError } = await supabase
-  .from("wishlists")
-  .select("id")
-  .eq("user_id", user.id)
-  .eq("product_id", product.id)
-  .maybeSingle();
-
-if (findError) {
-  Alert.alert("Wishlist Error", findError.message);
-  return;
-}
-
-if (existing) {
-  const { error } = await supabase
-    .from("wishlists")
-    .delete()
-    .eq("id", existing.id);
-
-  if (error) {
-    Alert.alert("Wishlist Error", error.message);
-    return;
-  }
-
-  setWishlist((old) =>
-    old.filter((item) => item.id !== product.id)
-  );
-
-  Alert.alert("Wishlist", "Product Wishlist se remove ho gaya.");
-} else {
-  const { error } = await supabase
-    .from("wishlists")
-    .insert({
-      user_id: user.id,
-      product_id: product.id,
-    });
-
-  if (error) {
-    Alert.alert("Wishlist Error", error.message);
-    return;
-  }
-
-  setWishlist((old) => [...old, product]);
-
-  Alert.alert("Wishlist", "Product Wishlist mein save ho gaya.");
-}
-async function toggleWishlist(product) { if (!user) { Alert.alert( "Login Required", "Wishlist use karne ke liye pehle login karo." ); setScreen("auth"); return; }
-if (
-  !product.id ||
-  !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    String(product.id)
-  )
-) {
-  Alert.alert(
-    "Wishlist",
-    "Is product ko save karne ke liye pehle ise Supabase Products table mein add karna hoga."
-  );
-  return;
-}
-
-const { data: existing, error: findError } = await supabase
-  .from("wishlists")
-  .select("id")
-  .eq("user_id", user.id)
-  .eq("product_id", product.id)
-  .maybeSingle();
-
-if (findError) {
-  Alert.alert("Wishlist Error", findError.message);
-  return;
-}
-
-if (existing) {
-  const { error } = await supabase
-    .from("wishlists")
-    .delete()
-    .eq("id", existing.id);
-
-  if (error) {
-    Alert.alert("Wishlist Error", error.message);
-    return;
-  }
-
-  setWishlist((old) =>
-    old.filter((item) => item.id !== product.id)
-  );
-
-  Alert.alert("Wishlist", "Product Wishlist se remove ho gaya.");
-} else {
-  const { error } = await supabase
-    .from("wishlists")
-    .insert({
-      user_id: user.id,
-      product_id: product.id,
-    });
-
-  if (error) {
-    Alert.alert("Wishlist Error", error.message);
-    return;
-  }
-
-  setWishlist((old) => [...old, product]);
-
-  Alert.alert("Wishlist", "Product Wishlist mein save ho gaya.");
-}
   function removeFromCart(id) {
     setCart((old) =>
       old
