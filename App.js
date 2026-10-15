@@ -376,7 +376,8 @@ setWishlist(savedProducts);
       setScreen("auth");
       return;
     }
-
+console.log("Wishlist user:", user);
+console.log("Wishlist user ID:", user?.id);
     if (
       !product.id ||
       !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
