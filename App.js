@@ -1404,6 +1404,96 @@ function WishlistScreen() { return ( <ScrollView style={{ flex: 1, backgroundCol
               color: "#172337",
             }}
           >
+function WishlistScreen() {
+return (
+<ScrollView
+style={{ flex: 1, backgroundColor: "#F4F6FA" }}
+contentContainerStyle={{ padding: 18 }}
+>
+<Text
+style={{
+fontSize: 26,
+fontWeight: "800",
+color: "#172337",
+marginBottom: 20,
+}}
+>
+🛍️ My Wishlist
+</Text>
+
+  {wishlist.length === 0 ? (
+    <View
+      style={{
+        backgroundColor: "#FFFFFF",
+        padding: 24,
+        borderRadius: 14,
+        alignItems: "center",
+      }}
+    >
+      <Text style={{ fontSize: 40 }}>♡</Text>
+
+      <Text
+        style={{
+          fontSize: 17,
+          fontWeight: "700",
+          color: "#172337",
+          marginTop: 10,
+        }}
+      >
+        Your Wishlist is Empty
+      </Text>
+
+      <Text
+        style={{
+          fontSize: 13,
+          color: "#718096",
+          marginTop: 6,
+          textAlign: "center",
+        }}
+      >
+        Home par jaakar apne favourite products save karein.
+      </Text>
+
+      <TouchableOpacity
+        onPress={() => setScreen("home")}
+        style={{
+          backgroundColor: "#2874F0",
+          paddingVertical: 12,
+          paddingHorizontal: 20,
+          borderRadius: 8,
+          marginTop: 18,
+        }}
+      >
+        <Text style={{ color: "#FFFFFF", fontWeight: "700" }}>
+          Explore Products
+        </Text>
+      </TouchableOpacity>
+    </View>
+  ) : (
+    wishlist.map((product) => (
+      <View
+        key={product.id}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "#FFFFFF",
+          padding: 14,
+          borderRadius: 14,
+          marginBottom: 12,
+        }}
+      >
+        <Text style={{ fontSize: 32 }}>
+          {product.icon || "🛍️"}
+        </Text>
+
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: "700",
+              color: "#172337",
+            }}
+          >
             {product.name || "Product"}
           </Text>
 
@@ -1431,6 +1521,9 @@ function WishlistScreen() { return ( <ScrollView style={{ flex: 1, backgroundCol
     ))
   )}
 </ScrollView>
+
+);
+}
 async function loadSellerData() {
 if (!user) return;
 
