@@ -110,9 +110,58 @@ const [editPhone, setEditPhone] = useState("");
   const [category, setCategory] = useState("All");
 
   const [cart, setCart] = useState([]);
- const [wishlist, setWishlist] = useState([]);
+const [cartLoaded, setCartLoaded] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
   const [orders, setOrders] = useState([]);
-const [sellerApplications, setSellerApplications] = useState([]);
+useEffect(() => {
+  let mounted = true;
+
+  const loadSavedCart = async () => {
+    try {
+      const savedCart = await AsyncStorage.getItem("shopkart_cart");
+
+      if (mounted && savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+
+        if (Array.isArray(parsedCart)) {
+          setCart(parsedCart);
+        }
+      }
+    } catch (error) {
+      console.log("Failed to load cart:", error);
+    } finally {
+      if (mounted) {
+        setCartLoaded(true);
+      }
+    }
+  };
+
+  loadSavedCart();
+
+  return () => {
+    mounted = false;
+  };
+}, []);
+
+useEffect(() => {
+  if (!cartLoaded) {
+    return;
+  }
+
+  const saveCart = async () => {
+    try {
+      await AsyncStorage.setItem(
+        "shopkart_cart",
+        JSON.stringify(cart)
+      );
+    } catch (error) {
+      console.log("Failed to save cart:", error);
+    }
+  };
+
+  saveCart();
+}, [cart, cartLoaded]);
+  const [sellerApplications, setSellerApplications] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
