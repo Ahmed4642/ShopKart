@@ -413,39 +413,32 @@ console.log("Wishlist user ID:", user?.id);
         Alert.alert("Wishlist Error", error.message);
         return;
       }
-
-      setWishlist((old) =>
-        old.filter((item) => item.id !== product.id)
-      );
-
-      Alert.alert(
-        "Wishlist",
-        Alert.alert(
-  "Wishlist",
-  "Product removed from wishlist successfully."
+setWishlist((old) =>
+old.filter((item) => item.id !== product.id)
 );
-      );
-    } else {
-      const { error } = await supabase
-        .from("wishlists")
-        .insert({
-          user_id: user.id,
-          product_id: product.id,
-        });
 
+Alert.alert(
+"Wishlist",
+"Product removed from wishlist successfully."
+);
+} else {
+const { error } = await supabase
+.from("wishlists")
+.insert({
+user_id: user.id,
+product_id: product.id,
+});
       if (error) {
         Alert.alert("Wishlist Error", error.message);
         return;
       }
 
       setWishlist((old) => [...old, product]);
+      
 
       Alert.alert(
         "Wishlist",
-        Alert.alert(
-  "Wishlist",
-  "Product added to wishlist successfully."
-);
+        "Product added to wishlist successfully."
       );
     }
   }
