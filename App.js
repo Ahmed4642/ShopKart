@@ -653,11 +653,12 @@ setScreen("account");
     }
 
     const orderItems = cart.map((item) => ({
-      order_id: orderData.id,
-      product_id: item.id,
-      quantity: item.qty,
-      price: Number(item.price),
-    }));
+  order_id: orderData.id,
+  product_id: item.id,
+  product_name: item.name,
+  quantity: item.qty,
+  price: Number(item.price),
+}));
 
     const { error: itemsError } = await supabase
       .from("order_items")
