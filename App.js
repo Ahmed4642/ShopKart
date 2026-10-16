@@ -651,13 +651,13 @@ setScreen("account");
       Alert.alert("Order Failed", orderError.message);
       return;
     }
-
-    const orderItems = cart.map((item) => ({
+const orderItems = cart.map((item) => ({
   order_id: orderData.id,
   product_id: item.id,
   product_name: item.name,
   quantity: item.qty,
   price: Number(item.price),
+  subtotal: Number(item.price) * Number(item.qty),
 }));
 
     const { error: itemsError } = await supabase
