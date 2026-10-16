@@ -365,7 +365,7 @@ setWishlist(savedProducts);
       return [...old, { ...product, qty: 1 }];
     });
 
-    Alert.alert("Cart", "Product cart mein add ho gaya.");
+    Alert.alert("Cart", "Product added to cart successfully.");
   }
   async function toggleWishlist(product) {
     if (!user) {
@@ -1217,36 +1217,51 @@ function WishlistScreen() {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: "#F4F6FA" }}
-      contentContainerStyle={{ padding: 18 }}
+      contentContainerStyle={{ padding: 18, paddingBottom: 30 }}
     >
-      <Text
-        style={{
-          fontSize: 26,
-          fontWeight: "800",
-          color: "#172337",
-          marginBottom: 20,
-        }}
-      >
-        🛍️ My Wishlist
-      </Text>
+      {/* Header */}
+      <View style={{ marginBottom: 22 }}>
+        <Text
+          style={{
+            fontSize: 27,
+            fontWeight: "800",
+            color: "#172337",
+          }}
+        >
+          My Wishlist
+        </Text>
 
+        <Text
+          style={{
+            fontSize: 14,
+            color: "#718096",
+            marginTop: 5,
+          }}
+        >
+          Your favorite products, all in one place.
+        </Text>
+      </View>
+
+      {/* Empty Wishlist */}
       {wishlist.length === 0 ? (
         <View
           style={{
             backgroundColor: "#FFFFFF",
-            padding: 24,
-            borderRadius: 14,
+            padding: 28,
+            borderRadius: 18,
             alignItems: "center",
+            borderWidth: 1,
+            borderColor: "#E8EDF5",
           }}
         >
-          <Text style={{ fontSize: 40 }}>♡</Text>
+          <Text style={{ fontSize: 48 }}>♡</Text>
 
           <Text
             style={{
-              fontSize: 17,
-              fontWeight: "700",
+              fontSize: 19,
+              fontWeight: "800",
               color: "#172337",
-              marginTop: 10,
+              marginTop: 12,
             }}
           >
             Your Wishlist is Empty
@@ -1254,26 +1269,33 @@ function WishlistScreen() {
 
           <Text
             style={{
-              fontSize: 13,
+              fontSize: 14,
               color: "#718096",
-              marginTop: 6,
+              marginTop: 7,
               textAlign: "center",
+              lineHeight: 21,
             }}
           >
-            Home par jaakar apne favourite products save karein.
+            Save your favorite products here and find them whenever you need.
           </Text>
 
           <TouchableOpacity
             onPress={() => setScreen("home")}
             style={{
               backgroundColor: "#2874F0",
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 8,
-              marginTop: 18,
+              paddingVertical: 13,
+              paddingHorizontal: 24,
+              borderRadius: 10,
+              marginTop: 20,
             }}
           >
-            <Text style={{ color: "#FFFFFF", fontWeight: "700" }}>
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontWeight: "700",
+                fontSize: 14,
+              }}
+            >
               Explore Products
             </Text>
           </TouchableOpacity>
@@ -1287,20 +1309,42 @@ function WishlistScreen() {
               alignItems: "center",
               backgroundColor: "#FFFFFF",
               padding: 14,
-              borderRadius: 14,
-              marginBottom: 12,
+              borderRadius: 16,
+              marginBottom: 14,
+              borderWidth: 1,
+              borderColor: "#E8EDF5",
+              elevation: 2,
+              shadowColor: "#000000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.05,
+              shadowRadius: 5,
             }}
           >
-            <Text style={{ fontSize: 32 }}>
-              {product.icon || "🛍️"}
-            </Text>
+            {/* Product Icon */}
+            <View
+              style={{
+                width: 76,
+                height: 82,
+                backgroundColor: "#F4F6FA",
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ fontSize: 36 }}>
+                {product.icon || "🛍️"}
+              </Text>
+            </View>
 
-            <View style={{ flex: 1, marginLeft: 12 }}>
+            {/* Product Details */}
+            <View style={{ flex: 1, marginLeft: 13 }}>
               <Text
+                numberOfLines={2}
                 style={{
                   fontSize: 15,
                   fontWeight: "700",
                   color: "#172337",
+                  lineHeight: 21,
                 }}
               >
                 {product.name || "Product"}
@@ -1308,23 +1352,65 @@ function WishlistScreen() {
 
               <Text
                 style={{
-                  color: "#2874F0",
-                  fontSize: 15,
+                  color: "#172337",
+                  fontSize: 17,
                   fontWeight: "800",
-                  marginTop: 4,
+                  marginTop: 6,
                 }}
               >
                 ₹{Number(product.price || 0).toLocaleString("en-IN")}
               </Text>
 
-              <TouchableOpacity
-                onPress={() => toggleWishlist(product)}
-                style={{ marginTop: 8 }}
+              {/* Action Buttons */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 12,
+                  flexWrap: "wrap",
+                }}
               >
-                <Text style={{ color: "#D32F2F", fontWeight: "700" }}>
-                  Remove from Wishlist
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => addToCart(product)}
+                  style={{
+                    backgroundColor: "#2874F0",
+                    paddingVertical: 10,
+                    paddingHorizontal: 13,
+                    borderRadius: 8,
+                    marginRight: 10,
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: 12,
+                      fontWeight: "800",
+                    }}
+                  >
+                    + Add to Cart
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => toggleWishlist(product)}
+                  style={{
+                    paddingVertical: 8,
+                    paddingHorizontal: 4,
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#D32F2F",
+                      fontSize: 12,
+                      fontWeight: "700",
+                    }}
+                  >
+                    Remove
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         ))
@@ -1332,7 +1418,6 @@ function WishlistScreen() {
     </ScrollView>
   );
 }
-
 async function loadSellerData() {
 if (!user) return;
 
