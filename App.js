@@ -420,7 +420,10 @@ console.log("Wishlist user ID:", user?.id);
 
       Alert.alert(
         "Wishlist",
-        "Product Wishlist se remove ho gaya."
+        Alert.alert(
+  "Wishlist",
+  "Product removed from wishlist successfully."
+);
       );
     } else {
       const { error } = await supabase
@@ -439,7 +442,10 @@ console.log("Wishlist user ID:", user?.id);
 
       Alert.alert(
         "Wishlist",
-        "Product Wishlist mein save ho gaya."
+        Alert.alert(
+  "Wishlist",
+  "Product added to wishlist successfully."
+);
       );
     }
   }
