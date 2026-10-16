@@ -595,34 +595,93 @@ setSellerTermsAccepted(false);
 setScreen("account");
   }
 
-  function checkout() {
-    if (!user) {
-      Alert.alert(
-        "Login required",
-        "Order place karne ke liye pehle login karo."
-      );
-      setScreen("auth");
+  async function checkout() {
+  if (!user) {
+    Alert.alert(
+      "Login Required",
+      "Please login before placing an order."
+    );
+    setScreen("auth");
+    return;
+  }
+
+  if (cart.length === 0) {
+    Alert.alert(
+      "Empty Cart",
+      "Please add products to your cart first."
+    );
+    return;
+  }
+
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  const invalidProduct = cart.find(
+    (item) => !uuidPattern.test(String(item.id))
+  );
+
+  if (invalidProduct) {
+    Alert.alert(
+      "Invalid Product",
+      "Please add a valid product from the Supabase Products table."
+    );
+    return;
+  }
+
+  const total = Number(cartTotal);
+  const commission = (total * commissionRate) / 100;
+  const sellerAmount = total - commission;
+
+  try {
+    const { data: orderData, error: orderError } =
+      await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          total_amount: total,
+          order_status: "pending",
+          payment_status: "pending",
+        })
+        .select(
+          "id, created_at, total_amount, order_status, payment_status"
+        )
+        .single();
+
+    if (orderError) {
+      Alert.alert("Order Failed", orderError.message);
       return;
     }
 
-    if (cart.length === 0) {
-      Alert.alert("Cart empty", "Pehle product cart mein add karo.");
+    const orderItems = cart.map((item) => ({
+      order_id: orderData.id,
+      product_id: item.id,
+      quantity: item.qty,
+      price: Number(item.price),
+    }));
+
+    const { error: itemsError } = await supabase
+      .from("order_items")
+      .insert(orderItems);
+
+    if (itemsError) {
+      await supabase
+        .from("orders")
+        .delete()
+        .eq("id", orderData.id);
+
+      Alert.alert("Order Items Failed", itemsError.message);
       return;
     }
-
-    const commission =
-      (cartTotal * commissionRate) / 100;
-
-    const sellerAmount = cartTotal - commission;
 
     const newOrder = {
-      id: "ORDER-" + Date.now(),
-      items: cart,
-      total: cartTotal,
+      id: orderData.id,
+      items: [...cart],
+      total: Number(orderData.total_amount),
       commission,
       sellerAmount,
-      status: "Pending",
-      createdAt: new Date().toLocaleString(),
+      status: orderData.order_status,
+      paymentStatus: orderData.payment_status,
+      createdAt: orderData.created_at,
     };
 
     setOrders((old) => [newOrder, ...old]);
@@ -630,12 +689,20 @@ setScreen("account");
     setScreen("orders");
 
     Alert.alert(
-      "Order created",
-      `Total: ₹${cartTotal}\nMarketplace commission: ₹${commission.toFixed(
-        2
-      )}\nSeller amount: ₹${sellerAmount.toFixed(2)}`
+      "Order Created Successfully",
+      `Order ID: ${orderData.id}\n` +
+        `Total: ₹${total.toFixed(2)}\n` +
+        `Marketplace Commission: ₹${commission.toFixed(2)}\n` +
+        `Seller Amount Before Other Charges: ₹${sellerAmount.toFixed(2)}\n` +
+        "Payment Status: Pending"
+    );
+  } catch (error) {
+    Alert.alert(
+      "Checkout Error",
+      error?.message || "Unable to create the order."
     );
   }
+}
 
   function Header() {
     return (
