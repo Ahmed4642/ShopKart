@@ -2898,7 +2898,7 @@ function Account() {
                 Status: {seller.status}
               </Text>
 
-              {seller.status === "pending" && (
+              {String(seller.status || "").trim().toLowerCase() === "pending" && (
                 <View>
                   <TouchableOpacity
                     style={styles.accountOption}
