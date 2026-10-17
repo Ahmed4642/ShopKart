@@ -5,8 +5,9 @@ import * as AuthSession from "expo-auth-session";
 import { createClient } from "@supabase/supabase-js";
 import {
   SafeAreaView,
-  View,
-  Text,
+View,
+Text,
+Image,
   TextInput,
   ScrollView,
   TouchableOpacity,
@@ -1806,9 +1807,36 @@ try {
 }
 
   function Seller() {
-  
-  
+    const [productImage, setProductImage] = useState(null);
 
+  async function chooseProductImage() {
+    try {
+      const permission =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permission.granted) {
+        Alert.alert(
+          "Permission Required",
+          "Product photo choose karne ke liye Gallery permission zaroori hai."
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        setProductImage(result.assets[0]);
+        Alert.alert("Success", "Product photo select ho gayi.");
+      }
+    } catch (error) {
+      Alert.alert("Photo Error", error.message);
+    }
+  }
 
   async function addProduct() {
     if (!seller || seller.status !== "approved") {
@@ -2058,7 +2086,20 @@ try {
       <Text style={styles.sectionTitle}>
         ➕ Add New Product
       </Text>
+<TouchableOpacity
+style={styles.primary}
+onPress={chooseProductImage}
+>
+<Text style={styles.primaryText}>
+{productImage ? "📸 Change Product Photo" : "📸 Choose Product Photo"}
+</Text>
+</TouchableOpacity>
 
+  {productImage && (
+    <Text style={styles.accountText}>
+      ✅ Product photo selected
+    </Text>
+  )}
       <TextInput
         value={productName}
         onChangeText={setProductName}
