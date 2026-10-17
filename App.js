@@ -3037,16 +3037,16 @@ function Account() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1 }}>
-        {screen === "home" && Home()}
-{screen === "categories" && Categories()}
-{screen === "cart" && Cart()}
-{screen === "orders" && Orders()}
-{screen === "wishlist" && WishlistScreen()}
-{screen === "auth" && Auth()}
-{screen === "seller" && Seller()}
+        {screen === "home" && <Home />}
+{screen === "categories" && <Categories />}
+{screen === "cart" && <Cart />}
+{screen === "orders" && <Orders />}
+{screen === "wishlist" && <WishlistScreen />}
+{screen === "auth" && <Auth />}
+{screen === "seller" && <Seller />}
 {screen === "manageSellers" && <ManageSellers />}
-{screen === "account" && Account()}
-{screen === "admin" && Admin()}
+{screen === "account" && <Account />}
+{screen === "admin" && <Admin />}
       </View>
 
       <View style={styles.bottom}>
