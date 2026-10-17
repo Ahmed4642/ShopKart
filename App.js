@@ -14,6 +14,9 @@ import {
   Alert,
   ActivityIndicator,BackHandler,
 } from "react-native";
+
+import * as ImagePicker from "expo-image-picker";
+
 // Keep your existing Supabase values here
 const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_4dR2ryPZxL8cjNula-kePQ_lYrwSi49";
