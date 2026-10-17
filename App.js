@@ -2859,7 +2859,7 @@ function Account() {
 
     return (
       <ScrollView style={styles.page}>
-        <Text style={styles.pageTitle}>🏪 Manage Sellers</Text>
+      <Text style={styles.pageTitle}>🏪 Manage Sellers - TEST 123</Text>
 
         <TouchableOpacity
           style={styles.accountOption}
