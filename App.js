@@ -2095,11 +2095,22 @@ onPress={chooseProductImage}
 </Text>
 </TouchableOpacity>
 
-  {productImage && (
-    <Text style={styles.accountText}>
-      ✅ Product photo selected
-    </Text>
-  )}
+{productImage && (
+<View style={{ alignItems: "center", marginBottom: 15 }}>
+<Image
+source={{ uri: productImage.uri }}
+style={{
+width: 150,
+height: 150,
+borderRadius: 12,
+resizeMode: "cover",
+}}
+/>
+<Text style={styles.accountText}>
+✅ Product photo selected
+</Text>
+</View>
+)}
       <TextInput
         value={productName}
         onChangeText={setProductName}
