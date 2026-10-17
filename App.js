@@ -2897,7 +2897,7 @@ function Account() {
               <Text style={styles.accountText}>
                 Status: {seller.status}
               </Text>
-              {true && (
+              <View style={{ marginTop: 15, marginBottom: 30 }}>
                 <View>
                   <TouchableOpacity
                     style={styles.accountOption}
@@ -2920,9 +2920,8 @@ function Account() {
                       ❌ Reject Seller
                     </Text>
                   </TouchableOpacity>
-                </View>
-              )}
-            </View>
+                                            </View>
+              </View>    
           ))
         )}
       </ScrollView>
