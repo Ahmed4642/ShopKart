@@ -4,8 +4,8 @@ import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import { createClient } from "@supabase/supabase-js";
 import {
+  Linking,
   SafeAreaView,
-View,
 Text,
 Image,
   TextInput,
