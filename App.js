@@ -1901,12 +1901,17 @@ try {
       return;
     }
 
-    if (!productName || !productPrice || !productStock) {
-      Alert.alert(
-        "Missing Information",
-        "Product name, price aur stock bharna zaroori hai."
-      );
-      return;
+    if (
+!productName ||
+!productPrice ||
+!productStock ||
+!productCategory
+) {
+Alert.alert(
+"Missing Information",
+"Product name, price, stock, and category are required."
+);
+return;
     }
 
     const { data, error } = await supabase
@@ -1915,7 +1920,7 @@ try {
         seller_id: seller.id,
         name: productName,
         price: Number(productPrice),
-        category: productCategory || "Other",
+        category_id: productCategory,
         stock: Number(productStock),
         description: productDescription || null,
       })
@@ -2182,13 +2187,32 @@ resizeMode: "cover",
         style={styles.input}
       />
 
-      <TextInput
-        value={productCategory}
-        onChangeText={setProductCategory}
-        placeholder="Category"
-        placeholderTextColor="#777"
-        style={styles.input}
-      />
+      <Text style={styles.sectionTitle}>
+  Select Product Category
+</Text>{categories.length === 0 ? (
+<Text style={styles.cartItemPrice}>
+No categories available. Please try again later.
+</Text>
+) : (
+categories.map((category) => (
+<TouchableOpacity
+key={category.id}
+onPress={() => setProductCategory(category.id)}
+style={[
+styles.input,
+productCategory === category.id && {
+borderWidth: 2,
+borderColor: "#16A34A",
+},
+]}
+>
+<Text>
+{productCategory === category.id ? "✅ " : ""}
+{category.name}
+</Text>
+</TouchableOpacity>
+))
+)}
 
       <TextInput
         value={productStock}
