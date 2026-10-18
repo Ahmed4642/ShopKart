@@ -166,6 +166,8 @@ useEffect(() => {
   saveCart();
 }, [cart, cartLoaded]);
   const [sellerApplications, setSellerApplications] = useState([]);
+ const [sellerTab, setSellerTab] = useState("pending");
+const [sellerStatusHistory, setSellerStatusHistory] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
