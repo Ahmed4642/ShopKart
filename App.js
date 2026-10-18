@@ -1900,13 +1900,14 @@ try {
       );
       return;
     }
-
-    if (
-!productName ||
-!productPrice ||
-!productStock ||
-!productCategory
-) {
+if (!productImage) {
+  Alert.alert(
+    "Product Photo Required",
+    "Please select a product photo before adding the product."
+  );
+  return;
+}
+    
 Alert.alert(
 "Missing Information",
 "Product name, price, stock, and category are required."
