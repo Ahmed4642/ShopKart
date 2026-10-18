@@ -323,22 +323,20 @@ setWishlist(savedProducts);
 
     setLoadingProducts(false);
   }
-  async function loadSellerApplications() {
-    const { data, error } = await supabase
-      .from("sellers")
-      .select("id, user_id, shop_name, phone, address, status, created_at")
-      .order("created_at", { ascending: false });
+async function loadSellerApplications() {
+  const { data, error } = await supabase
+    .from("sellers")
+    .select("id, user_id, shop_name, phone, address, status, created_at")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
 
-    if (error) {
-      Alert.alert(
-        "Seller Applications",
-        error.message
-      );
-      return;
-    }
-
-    setSellerApplications(data || []);
+  if (error) {
+    Alert.alert("Seller Applications", error.message);
+    return;
   }
+
+  setSellerApplications(data || []);
+}
   async function updateSellerStatus(sellerId, newStatus) {
     const { error } = await supabase
       .from("sellers")
