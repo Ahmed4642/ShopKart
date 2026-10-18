@@ -372,25 +372,26 @@ async function loadSellerStatusHistory() {
   setSellerApplications(data || []);
 }
   async function updateSellerStatus(sellerId, newStatus) {
-    const { error } = await supabase
-      .from("sellers")
-      .update({ status: newStatus })
-      .eq("id", sellerId);
+  const { error } = await supabase
+    .from("sellers")
+    .update({ status: newStatus })
+    .eq("id", sellerId);
 
-    if (error) {
-      Alert.alert("Error", error.message);
-      return;
-    }
-
-    Alert.alert(
-      "Success",
-      newStatus === "approved"
-        ? "Seller application approved!"
-        : "Seller application rejected!"
-    );
-
-    await loadSellerApplications();
+  if (error) {
+    Alert.alert("Error", error.message);
+    return;
   }
+
+  Alert.alert(
+    "Success",
+    newStatus === "approved"
+      ? "Seller application approved!"
+      : "Seller application rejected!"
+  );
+
+  await loadSellerApplications();
+  await loadSellerStatusHistory();
+}
   async function loadCommission() {
     const { data } = await supabase
       .from("marketplace_settings")
