@@ -326,8 +326,9 @@ setWishlist(savedProducts);
 async function loadSellerApplications() {
   const { data, error } = await supabase
     .from("sellers")
-    .select("id, user_id, shop_name, phone, address, status, created_at")
-    .eq("status", "pending")
+    .select(
+      "id, user_id, shop_name, phone, address, status, created_at, status_updated_at"
+    )
     .order("created_at", { ascending: false });
 
   if (error) {
