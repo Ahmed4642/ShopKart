@@ -2842,16 +2842,19 @@ function Account() {
     </ScrollView>
   );
 }
-    function ManageSellers() {
+      function ManageSellers() {
     if (!user || profile?.role !== "admin") {
       return (
         <View style={styles.page}>
           <Text style={styles.pageTitle}>Access Denied</Text>
+
           <TouchableOpacity
             style={styles.button}
             onPress={() => setScreen("account")}
           >
-            <Text style={styles.buttonText}>Back to Account</Text>
+            <Text style={styles.buttonText}>
+              Back to Account
+            </Text>
           </TouchableOpacity>
         </View>
       );
@@ -2859,20 +2862,26 @@ function Account() {
 
     return (
       <ScrollView style={styles.page}>
-      <Text style={styles.pageTitle}>🏪 Manage Sellers - TEST 123</Text>
+        <Text style={styles.pageTitle}>
+          🏪 Manage Sellers
+        </Text>
 
         <TouchableOpacity
           style={styles.accountOption}
           onPress={() => setScreen("admin")}
         >
-          <Text style={styles.accountOptionText}>← Back to Admin Panel</Text>
+          <Text style={styles.accountOptionText}>
+            ← Back to Admin Panel
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.accountOption}
           onPress={loadSellerApplications}
         >
-          <Text style={styles.accountOptionText}>🔄 Refresh Applications</Text>
+          <Text style={styles.accountOptionText}>
+            🔄 Refresh Applications
+          </Text>
         </TouchableOpacity>
 
         {sellerApplications.length === 0 ? (
@@ -2881,7 +2890,10 @@ function Account() {
           </Text>
         ) : (
           sellerApplications.map((seller) => (
-            <View key={seller.id} style={styles.accountCard}>
+            <View
+              key={seller.id}
+              style={styles.accountCard}
+            >
               <Text style={styles.accountTitle}>
                 {seller.shop_name}
               </Text>
@@ -2895,38 +2907,50 @@ function Account() {
               </Text>
 
               <Text style={styles.accountText}>
-                Status: {seller.status}
+                Status: {seller.status || "pending"}
               </Text>
-              <View style={{ marginTop: 15, marginBottom: 30 }}>
-                <View>
-                  <TouchableOpacity
-                    style={styles.accountOption}
-                    onPress={() =>
-                      updateSellerStatus(seller.id, "approved")
-                    }
-                  >
-                    <Text style={styles.accountOptionText}>
-                      ✅ Approve Seller
-                    </Text>
-                  </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.accountOption}
-                    onPress={() =>
-                      updateSellerStatus(seller.id, "rejected")
-                    }
-                  >
-                    <Text style={styles.accountOptionText}>
-                      ❌ Reject Seller
-                    </Text>
-                  </TouchableOpacity>
-                                            </View>
-              </View>    
+              <View
+                style={{
+                  width: "100%",
+                  marginTop: 15,
+                  paddingBottom: 10,
+                }}
+              >
+                <TouchableOpacity
+                  style={styles.accountOption}
+                  onPress={() =>
+                    updateSellerStatus(
+                      seller.id,
+                      "approved"
+                    )
+                  }
+                >
+                  <Text style={styles.accountOptionText}>
+                    ✅ Approve Seller
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.accountOption}
+                  onPress={() =>
+                    updateSellerStatus(
+                      seller.id,
+                      "rejected"
+                    )
+                  }
+                >
+                  <Text style={styles.accountOptionText}>
+                    ❌ Reject Seller
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           ))
         )}
       </ScrollView>
     );
-              }
+  }
   function Admin() {
     if (!user) {
       return (
