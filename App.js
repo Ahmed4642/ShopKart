@@ -2876,114 +2876,378 @@ function Account() {
   );
 }
       function ManageSellers() {
-    if (!user || profile?.role !== "admin") {
-      return (
-        <View style={styles.page}>
-          <Text style={styles.pageTitle}>Access Denied</Text>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setScreen("account")}
-          >
-            <Text style={styles.buttonText}>
-              Back to Account
-            </Text>
-          </TouchableOpacity>
-        </View>
-      );
-    }
-
+  if (!user || profile?.role !== "admin") {
     return (
-      <ScrollView style={styles.page}>
-        <Text style={styles.pageTitle}>
-          🏪 Manage Sellers
-        </Text>
+      <View style={styles.page}>
+        <Text style={styles.pageTitle}>Access Denied</Text>
 
         <TouchableOpacity
-          style={styles.accountOption}
-          onPress={() => setScreen("admin")}
+          style={styles.button}
+          onPress={() => setScreen("account")}
         >
-          <Text style={styles.accountOptionText}>
-            ← Back to Admin Panel
+          <Text style={styles.buttonText}>
+            Back to Account
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.accountOption}
-          onPress={loadSellerApplications}
-        >
-          <Text style={styles.accountOptionText}>
-            🔄 Refresh Applications
-          </Text>
-        </TouchableOpacity>
-
-        {sellerApplications.length === 0 ? (
-          <Text style={styles.accountText}>
-            No seller applications found.
-          </Text>
-        ) : (
-          sellerApplications.map((seller) => (
-            <View
-              key={seller.id}
-              style={styles.accountCard}
-            >
-              <Text style={styles.accountTitle}>
-                {seller.shop_name}
-              </Text>
-
-              <Text style={styles.accountText}>
-                Phone: {seller.phone}
-              </Text>
-
-              <Text style={styles.accountText}>
-                Address: {seller.address || "Not provided"}
-              </Text>
-
-              <Text style={styles.accountText}>
-                Status: {seller.status || "pending"}
-              </Text>
-
-              <View
-                style={{
-                  width: "100%",
-                  marginTop: 15,
-                  paddingBottom: 10,
-                }}
-              >
-                <TouchableOpacity
-                  style={styles.accountOption}
-                  onPress={() =>
-                    updateSellerStatus(
-                      seller.id,
-                      "approved"
-                    )
-                  }
-                >
-                  <Text style={styles.accountOptionText}>
-                    ✅ Approve Seller
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.accountOption}
-                  onPress={() =>
-                    updateSellerStatus(
-                      seller.id,
-                      "rejected"
-                    )
-                  }
-                >
-                  <Text style={styles.accountOptionText}>
-                    ❌ Reject Seller
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))
-        )}
-      </ScrollView>
+      </View>
     );
   }
+
+  const formatDate = (date) => {
+    if (!date) return "Not recorded";
+
+    return new Date(date).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const callSeller = async (phone) => {
+    if (!phone) {
+      Alert.alert("Phone Number", "Seller का नंबर उपलब्ध नहीं है।");
+      return;
+    }
+
+    try {
+      await Linking.openURL(`tel:${phone}`);
+    } catch (error) {
+      Alert.alert("Call Seller", "कॉल खोलने में समस्या हुई।");
+    }
+  };
+
+  const viewSellerDetails = (seller) => {
+    Alert.alert(
+      "Seller Details",
+      `Shop: ${seller.shop_name || "Not provided"}\n` +
+      `Phone: ${seller.phone || "Not provided"}\n` +
+      `Address: ${seller.address || "Not provided"}\n` +
+      `Application Date: ${formatDate(seller.created_at)}\n` +
+      `Last Status Change: ${formatDate(seller.status_updated_at)}\n` +
+      `Status: ${seller.status || "pending"}`
+    );
+  };
+
+  const changeTab = (tab) => {
+    setSellerTab(tab);
+
+    if (tab === "history") {
+      loadSellerStatusHistory();
+    }
+  };
+
+  const filteredSellers = sellerApplications.filter(
+    (seller) => (seller.status || "pending") === sellerTab
+  );
+
+  const historyIsRecent = (entry) => {
+    if (!entry.changed_at) return false;
+
+    const changedAt = new Date(entry.changed_at).getTime();
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+    return (
+      !Number.isNaN(changedAt) &&
+      changedAt <= Date.now() &&
+      Date.now() - changedAt < sevenDays
+    );
+  };
+
+  const tabs = [
+    { id: "pending", label: "🟡 Pending Requests" },
+    { id: "approved", label: "🟢 Approved Sellers" },
+    { id: "rejected", label: "🔴 Rejected Sellers" },
+    { id: "history", label: "📋 Status History (7 Days)" },
+  ];
+
+  return (
+    <ScrollView style={styles.page}>
+      <Text style={styles.pageTitle}>
+        🏪 Manage Sellers
+      </Text>
+
+      <TouchableOpacity
+        style={styles.accountOption}
+        onPress={() => setScreen("admin")}
+      >
+        <Text style={styles.accountOptionText}>
+          ← Back to Admin Panel
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.accountOption}
+        onPress={async () => {
+          await loadSellerApplications();
+          await loadSellerStatusHistory();
+        }}
+      >
+        <Text style={styles.accountOptionText}>
+          🔄 Refresh Sellers & History
+        </Text>
+      </TouchableOpacity>
+
+      {tabs.map((tab) => (
+        <TouchableOpacity
+          key={tab.id}
+          style={[
+            styles.accountOption,
+            sellerTab === tab.id && {
+              backgroundColor: "#FFF0B3",
+              borderWidth: 1,
+              borderColor: "#D9A400",
+            },
+          ]}
+          onPress={() => changeTab(tab.id)}
+        >
+          <Text style={styles.accountOptionText}>
+            {tab.label}
+          </Text>
+          <Text style={styles.arrow}>
+            {sellerTab === tab.id ? "✓" : "›"}
+          </Text>
+        </TouchableOpacity>
+      ))}
+
+      {sellerTab !== "history" && (
+        <>
+          {filteredSellers.length === 0 ? (
+            <Text style={styles.accountText}>
+              No {sellerTab} sellers found.
+            </Text>
+          ) : (
+            filteredSellers.map((seller) => (
+              <View
+                key={seller.id}
+                style={styles.accountCard}
+              >
+                <Text style={styles.accountTitle}>
+                  {seller.shop_name || "Unnamed Shop"}
+                </Text>
+
+                <Text style={styles.accountText}>
+                  Phone: {seller.phone || "Not provided"}
+                </Text>
+
+                <Text style={styles.accountText}>
+                  Address: {seller.address || "Not provided"}
+                </Text>
+
+                <Text style={styles.accountText}>
+                  Application Date: {formatDate(seller.created_at)}
+                </Text>
+
+                <Text style={styles.accountText}>
+                  Status: {(seller.status || "pending").toUpperCase()}
+                </Text>
+
+                {seller.status === "approved" && (
+                  <Text style={styles.accountText}>
+                    Approval Date: {formatDate(seller.status_updated_at)}
+                  </Text>
+                )}
+
+                {seller.status === "rejected" && (
+                  <Text style={styles.accountText}>
+                    Rejection Date: {formatDate(seller.status_updated_at)}
+                  </Text>
+                )}
+
+                <TouchableOpacity
+                  style={styles.accountOption}
+                  onPress={() => callSeller(seller.phone)}
+                >
+                  <Text style={styles.accountOptionText}>
+                    📞 Call Seller
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.accountOption}
+                  onPress={() => viewSellerDetails(seller)}
+                >
+                  <Text style={styles.accountOptionText}>
+                    👁️ View Details
+                  </Text>
+                </TouchableOpacity>
+
+                {sellerTab === "pending" && (
+                  <>
+                    <TouchableOpacity
+                      style={styles.accountOption}
+                      onPress={() =>
+                        Alert.alert(
+                          "Approve Seller?",
+                          `क्या आप ${seller.shop_name} को Approve करना चाहते हैं?`,
+                          [
+                            { text: "Cancel", style: "cancel" },
+                            {
+                              text: "Approve",
+                              onPress: () =>
+                                updateSellerStatus(seller.id, "approved"),
+                            },
+                          ]
+                        )
+                      }
+                    >
+                      <Text style={styles.accountOptionText}>
+                        ✅ Approve Seller
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.accountOption}
+                      onPress={() =>
+                        Alert.alert(
+                          "Reject Seller?",
+                          `क्या आप ${seller.shop_name} की application Reject करना चाहते हैं?`,
+                          [
+                            { text: "Cancel", style: "cancel" },
+                            {
+                              text: "Reject",
+                              style: "destructive",
+                              onPress: () =>
+                                updateSellerStatus(seller.id, "rejected"),
+                            },
+                          ]
+                        )
+                      }
+                    >
+                      <Text style={styles.accountOptionText}>
+                        ❌ Reject Seller
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+
+                {sellerTab === "rejected" && (
+                  <TouchableOpacity
+                    style={styles.accountOption}
+                    onPress={() =>
+                      Alert.alert(
+                        "Reconsider Application",
+                        `क्या आप ${seller.shop_name} को Approve करना चाहते हैं?`,
+                        [
+                          { text: "Cancel", style: "cancel" },
+                          {
+                            text: "Approve Seller",
+                            onPress: () =>
+                              updateSellerStatus(seller.id, "approved"),
+                          },
+                        ]
+                      )
+                    }
+                  >
+                    <Text style={styles.accountOptionText}>
+                      🔄 Reconsider / Approve Seller
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            ))
+          )}
+        </>
+      )}
+
+      {sellerTab === "history" && (
+        <>
+          <Text style={styles.accountTitle}>
+            Status History — Last 7 Days
+          </Text>
+
+          {sellerStatusHistory.filter(historyIsRecent).length === 0 ? (
+            <Text style={styles.accountText}>
+              पिछले 7 दिनों में कोई Status Change रिकॉर्ड नहीं मिला।
+            </Text>
+          ) : (
+            sellerStatusHistory
+              .filter(historyIsRecent)
+              .map((entry) => {
+                const seller = Array.isArray(entry.sellers)
+                  ? entry.sellers[0]
+                  : entry.sellers;
+
+                return (
+                  <View
+                    key={entry.id}
+                    style={styles.accountCard}
+                  >
+                    <Text style={styles.accountTitle}>
+                      {seller?.shop_name || "Seller"}
+                    </Text>
+
+                    <Text style={styles.accountText}>
+                      Status: {(entry.new_status || "").toUpperCase()}
+                    </Text>
+
+                    <Text style={styles.accountText}>
+                      Date: {formatDate(entry.changed_at)}
+                    </Text>
+
+                    <TouchableOpacity
+                      style={styles.accountOption}
+                      onPress={() => {
+                        if (seller) {
+                          viewSellerDetails({
+                            ...seller,
+                            status: entry.new_status,
+                          });
+                        } else {
+                          Alert.alert(
+                            "Seller Details",
+                            "Seller की वर्तमान जानकारी उपलब्ध नहीं है।"
+                          );
+                        }
+                      }}
+                    >
+                      <Text style={styles.accountOptionText}>
+                        👁️ View Details
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.accountOption}
+                      onPress={() => callSeller(seller?.phone)}
+                    >
+                      <Text style={styles.accountOptionText}>
+                        📞 Call Seller
+                      </Text>
+                    </TouchableOpacity>
+
+                    {entry.new_status === "rejected" && seller && (
+                      <TouchableOpacity
+                        style={styles.accountOption}
+                        onPress={() =>
+                          Alert.alert(
+                            "Reconsider Application",
+                            `क्या आप ${seller.shop_name} को Approve करना चाहते हैं?`,
+                            [
+                              { text: "Cancel", style: "cancel" },
+                              {
+                                text: "Approve",
+                                onPress: () =>
+                                  updateSellerStatus(seller.id, "approved"),
+                              },
+                            ]
+                          )
+                        }
+                      >
+                        <Text style={styles.accountOptionText}>
+                          🔄 Reconsider / Approve
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })
+          )}
+        </>
+      )}
+    </ScrollView>
+  );
+}
   function Admin() {
     if (!user) {
       return (
