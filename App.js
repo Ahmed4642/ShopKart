@@ -325,7 +325,38 @@ setWishlist(savedProducts);
 
     setLoadingProducts(false);
   }
-async function loadSellerApplications() {
+async function loadSellerStatusHistory() {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const { data, error } = await supabase
+    .from("seller_status_history")
+    .select(`
+      id,
+      seller_id,
+      old_status,
+      new_status,
+      changed_at,
+      changed_by,
+      sellers (
+        id,
+        shop_name,
+        phone,
+        address,
+        created_at
+      )
+    `)
+    .gte("changed_at", sevenDaysAgo.toISOString())
+    .order("changed_at", { ascending: false });
+
+  if (error) {
+    Alert.alert("Status History", error.message);
+    return;
+  }
+
+  setSellerStatusHistory(data || []);
+}
+  async function loadSellerApplications() {
   const { data, error } = await supabase
     .from("sellers")
     .select(
