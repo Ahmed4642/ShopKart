@@ -4,16 +4,19 @@ import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import { createClient } from "@supabase/supabase-js";
 import {
-  Linking,
-  SafeAreaView,
+import {
+Linking,
+SafeAreaView,
+View,
 Text,
 Image,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,BackHandler,
+TextInput,
+ScrollView,
+TouchableOpacity,
+StyleSheet,
+Alert,
+ActivityIndicator,
+BackHandler,
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
