@@ -195,9 +195,28 @@ const [sellerLoading, setSellerLoading] = useState(false);
 const [productName, setProductName] = useState("");
 const [productPrice, setProductPrice] = useState("");
 const [productCategory, setProductCategory] = useState("");
+const [categories, setCategories] = useState([]);
 const [productStock, setProductStock] = useState("");
 const [productDescription, setProductDescription] = useState("");
-    useEffect(() => {
+  useEffect(() => {
+async function loadCategories() {
+const { data, error } = await supabase
+.from("categories")
+.select("id, name")
+.order("name");
+
+  if (error) {
+    Alert.alert("Category Error", error.message);
+    return;
+  }
+
+  setCategories(data || []);
+}
+
+loadCategories();
+
+}, []);
+  useEffect(() => {
     loadSession();
     loadProducts();
     loadCommission();
