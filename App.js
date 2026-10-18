@@ -1908,12 +1908,18 @@ if (!productImage) {
   return;
 }
     
+if (
+!productName ||
+!productPrice ||
+!productStock ||
+!productCategory
+) {
 Alert.alert(
 "Missing Information",
 "Product name, price, stock, and category are required."
 );
 return;
-    }
+}
 
     const { data, error } = await supabase
       .from("products")
