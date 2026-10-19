@@ -16,8 +16,8 @@
     "@supabase/supabase-js": "^2.57.0",
   "@react-native-async-storage/async-storage": "^2.2.0",
 "expo-web-browser": "~57.0.0",
-"expo-auth-session": "~57.0.0"
-  "react-native-country-picker-modal": "^2.0.0"
+"expo-auth-session": "~57.0.0",
+"react-native-country-picker-modal": "^2.0.0"
   },
   "private": true
 }
