@@ -198,6 +198,7 @@ const [productCategory, setProductCategory] = useState("");
 const [categories, setCategories] = useState([]);
 const [productStock, setProductStock] = useState("");
 const [productDescription, setProductDescription] = useState("");
+ const [productImage, setProductImage] = useState(null);
   useEffect(() => {
 async function loadCategories() {
 const { data, error } = await supabase
@@ -840,7 +841,7 @@ const orderItems = cart.map((item) => ({
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Header />
+        {Header()}
 
         <TextInput
           value={search}
@@ -1861,8 +1862,7 @@ try {
 }
 
   function Seller() {
-    const [productImage, setProductImage] = useState(null);
-
+  
   async function chooseProductImage() {
     try {
       const permission =
@@ -3401,16 +3401,16 @@ function Account() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1 }}>
-        {screen === "home" && <Home />}
-{screen === "categories" && <Categories />}
-{screen === "cart" && <Cart />}
-{screen === "orders" && <Orders />}
-{screen === "wishlist" && <WishlistScreen />}
+        {screen === "home" && Home()}
+{screen === "categories" && Categories()}
+{screen === "cart" && Cart()}
+{screen === "orders" && Orders()}
+{screen === "wishlist" && WishlistScreen()}
 {screen === "auth" && Auth()}
-{screen === "seller" && <Seller />}
-{screen === "manageSellers" && <ManageSellers />}
-{screen === "account" && <Account />}
-{screen === "admin" && <Admin />}
+{screen === "seller" && Seller()}
+{screen === "manageSellers" && ManageSellers()}
+{screen === "account" && Account()}
+{screen === "admin" && Admin()}
       </View>
 
       <View style={styles.bottom}>
