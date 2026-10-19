@@ -3406,7 +3406,7 @@ function Account() {
 {screen === "cart" && <Cart />}
 {screen === "orders" && <Orders />}
 {screen === "wishlist" && <WishlistScreen />}
-{screen === "auth" && <Auth />}
+{screen === "auth" && Auth()}
 {screen === "seller" && <Seller />}
 {screen === "manageSellers" && <ManageSellers />}
 {screen === "account" && <Account />}
