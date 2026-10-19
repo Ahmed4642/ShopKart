@@ -2045,6 +2045,237 @@ async function addProduct() {
     );
   }
 }
+    if (!user) {
+return (
+<View style={styles.page}>
+<Text style={styles.pageTitle}>🏪 Become a Seller</Text>
+<Text style={styles.accountText}>
+Seller registration ke liye pehle login karein.
+</Text>
+<TouchableOpacity
+style={styles.primary}
+onPress={() => setScreen("auth")}
+>
+<Text style={styles.primaryText}>Login</Text>
+</TouchableOpacity>
+</View>
+);
+}
+
+if (sellerLoading) {
+return (
+<View style={styles.page}>
+<ActivityIndicator size="large" />
+<Text style={styles.accountText}>
+Seller details load ho rahi hain...
+</Text>
+</View>
+);
+}
+
+if (!seller) {
+return (
+<ScrollView
+style={styles.page}
+contentContainerStyle={{ paddingBottom: 30 }}
+>
+<Text style={styles.pageTitle}>🏪 Become a Seller</Text>
+
+    <TextInput
+      style={styles.input}
+      placeholder="Shop Name"
+      value={shopName}
+      onChangeText={setShopName}
+    />
+    <TextInput
+      style={styles.input}
+      placeholder="Mobile Number"
+      value={sellerPhone}
+      onChangeText={setSellerPhone}
+      keyboardType="phone-pad"
+    />
+    <TextInput
+      style={styles.input}
+      placeholder="Shop Address"
+      value={sellerAddress}
+      onChangeText={setSellerAddress}
+    />
+    <TextInput
+      style={styles.input}
+      placeholder="PAN Number"
+      value={sellerPan}
+      onChangeText={setSellerPan}
+      autoCapitalize="characters"
+    />
+    <TextInput
+      style={styles.input}
+      placeholder="GSTIN (Optional)"
+      value={sellerGstin}
+      onChangeText={setSellerGstin}
+      autoCapitalize="characters"
+    />
+    <TextInput
+      style={styles.input}
+      placeholder="Bank Name"
+      value={sellerBankName}
+      onChangeText={setSellerBankName}
+    />
+    <TextInput
+      style={styles.input}
+      placeholder="Bank Account Number"
+      value={sellerAccountNumber}
+      onChangeText={setSellerAccountNumber}
+      keyboardType="numeric"
+    />
+    <TextInput
+      style={styles.input}
+      placeholder="IFSC Code"
+      value={sellerIfsc}
+      onChangeText={setSellerIfsc}
+      autoCapitalize="characters"
+    />
+
+    <TouchableOpacity
+      style={styles.accountOption}
+      onPress={() =>
+        setSellerTermsAccepted((old) => !old)
+      }
+    >
+      <Text style={styles.accountOptionText}>
+        {sellerTermsAccepted ? "☑" : "☐"} I accept Seller Terms & Conditions
+      </Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
+      style={styles.primary}
+      onPress={registerSeller}
+    >
+      <Text style={styles.primaryText}>
+        Submit Seller Application
+      </Text>
+    </TouchableOpacity>
+  </ScrollView>
+);
+
+}
+
+if (seller.status !== "approved") {
+return (
+<View style={styles.page}>
+<Text style={styles.pageTitle}>Seller Application</Text>
+<View style={styles.accountCard}>
+<Text style={styles.accountTitle}>
+Status: {(seller.status || "pending").toUpperCase()}
+</Text>
+<Text style={styles.accountText}>
+Product add karne se pehle Admin approval zaroori hai.
+</Text>
+</View>
+</View>
+);
+}
+
+return (
+<ScrollView
+style={styles.page}
+contentContainerStyle={{ paddingBottom: 30 }}
+>
+<Text style={styles.pageTitle}>🏪 Seller Dashboard</Text>
+
+  <View style={styles.accountCard}>
+    <Text style={styles.accountTitle}>
+      {seller.shop_name}
+    </Text>
+    <Text style={styles.accountText}>
+      Marketplace commission: {commissionRate}%
+    </Text>
+  </View>
+
+  <TextInput
+    style={styles.input}
+    placeholder="Product Name"
+    value={productName}
+    onChangeText={setProductName}
+  />
+  <TextInput
+    style={styles.input}
+    placeholder="Selling Price (₹)"
+    value={productPrice}
+    onChangeText={setProductPrice}
+    keyboardType="decimal-pad"
+  />
+  <TextInput
+    style={styles.input}
+    placeholder="Stock Quantity"
+    value={productStock}
+    onChangeText={setProductStock}
+    keyboardType="numeric"
+  />
+  <TextInput
+    style={styles.input}
+    placeholder="Description (Optional)"
+    value={productDescription}
+    onChangeText={setProductDescription}
+    multiline
+  />
+
+  <Text style={styles.accountTitle}>Select Category</Text>
+
+  {categories.map((cat) => (
+    <TouchableOpacity
+      key={cat.id}
+      style={styles.accountOption}
+      onPress={() => setProductCategory(cat.id)}
+    >
+      <Text style={styles.accountOptionText}>
+        {productCategory === cat.id ? "🔘 " : "⚪ "}
+        {cat.name}
+      </Text>
+    </TouchableOpacity>
+  ))}
+
+  <TouchableOpacity
+    style={styles.accountOption}
+    onPress={chooseProductImage}
+  >
+    {productImage?.uri ? (
+      <Image
+        source={{ uri: productImage.uri }}
+        style={{ width: 80, height: 80, borderRadius: 8 }}
+      />
+    ) : null}
+    <Text style={styles.accountOptionText}>
+      {productImage ? "Change Product Photo" : "📷 Choose Product Photo"}
+    </Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.primary}
+    onPress={addProduct}
+  >
+    <Text style={styles.primaryText}>Add Product</Text>
+  </TouchableOpacity>
+
+  <Text style={styles.sectionTitle}>Your Products</Text>
+
+  {sellerProducts.map((p) => (
+    <View key={p.id} style={styles.accountCard}>
+      {p.image_url ? (
+        <Image
+          source={{ uri: p.image_url }}
+          style={{ width: 120, height: 120, borderRadius: 10 }}
+        />
+      ) : null}
+      <Text style={styles.accountTitle}>{p.name}</Text>
+      <Text style={styles.accountText}>
+        ₹{p.price} · Stock: {p.stock}
+      </Text>
+    </View>
+  ))}
+</ScrollView>
+
+);
+}
     function Categories() {
     return (
       <ScrollView style={styles.page}>
