@@ -187,7 +187,9 @@ const [sellerIfsc, setSellerIfsc] = useState("");
   const [authMode, setAuthMode] = useState("login");
   const [showPassword, setShowPassword] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
-
+const [emailOtp, setEmailOtp] = useState("");
+const [otpSent, setOtpSent] = useState(false);
+const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
   const [commissionRate, setCommissionRate] = useState(10);
 const [seller, setSeller] = useState(null);
 const [sellerProducts, setSellerProducts] = useState([]);
