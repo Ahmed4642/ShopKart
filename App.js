@@ -2082,119 +2082,177 @@ Seller details load ho rahi hain...
 </View>
 );
 }
-
 if (!seller) {
 return (
 <ScrollView
 style={styles.page}
-contentContainerStyle={{ paddingBottom: 30 }}
+contentContainerStyle={styles.sellerFormContainer}
+keyboardShouldPersistTaps="handled"
 >
-<Text style={styles.pageTitle}>🏪 Become a Seller</Text>
+<Text style={styles.sellerFormTitle}>
+Become a Seller
+</Text>
 
-    <TextInput
-      style={styles.input}
-      placeholder="Shop Name"
-      value={shopName}
-      onChangeText={setShopName}
-    />
-    <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
-<TouchableOpacity
-  style={[styles.input, { width: 115, justifyContent: "center", marginBottom: 0 }]}
-  onPress={() => setShowSellerCountryPicker(true)}
->
-  <Text style={{ color: "#222" }}>
-    {sellerCountryCode} +{sellerCallingCode} ▼
-  </Text>
-</TouchableOpacity><View style={{ flex: 1, marginLeft: 8 }}>
-<TextInput
-style={[styles.input, { marginBottom: 0 }]}
-placeholder="Mobile Number"
-value={sellerPhone}
-onChangeText={setSellerPhone}
-keyboardType="phone-pad"
-/>
-</View>
+  <Text style={styles.sellerLabel}>Shop Name *</Text>
+  <TextInput
+    style={styles.sellerInput}
+    placeholder="Enter your shop name"
+    placeholderTextColor="#888888"
+    value={shopName}
+    onChangeText={setShopName}
+  />
 
-<CountryPicker
-countryCode={sellerCountryCode}
-withFilter
-withFlag
-withCallingCode
-withEmoji
-visible={showSellerCountryPicker}
-onClose={() => setShowSellerCountryPicker(false)}
-onSelect={(country) => {
-setSellerCountryCode(country.cca2);
-setSellerCallingCode(country.callingCode?.[0] || "91");
-setShowSellerCountryPicker(false);
-}}
-/>
-</View>
-    <TextInput
-      style={styles.input}
-      placeholder="Shop Address"
-      value={sellerAddress}
-      onChangeText={setSellerAddress}
-    />
-    <TextInput
-      style={styles.input}
-      placeholder="PAN Number"
-      value={sellerPan}
-      onChangeText={setSellerPan}
-      autoCapitalize="characters"
-    />
-    <TextInput
-      style={styles.input}
-      placeholder="GSTIN (Optional)"
-      value={sellerGstin}
-      onChangeText={setSellerGstin}
-      autoCapitalize="characters"
-    />
-    <TextInput
-      style={styles.input}
-      placeholder="Bank Name"
-      value={sellerBankName}
-      onChangeText={setSellerBankName}
-    />
-    <TextInput
-      style={styles.input}
-      placeholder="Bank Account Number"
-      value={sellerAccountNumber}
-      onChangeText={setSellerAccountNumber}
-      keyboardType="numeric"
-    />
-    <TextInput
-      style={styles.input}
-      placeholder="IFSC Code"
-      value={sellerIfsc}
-      onChangeText={setSellerIfsc}
-      autoCapitalize="characters"
-    />
-
+  <Text style={styles.sellerLabel}>Mobile Number *</Text>
+  <View
+    style={{
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 12,
+    }}
+  >
     <TouchableOpacity
-      style={styles.accountOption}
-      onPress={() =>
-        setSellerTermsAccepted((old) => !old)
-      }
+      style={[
+        styles.sellerInput,
+        {
+          width: 112,
+          justifyContent: "center",
+          marginBottom: 0,
+          paddingHorizontal: 8,
+        },
+      ]}
+      onPress={() => setShowSellerCountryPicker(true)}
     >
-      <Text style={styles.accountOptionText}>
-        {sellerTermsAccepted ? "☑" : "☐"} I accept ShopKart's Terms & Conditions.
+      <Text style={{ color: "#111111", fontSize: 13 }}>
+        {sellerCountryCode} +{sellerCallingCode} ▼
       </Text>
     </TouchableOpacity>
 
-    <TouchableOpacity
-      style={styles.primary}
-      onPress={registerSeller}
+    <View style={{ flex: 1, marginLeft: 8 }}>
+      <TextInput
+        style={[styles.sellerInput, { marginBottom: 0 }]}
+        placeholder="Mobile number"
+        placeholderTextColor="#888888"
+        value={sellerPhone}
+        onChangeText={setSellerPhone}
+        keyboardType="phone-pad"
+      />
+    </View>
+
+    <CountryPicker
+      countryCode={sellerCountryCode}
+      withFilter
+      withFlag
+      withCallingCode
+      withEmoji
+      visible={showSellerCountryPicker}
+      onClose={() => setShowSellerCountryPicker(false)}
+      onSelect={(country) => {
+        setSellerCountryCode(country.cca2);
+        setSellerCallingCode(
+          country.callingCode?.[0] || "91"
+        );
+        setShowSellerCountryPicker(false);
+      }}
+    />
+  </View>
+
+  <Text style={styles.sellerLabel}>Shop Address *</Text>
+  <TextInput
+    style={styles.sellerInput}
+    placeholder="Enter complete shop address"
+    placeholderTextColor="#888888"
+    value={sellerAddress}
+    onChangeText={setSellerAddress}
+  />
+
+  <Text style={styles.sellerLabel}>PAN Number *</Text>
+  <TextInput
+    style={styles.sellerInput}
+    placeholder="Enter PAN number"
+    placeholderTextColor="#888888"
+    value={sellerPan}
+    onChangeText={setSellerPan}
+    autoCapitalize="characters"
+  />
+
+  <Text style={styles.sellerLabel}>GSTIN (Optional)</Text>
+  <TextInput
+    style={styles.sellerInput}
+    placeholder="Enter GSTIN, if available"
+    placeholderTextColor="#888888"
+    value={sellerGstin}
+    onChangeText={setSellerGstin}
+    autoCapitalize="characters"
+  />
+
+  <Text style={styles.sellerLabel}>Bank Name *</Text>
+  <TextInput
+    style={styles.sellerInput}
+    placeholder="Enter bank name"
+    placeholderTextColor="#888888"
+    value={sellerBankName}
+    onChangeText={setSellerBankName}
+  />
+
+  <Text style={styles.sellerLabel}>Bank Account Number *</Text>
+  <TextInput
+    style={styles.sellerInput}
+    placeholder="Enter account number"
+    placeholderTextColor="#888888"
+    value={sellerAccountNumber}
+    onChangeText={setSellerAccountNumber}
+    keyboardType="numeric"
+  />
+
+  <Text style={styles.sellerLabel}>IFSC Code *</Text>
+  <TextInput
+    style={styles.sellerInput}
+    placeholder="Enter IFSC code"
+    placeholderTextColor="#888888"
+    value={sellerIfsc}
+    onChangeText={setSellerIfsc}
+    autoCapitalize="characters"
+  />
+
+  <TouchableOpacity
+    style={[
+      styles.accountOption,
+      {
+        marginHorizontal: 0,
+        padding: 12,
+        backgroundColor: "#F5F5F5",
+        borderWidth: 1,
+        borderColor: "#DDDDDD",
+      },
+    ]}
+    onPress={() =>
+      setSellerTermsAccepted((old) => !old)
+    }
+  >
+    <Text
+      style={{
+        color: "#111111",
+        fontSize: 13,
+        fontWeight: "600",
+      }}
     >
-      <Text style={styles.primaryText}>
-        Submit Seller Application
-      </Text>
-    </TouchableOpacity>
-  </ScrollView>
+      {sellerTermsAccepted ? "☑" : "☐"} I accept ShopKart's
+      Terms & Conditions.
+    </Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.sellerPrimaryButton}
+    onPress={registerSeller}
+  >
+    <Text style={styles.sellerPrimaryButtonText}>
+      Submit Seller Application
+    </Text>
+  </TouchableOpacity>
+</ScrollView>
+
 );
-
 }
-
 if (seller.status !== "approved") {
 return (
 <View style={styles.page}>
