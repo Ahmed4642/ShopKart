@@ -2099,16 +2099,13 @@ contentContainerStyle={{ paddingBottom: 30 }}
     />
     <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
 <TouchableOpacity
-style={[styles.input, { width: 115, justifyContent: "center", marginBottom: 0 }]}
-onPress={() => setShowSellerCountryPicker(true)}
-
-«»
-
-<Text style={{ color: "#222" }}>
-  {sellerCountryCode} +{sellerCallingCode} ▼
-</Text>
-
-  </TouchableOpacity><View style={{ flex: 1, marginLeft: 8 }}>
+  style={[styles.input, { width: 115, justifyContent: "center", marginBottom: 0 }]}
+  onPress={() => setShowSellerCountryPicker(true)}
+>
+  <Text style={{ color: "#222" }}>
+    {sellerCountryCode} +{sellerCallingCode} ▼
+  </Text>
+</TouchableOpacity><View style={{ flex: 1, marginLeft: 8 }}>
 <TextInput
 style={[styles.input, { marginBottom: 0 }]}
 placeholder="Mobile Number"
