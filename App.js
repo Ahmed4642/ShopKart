@@ -19,7 +19,7 @@ BackHandler,
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
-
+import CountryPicker from "react-native-country-picker-modal";
 // Keep your existing Supabase values here
 const SUPABASE_URL = "https://fewuccdcoujgbeafxazu.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_4dR2ryPZxL8cjNula-kePQ_lYrwSi49";
@@ -176,6 +176,14 @@ const [sellerStatusHistory, setSellerStatusHistory] = useState([]);
 
   const [shopName, setShopName] = useState("");
   const [sellerPhone, setSellerPhone] = useState("");
+  const [sellerCountryCode, setSellerCountryCode] = useState("IN");
+const [sellerCallingCode, setSellerCallingCode] = useState("91");
+const [showSellerCountryPicker, setShowSellerCountryPicker] = useState(false);
+
+const [loginCountryCode, setLoginCountryCode] = useState("IN");
+const [loginCallingCode, setLoginCallingCode] = useState("91");
+const [showLoginCountryPicker, setShowLoginCountryPicker] = useState(false);
+const [loginPhone, setLoginPhone] = useState("");
   const [sellerPan, setSellerPan] = useState("");
 const [sellerGstin, setSellerGstin] = useState("");
   const [sellerBankName, setSellerBankName] = useState("");
@@ -2089,13 +2097,42 @@ contentContainerStyle={{ paddingBottom: 30 }}
       value={shopName}
       onChangeText={setShopName}
     />
-    <TextInput
-      style={styles.input}
-      placeholder="Mobile Number"
-      value={sellerPhone}
-      onChangeText={setSellerPhone}
-      keyboardType="phone-pad"
-    />
+    <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+<TouchableOpacity
+style={[styles.input, { width: 115, justifyContent: "center", marginBottom: 0 }]}
+onPress={() => setShowSellerCountryPicker(true)}
+
+«»
+
+<Text style={{ color: "#222" }}>
+  {sellerCountryCode} +{sellerCallingCode} ▼
+</Text>
+
+  </TouchableOpacity><View style={{ flex: 1, marginLeft: 8 }}>
+<TextInput
+style={[styles.input, { marginBottom: 0 }]}
+placeholder="Mobile Number"
+value={sellerPhone}
+onChangeText={setSellerPhone}
+keyboardType="phone-pad"
+/>
+</View>
+
+<CountryPicker
+countryCode={sellerCountryCode}
+withFilter
+withFlag
+withCallingCode
+withEmoji
+visible={showSellerCountryPicker}
+onClose={() => setShowSellerCountryPicker(false)}
+onSelect={(country) => {
+setSellerCountryCode(country.cca2);
+setSellerCallingCode(country.callingCode?.[0] || "91");
+setShowSellerCountryPicker(false);
+}}
+/>
+</View>
     <TextInput
       style={styles.input}
       placeholder="Shop Address"
