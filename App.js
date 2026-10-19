@@ -2142,7 +2142,7 @@ contentContainerStyle={{ paddingBottom: 30 }}
       }
     >
       <Text style={styles.accountOptionText}>
-        {sellerTermsAccepted ? "☑" : "☐"} I accept Seller Terms & Conditions
+        {sellerTermsAccepted ? "☑" : "☐"} I accept ShopKart's Terms & Conditions.
       </Text>
     </TouchableOpacity>
 
