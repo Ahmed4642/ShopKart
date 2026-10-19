@@ -4106,4 +4106,89 @@ const styles = StyleSheet.create({
     color: "#1769E0",
     fontWeight: "800",
   },
+// ShopKart Seller Forms - Black Theme
+
+sellerFormContainer: {
+paddingHorizontal: 16,
+paddingTop: 8,
+paddingBottom: 30,
+},
+
+sellerFormTitle: {
+fontSize: 23,
+fontWeight: "800",
+color: "#111111",
+marginHorizontal: 2,
+marginTop: 12,
+marginBottom: 18,
+},
+
+sellerLabel: {
+fontSize: 13,
+fontWeight: "700",
+color: "#222222",
+marginBottom: 5,
+marginLeft: 2,
+},
+
+sellerInput: {
+backgroundColor: "#FFFFFF",
+color: "#111111",
+borderWidth: 1,
+borderColor: "#D0D0D0",
+borderRadius: 8,
+paddingHorizontal: 12,
+height: 43,
+marginBottom: 12,
+fontSize: 14,
+},
+
+sellerMultilineInput: {
+backgroundColor: "#FFFFFF",
+color: "#111111",
+borderWidth: 1,
+borderColor: "#D0D0D0",
+borderRadius: 8,
+paddingHorizontal: 12,
+paddingTop: 10,
+minHeight: 75,
+marginBottom: 12,
+fontSize: 14,
+textAlignVertical: "top",
+},
+
+sellerPrimaryButton: {
+backgroundColor: "#111111",
+paddingVertical: 12,
+paddingHorizontal: 16,
+borderRadius: 8,
+alignItems: "center",
+justifyContent: "center",
+marginTop: 6,
+marginBottom: 12,
+},
+
+sellerPrimaryButtonText: {
+color: "#FFFFFF",
+fontSize: 15,
+fontWeight: "800",
+},
+
+sellerFormCard: {
+backgroundColor: "#FFFFFF",
+marginHorizontal: 2,
+marginBottom: 14,
+padding: 14,
+borderRadius: 10,
+borderWidth: 1,
+borderColor: "#E2E2E2",
+},
+
+sellerSectionTitle: {
+fontSize: 19,
+fontWeight: "800",
+color: "#111111",
+marginTop: 18,
+marginBottom: 12,
+},
 });
