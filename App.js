@@ -1892,397 +1892,159 @@ try {
     }
   }
 
-  async function addProduct() {
-    if (!seller || seller.status !== "approved") {
-      Alert.alert(
-        "Seller Approval",
-        "Product add karne ke liye seller account approve hona zaroori hai."
-      );
-      return;
-    }
-if (!productImage) {
-  Alert.alert(
-    "Product Photo Required",
-    "Please select a product photo before adding the product."
-  );
-  return;
-}
-    
-if (
-!productName ||
-!productPrice ||
-!productStock ||
-!productCategory
-) {
-Alert.alert(
-"Missing Information",
-"Product name, price, stock, and category are required."
-);
-return;
-}
+async function addProduct() {
+  if (!seller || seller.status !== "approved") {
+    Alert.alert(
+      "Seller Approval",
+      "Product add karne ke liye seller account approve hona zaroori hai."
+    );
+    return;
+  }
 
+  if (!productImage) {
+    Alert.alert(
+      "Product Photo Required",
+      "Please select a product photo before adding the product."
+    );
+    return;
+  }
+
+  if (
+    !productName.trim() ||
+    !productPrice ||
+    !productStock ||
+    !productCategory
+  ) {
+    Alert.alert(
+      "Missing Information",
+      "Product name, price, stock, and category are required."
+    );
+    return;
+  }
+
+  const price = Number(productPrice);
+  const stock = Number(productStock);
+
+  if (
+    !Number.isFinite(price) ||
+    price <= 0 ||
+    !Number.isInteger(stock) ||
+    stock < 0
+  ) {
+    Alert.alert(
+      "Invalid Information",
+      "Please enter a valid price and stock quantity."
+    );
+    return;
+  }
+
+  let uploadedPath = null;
+
+  try {
+    // 1. Selected image ko Blob mein convert karein
+    const response = await fetch(productImage.uri);
+
+    if (!response.ok) {
+      throw new Error("Selected photo could not be read.");
+    }
+
+    const blob = await response.blob();
+
+    // 2. Unique file name aur seller folder banayein
+    const extensionMatch = productImage.uri.match(
+      /\.(jpg|jpeg|png|webp)(?:\?|$)/i
+    );
+
+    const extension = extensionMatch
+      ? extensionMatch[1].toLowerCase()
+      : "jpg";
+
+    const filePath =
+      `${seller.id}/${Date.now()}.${extension}`;
+
+    // 3. Supabase Storage mein photo upload karein
+    const { data: uploadData, error: uploadError } =
+      await supabase.storage
+        .from("product-images")
+        .upload(filePath, blob, {
+          contentType:
+            productImage.mimeType || "image/jpeg",
+          upsert: false,
+        });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    uploadedPath = uploadData.path;
+
+    // 4. Uploaded photo ka URL nikalein
+    const { data: urlData } = supabase.storage
+      .from("product-images")
+      .getPublicUrl(uploadData.path);
+
+    const imageUrl = urlData?.publicUrl;
+
+    if (!imageUrl) {
+      throw new Error("Product photo URL could not be created.");
+    }
+
+    // 5. Product aur photo URL database mein save karein
     const { data, error } = await supabase
       .from("products")
       .insert({
         seller_id: seller.id,
-        name: productName,
-        price: Number(productPrice),
+        name: productName.trim(),
+        price,
         category_id: productCategory,
-        stock: Number(productStock),
-        description: productDescription || null,
+        stock,
+        description: productDescription.trim() || null,
+        image_url: imageUrl,
       })
       .select()
       .single();
 
     if (error) {
-      Alert.alert("Product Error", error.message);
-      return;
+      throw error;
     }
 
+    // 6. Product list update karein
     setSellerProducts((old) => [data, ...old]);
 
+    // 7. Form reset karein
+    setProductImage(null);
     setProductName("");
     setProductPrice("");
     setProductCategory("");
     setProductStock("");
     setProductDescription("");
 
-    Alert.alert("Success", "Product successfully add ho gaya.");
-  }
+    Alert.alert(
+      "Success",
+      "Product aur photo successfully save ho gaye."
+    );
+  } catch (error) {
+    // Product save fail ho to uploaded photo clean up karein
+    if (uploadedPath) {
+      const { error: cleanupError } =
+        await supabase.storage
+          .from("product-images")
+          .remove([uploadedPath]);
 
-  if (!user) {
-    return (
-      <ScrollView style={styles.page}>
-        <Text style={styles.pageTitle}>🏪 Seller Center</Text>
+      if (cleanupError) {
+        console.log(
+          "Photo cleanup failed:",
+          cleanupError.message
+        );
+      }
+    }
 
-        <View style={styles.empty}>
-          <Text style={styles.emptyTitle}>
-            Seller banne ke liye login karo
-          </Text>
-
-          <TouchableOpacity
-            style={styles.primary}
-            onPress={() => setScreen("auth")}
-          >
-            <Text style={styles.primaryText}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+    Alert.alert(
+      "Product Error",
+      error.message || "Product save nahi ho saka."
     );
   }
-
-  if (sellerLoading) {
-    return (
-      <View style={styles.page}>
-        <ActivityIndicator size="large" />
-        <Text style={styles.emptyText}>
-          Seller information load ho rahi hai...
-        </Text>
-      </View>
-    );
-  }
-
-  if (!seller) {
-    return (
-      <ScrollView style={styles.page}>
-        <Text style={styles.pageTitle}>
-          🏪 Become a Seller
-        </Text>
-
-        
-
-        <TextInput
-          value={shopName}
-          onChangeText={setShopName}
-          placeholder="Shop Name"
-          placeholderTextColor="#777"
-          style={styles.input}
-        />
-
-        <TextInput
-          value={sellerPhone}
-          onChangeText={setSellerPhone}
-          placeholder="Phone Number"
-          placeholderTextColor="#777"
-          keyboardType="phone-pad"
-          style={styles.input}
-        />
-
-        <TextInput
-          value={sellerAddress}
-          onChangeText={setSellerAddress}
-          placeholder="Shop Address"
-          placeholderTextColor="#777"
-          style={styles.input}
-        />
-<TextInput
-  value={user?.email || ""}
-  editable={false}
-  placeholder="Email"
-  placeholderTextColor="#777"
-  style={styles.input}
-/>
-
-<TextInput
-  value={sellerPan}
-  onChangeText={setSellerPan}
-  placeholder="PAN Number"
-  placeholderTextColor="#777"
-  autoCapitalize="characters"
-  style={styles.input}
-/>
-
-<TextInput
-  value={sellerGstin}
-  onChangeText={setSellerGstin}
-  placeholder="GSTIN (Optional)"
-  placeholderTextColor="#777"
-  autoCapitalize="characters"
-  style={styles.input}
-/>
-
-<TextInput
-  value={sellerBankName}
-  onChangeText={setSellerBankName}
-  placeholder="Bank Name"
-  placeholderTextColor="#777"
-  style={styles.input}
-/>
-
-<TextInput
-  value={sellerAccountNumber}
-  onChangeText={setSellerAccountNumber}
-  placeholder="Bank Account Number"
-  placeholderTextColor="#777"
-  keyboardType="numeric"
-  style={styles.input}
-/>
-
-<TextInput
-  value={sellerIfsc}
-  onChangeText={setSellerIfsc}
-  placeholder="IFSC Code"
-  placeholderTextColor="#777"
-  autoCapitalize="characters"
-  style={styles.input}
-/>
-
-<TouchableOpacity
-  style={styles.termsRow}
-  onPress={() =>
-    setSellerTermsAccepted(!sellerTermsAccepted)
-  }
->
-  <Text style={styles.checkbox}>
-    {sellerTermsAccepted ? "☑" : "☐"}
-  </Text>
-
-  <Text style={styles.termsText}>
-    Main ShopKart Seller Terms & Conditions ko accept karta/karti hoon.
-  </Text>
-</TouchableOpacity>
-
-<TouchableOpacity
-  style={styles.primary}
-  onPress={registerSeller}
->
-  <Text style={styles.primaryText}>
-    Submit Seller Application
-  </Text>
-</TouchableOpacity>
-      </ScrollView>
-    );
-  }
-
-  if (seller.status !== "approved") {
-    return (
-      <ScrollView style={styles.page}>
-        <Text style={styles.pageTitle}>
-          🏪 Seller Center
-        </Text>
-
-        <View style={styles.accountCard}>
-          <Text style={styles.accountIcon}>⏳</Text>
-
-          <Text style={styles.accountTitle}>
-            Application {seller.status || "pending"}
-          </Text>
-
-          <Text style={styles.accountText}>
-            Admin approval ke baad aap products add kar sakenge.
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.accountOption}
-          onPress={loadSellerData}
-        >
-          <Text style={styles.accountOptionText}>
-            🔄 Check Approval Status
-          </Text>
-
-          <Text style={styles.arrow}>›</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    );
-  }
-
-  return (
-    <ScrollView style={styles.page}>
-      <Text style={styles.pageTitle}>
-        🏪 Seller Dashboard
-      </Text>
-
-      <View style={styles.accountCard}>
-        <Text style={styles.accountIcon}>🏪</Text>
-
-        <Text style={styles.accountTitle}>
-          {seller.shop_name}
-        </Text>
-
-        <Text style={styles.accountText}>
-          Status: Approved
-        </Text>
-
-        <Text style={styles.accountText}>
-          Commission: {seller.commission_rate || commissionRate}%
-        </Text>
-      </View>
-
-      <Text style={styles.sectionTitle}>
-        ➕ Add New Product
-      </Text>
-<TouchableOpacity
-style={styles.primary}
-onPress={chooseProductImage}
->
-<Text style={styles.primaryText}>
-{productImage ? "📸 Change Product Photo" : "📸 Choose Product Photo"}
-</Text>
-</TouchableOpacity>
-
-{productImage && (
-<View style={{ alignItems: "center", marginBottom: 15 }}>
-<Image
-source={{ uri: productImage.uri }}
-style={{
-width: 150,
-height: 150,
-borderRadius: 12,
-resizeMode: "cover",
-}}
-/>
-<Text style={styles.accountText}>
-✅ Product photo selected
-</Text>
-</View>
-)}
-      <TextInput
-        value={productName}
-        onChangeText={setProductName}
-        placeholder="Product Name"
-        placeholderTextColor="#777"
-        style={styles.input}
-      />
-
-      <TextInput
-        value={productPrice}
-        onChangeText={setProductPrice}
-        placeholder="Price"
-        placeholderTextColor="#777"
-        keyboardType="numeric"
-        style={styles.input}
-      />
-
-      <Text style={styles.sectionTitle}>
-  Select Product Category
-</Text>{categories.length === 0 ? (
-<Text style={styles.cartItemPrice}>
-No categories available. Please try again later.
-</Text>
-) : (
-categories.map((category) => (
-<TouchableOpacity
-key={category.id}
-onPress={() => setProductCategory(category.id)}
-style={[
-styles.input,
-productCategory === category.id && {
-borderWidth: 2,
-borderColor: "#16A34A",
-},
-]}
->
-<Text>
-{productCategory === category.id ? "✅ " : ""}
-{category.name}
-</Text>
-</TouchableOpacity>
-))
-)}
-
-      <TextInput
-        value={productStock}
-        onChangeText={setProductStock}
-        placeholder="Stock Quantity"
-        placeholderTextColor="#777"
-        keyboardType="numeric"
-        style={styles.input}
-      />
-
-      <TextInput
-        value={productDescription}
-        onChangeText={setProductDescription}
-        placeholder="Product Description"
-        placeholderTextColor="#777"
-        multiline
-        style={styles.input}
-      />
-
-      <TouchableOpacity
-        style={styles.primary}
-        onPress={addProduct}
-      >
-        <Text style={styles.primaryText}>
-          ➕ Add Product
-        </Text>
-      </TouchableOpacity>
-
-      <Text style={styles.sectionTitle}>
-        🛍️ My Products
-      </Text>
-
-      {sellerProducts.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyTitle}>
-            Abhi koi product nahi hai
-          </Text>
-        </View>
-      ) : (
-        sellerProducts.map((product) => (
-          <View key={product.id} style={styles.cartItem}>
-            <Text style={styles.cartItemIcon}>🛍️</Text>
-
-            <View style={styles.cartItemInfo}>
-              <Text style={styles.cartItemName}>
-                {product.name}
-              </Text>
-
-              <Text style={styles.cartItemPrice}>
-                ₹{product.price}
-              </Text>
-
-              <Text>
-                Stock: {product.stock}
-              </Text>
-            </View>
-          </View>
-        ))
-      )}
-    </ScrollView>
-  );
 }
-
     function Categories() {
     return (
       <ScrollView style={styles.page}>
