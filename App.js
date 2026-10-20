@@ -578,13 +578,16 @@ async function sendEmailOtp() {
   setAuthLoading(true);
 
   try {
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        shouldCreateUser: false,
-      },
-    });
-
+const { error } = await supabase.auth.signInWithOtp({
+  email: email.trim(),
+  options: {
+    shouldCreateUser: false,
+    emailRedirectTo: AuthSession.makeRedirectUri({
+      scheme: "shopkart",
+      path: "auth/callback",
+    }),
+  },
+});
     if (error) {
       Alert.alert("OTP Failed", error.message);
       return;
