@@ -1765,7 +1765,7 @@ setSellerLoading(false);
   }
 }, [screen, user]);
 function Auth() {
-  
+  const SHOW_EMAIL_OTP = false;
 
   async function handleGoogleLogin() {
 setAuthLoading(true);
@@ -1922,7 +1922,7 @@ try {
         style={styles.input}
         returnKeyType="next"
       />
-{authMode === "login" && (
+{SHOW_EMAIL_OTP && authMode === "login" && (
   <TouchableOpacity
     style={styles.googleButton}
     onPress={sendEmailOtp}
