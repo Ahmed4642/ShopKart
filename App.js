@@ -2268,106 +2268,274 @@ Product add karne se pehle Admin approval zaroori hai.
 </View>
 );
 }
-
 return (
-<ScrollView
-style={styles.page}
-contentContainerStyle={{ paddingBottom: 30 }}
->
-<Text style={styles.pageTitle}>🏪 Seller Dashboard</Text>
-
-  <View style={styles.accountCard}>
-    <Text style={styles.accountTitle}>
-      {seller.shop_name}
+  <ScrollView
+    style={styles.page}
+    contentContainerStyle={styles.sellerFormContainer}
+    keyboardShouldPersistTaps="handled"
+  >
+    <Text style={styles.sellerFormTitle}>
+      🏪 Seller Dashboard
     </Text>
-    <Text style={styles.accountText}>
-      Marketplace commission: {commissionRate}%
-    </Text>
-  </View>
 
-  <TextInput
-    style={styles.input}
-    placeholder="Product Name"
-    value={productName}
-    onChangeText={setProductName}
-  />
-  <TextInput
-    style={styles.input}
-    placeholder="Selling Price (₹)"
-    value={productPrice}
-    onChangeText={setProductPrice}
-    keyboardType="decimal-pad"
-  />
-  <TextInput
-    style={styles.input}
-    placeholder="Stock Quantity"
-    value={productStock}
-    onChangeText={setProductStock}
-    keyboardType="numeric"
-  />
-  <TextInput
-    style={styles.input}
-    placeholder="Description (Optional)"
-    value={productDescription}
-    onChangeText={setProductDescription}
-    multiline
-  />
-
-  <Text style={styles.accountTitle}>Select Category</Text>
-
-  {categories.map((cat) => (
-    <TouchableOpacity
-      key={cat.id}
-      style={styles.accountOption}
-      onPress={() => setProductCategory(cat.id)}
-    >
-      <Text style={styles.accountOptionText}>
-        {productCategory === cat.id ? "🔘 " : "⚪ "}
-        {cat.name}
+    {/* Shop Information */}
+    <View style={styles.sellerFormCard}>
+      <Text style={styles.sellerSectionTitle}>
+        Shop Information
       </Text>
-    </TouchableOpacity>
-  ))}
 
-  <TouchableOpacity
-    style={styles.accountOption}
-    onPress={chooseProductImage}
-  >
-    {productImage?.uri ? (
-      <Image
-        source={{ uri: productImage.uri }}
-        style={{ width: 80, height: 80, borderRadius: 8 }}
-      />
-    ) : null}
-    <Text style={styles.accountOptionText}>
-      {productImage ? "Change Product Photo" : "📷 Choose Product Photo"}
-    </Text>
-  </TouchableOpacity>
+      <Text style={styles.accountTitle}>
+        {seller.shop_name}
+      </Text>
 
-  <TouchableOpacity
-    style={styles.primary}
-    onPress={addProduct}
-  >
-    <Text style={styles.primaryText}>Add Product</Text>
-  </TouchableOpacity>
-
-  <Text style={styles.sectionTitle}>Your Products</Text>
-
-  {sellerProducts.map((p) => (
-    <View key={p.id} style={styles.accountCard}>
-      {p.image_url ? (
-        <Image
-          source={{ uri: p.image_url }}
-          style={{ width: 120, height: 120, borderRadius: 10 }}
-        />
-      ) : null}
-      <Text style={styles.accountTitle}>{p.name}</Text>
       <Text style={styles.accountText}>
-        ₹{p.price} · Stock: {p.stock}
+        Marketplace Commission: {commissionRate}%
       </Text>
     </View>
-  ))}
-</ScrollView>
 
+    {/* Add New Product */}
+    <View style={styles.sellerFormCard}>
+      <Text style={styles.sellerSectionTitle}>
+        Add New Product
+      </Text>
+
+      <Text style={styles.sellerLabel}>
+        Product Name *
+      </Text>
+
+      <TextInput
+        style={styles.sellerInput}
+        placeholder="Enter product name"
+        placeholderTextColor="#888888"
+        value={productName}
+        onChangeText={setProductName}
+      />
+
+      <Text style={styles.sellerLabel}>
+        Selling Price (₹) *
+      </Text>
+
+      <TextInput
+        style={styles.sellerInput}
+        placeholder="Enter selling price"
+        placeholderTextColor="#888888"
+        value={productPrice}
+        onChangeText={setProductPrice}
+        keyboardType="decimal-pad"
+      />
+
+      <Text style={styles.sellerLabel}>
+        Stock Quantity *
+      </Text>
+
+      <TextInput
+        style={styles.sellerInput}
+        placeholder="Enter available quantity"
+        placeholderTextColor="#888888"
+        value={productStock}
+        onChangeText={setProductStock}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.sellerLabel}>
+        Product Description
+      </Text>
+
+      <TextInput
+        style={styles.sellerMultilineInput}
+        placeholder="Describe your product (optional)"
+        placeholderTextColor="#888888"
+        value={productDescription}
+        onChangeText={setProductDescription}
+        multiline
+      />
+
+      {/* Category Selection */}
+      <Text style={styles.sellerLabel}>
+        Select Category *
+      </Text>
+
+      {categories.map((cat) => (
+        <TouchableOpacity
+          key={cat.id}
+          style={[
+            styles.accountOption,
+            {
+              marginHorizontal: 0,
+              marginTop: 5,
+              padding: 12,
+              backgroundColor:
+                productCategory === cat.id
+                  ? "#111111"
+                  : "#FFFFFF",
+              borderWidth: 1,
+              borderColor:
+                productCategory === cat.id
+                  ? "#111111"
+                  : "#DDDDDD",
+            },
+          ]}
+          onPress={() => setProductCategory(cat.id)}
+        >
+          <Text
+            style={{
+              flex: 1,
+              color:
+                productCategory === cat.id
+                  ? "#FFFFFF"
+                  : "#222222",
+              fontSize: 14,
+              fontWeight: "700",
+            }}
+          >
+            {productCategory === cat.id ? "✓  " : "○  "}
+            {cat.name}
+          </Text>
+        </TouchableOpacity>
+      ))}
+
+      {/* Product Photo */}
+      <Text style={[styles.sellerLabel, { marginTop: 18 }]}>
+        Product Photo *
+      </Text>
+
+      <TouchableOpacity
+        style={[
+          styles.sellerPrimaryButton,
+          {
+            backgroundColor: "#FFFFFF",
+            borderWidth: 1,
+            borderColor: "#111111",
+            borderStyle: "dashed",
+            paddingVertical: 16,
+          },
+        ]}
+        onPress={chooseProductImage}
+      >
+        {productImage?.uri ? (
+          <Image
+            source={{ uri: productImage.uri }}
+            style={{
+              width: 150,
+              height: 150,
+              borderRadius: 10,
+              marginBottom: 10,
+            }}
+            resizeMode="cover"
+          />
+        ) : null}
+
+        <Text
+          style={{
+            color: "#111111",
+            fontSize: 14,
+            fontWeight: "700",
+          }}
+        >
+          {productImage
+            ? "Change Product Photo"
+            : "📷 Choose Product Photo"}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Add Product Button */}
+      <TouchableOpacity
+        style={styles.sellerPrimaryButton}
+        onPress={addProduct}
+      >
+        <Text style={styles.sellerPrimaryButtonText}>
+          + Add Product
+        </Text>
+      </TouchableOpacity>
+    </View>
+
+    {/* My Products */}
+    <Text style={styles.sellerFormTitle}>
+      My Products
+    </Text>
+
+    {sellerProducts.length === 0 ? (
+      <View style={styles.sellerFormCard}>
+        <Text style={styles.accountText}>
+          You haven't added any products yet.
+        </Text>
+      </View>
+    ) : (
+      sellerProducts.map((p) => (
+        <View
+          key={p.id}
+          style={[
+            styles.sellerFormCard,
+            {
+              flexDirection: "row",
+              alignItems: "center",
+            },
+          ]}
+        >
+          {p.image_url ? (
+            <Image
+              source={{ uri: p.image_url }}
+              style={{
+                width: 90,
+                height: 90,
+                borderRadius: 10,
+                backgroundColor: "#F2F2F2",
+              }}
+              resizeMode="cover"
+            />
+          ) : (
+            <View
+              style={{
+                width: 90,
+                height: 90,
+                borderRadius: 10,
+                backgroundColor: "#EEEEEE",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#777777" }}>
+                No Photo
+              </Text>
+            </View>
+          )}
+
+          <View style={{ flex: 1, marginLeft: 14 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "800",
+                color: "#111111",
+              }}
+            >
+              {p.name}
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 17,
+                fontWeight: "800",
+                color: "#111111",
+                marginTop: 7,
+              }}
+            >
+              ₹{p.price}
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 13,
+                color: "#666666",
+                marginTop: 5,
+              }}
+            >
+              Stock: {p.stock}
+            </Text>
+          </View>
+        </View>
+      ))
+    )}
+  </ScrollView>
 );
 }
     function Categories() {
