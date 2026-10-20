@@ -2031,9 +2031,18 @@ fontWeight: "bold",
         marginTop: 8,
       }}
     >
-      <Text style={[styles.link, { color: "#FFFFFF" }]}>
-        Forgot Password?
-      </Text>
+      <Text
+  style={[
+    styles.link,
+    {
+      color: "#FFC400",
+      fontWeight: "800",
+      fontSize: 15,
+    },
+  ]}
+>
+  Forgot Password?
+</Text>
     </TouchableOpacity>
   )}
 
@@ -2077,9 +2086,11 @@ fontWeight: "bold",
       style={[
         styles.link,
         {
-          color: "#FFFFFF",
-          textAlign: "center",
-        },
+  color: "#FFC400",
+  textAlign: "center",
+  fontWeight: "800",
+  fontSize: 15,
+},
       ]}
     >
       {authMode === "login"
