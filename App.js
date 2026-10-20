@@ -1951,7 +1951,6 @@ try {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
         <TouchableOpacity
 style={[
 styles.primary,
