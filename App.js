@@ -687,7 +687,48 @@ error?.message || "Unable to send the password reset email."
 setAuthLoading(false);
 }
 }
+async function login() {
+  if (!email?.trim() || !password) {
+    Alert.alert(
+      "Login",
+      "Email aur password enter karo."
+    );
+    return;
+  }
 
+  setAuthLoading(true);
+
+  try {
+    const { data, error } =
+      await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+    if (error) {
+      Alert.alert("Login Failed", error.message);
+      return;
+    }
+
+    if (data?.user) {
+      setUser(data.user);
+      await loadProfile(data.user.id);
+      setScreen("account");
+
+      Alert.alert(
+        "Login Successful",
+        "Welcome back to ShopKart!"
+      );
+    }
+  } catch (error) {
+    Alert.alert(
+      "Login Failed",
+      error?.message || "Login mein problem aayi."
+    );
+  } finally {
+    setAuthLoading(false);
+  }
+}
   async function signup() {
     if (!email || !password) {
       Alert.alert("Signup", "Email aur password enter karo.");
