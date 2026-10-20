@@ -650,68 +650,42 @@ async function verifyEmailOtp() {
   }
 }
 async function forgotPassword() {
-  if (!email || !email.includes("@")) {
-    Alert.alert(
-      "Email Required",
-      "Pehle apna registered email enter karo."
-    );
-    return;
-  }
-
-  setAuthLoading(true);
-
-  try {
-    const { error } =
-      await supabase.auth.resetPasswordForEmail(
-        email.trim()
-      );
-
-    if (error) {
-      Alert.alert("Reset Failed", error.message);
-      return;
-    }
-
-    Alert.alert(
-      "Check Your Email",
-      "Password reset link ke liye apna Gmail Inbox aur Spam folder check karo."
-    );
-  } catch (error) {
-    Alert.alert(
-      "Error",
-      error?.message || "Password reset email nahi bheja ja saka."
-    );
-  } finally {
-    setAuthLoading(false);
-  }
+if (!email || !email.includes("@")) {
+Alert.alert(
+"Email Required",
+"Please enter your registered email address."
+);
+return;
 }
-  async function login() {
-  if (!email || !password) {
-    Alert.alert("Login", "Email aur password enter karo.");
-    return;
-  }
 
-  setAuthLoading(true);
+setAuthLoading(true);
 
-  const { data, error } =
-    await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+try {
+const { error } = await supabase.auth.resetPasswordForEmail(
+email.trim(),
+{
+redirectTo: "shopkart://auth/callback",
+}
+);
 
-  setAuthLoading(false);
+if (error) {
+  Alert.alert("Reset Failed", error.message);
+  return;
+}
 
-  if (error) {
-    Alert.alert("Login failed", error.message);
-    return;
-  }
+Alert.alert(
+  "Check Your Email",
+  "Please check your inbox and spam folder for the password reset link."
+);
 
-  if (data?.user) {
-    setUser(data.user);
-    await loadProfile(data.user.id);
-    setScreen("home");
-
-    Alert.alert("Success", "Login successful.");
-  }
+} catch (error) {
+Alert.alert(
+"Error",
+error?.message || "Unable to send the password reset email."
+);
+} finally {
+setAuthLoading(false);
+}
 }
 
   async function signup() {
@@ -1978,57 +1952,105 @@ try {
       </View>
 
       <TouchableOpacity
-        style={styles.primary}
-        onPress={authMode === "login" ? login : signup}
-        disabled={authLoading}
-      >
-        <Text style={styles.primaryText}>
-          {authLoading
-            ? "Please wait..."
-            : authMode === "login"
-            ? "Login"
-            : "Create Account"}
-        </Text>
-      </TouchableOpacity>
-{authMode === "login" && (
+        <TouchableOpacity
+style={[
+styles.primary,
+{
+backgroundColor: "#FFFFFF",
+borderRadius: 12,
+paddingVertical: 15,
+},
+]}
+onPress={authMode === "login" ? login : signup}
+disabled={authLoading}
+>
+<Text
+style={[
+styles.primaryText,
+{
+color: "#000000",
+fontWeight: "bold",
+},
+]}
+>
+{authLoading
+? "Please wait..."
+: authMode === "login"
+? "Login"
+: "Create Account"}
+</Text>
+</TouchableOpacity>
+
+  {authMode === "login" && (
+    <TouchableOpacity
+      onPress={forgotPassword}
+      disabled={authLoading}
+      style={{
+        alignSelf: "flex-end",
+        marginBottom: 12,
+        marginTop: 8,
+      }}
+    >
+      <Text style={[styles.link, { color: "#FFFFFF" }]}>
+        Forgot Password?
+      </Text>
+    </TouchableOpacity>
+  )}
+
+  <Text style={[styles.orText, { color: "#888888" }]}>
+    OR
+  </Text>
+
   <TouchableOpacity
-    onPress={forgotPassword}
+    style={[
+      styles.googleButton,
+      {
+        backgroundColor: "#1A1A1A",
+        borderColor: "#444444",
+        borderWidth: 1,
+        borderRadius: 12,
+        paddingVertical: 14,
+      },
+    ]}
+    onPress={handleGoogleLogin}
     disabled={authLoading}
-    style={{ alignSelf: "flex-end", marginBottom: 12 }}
   >
-    <Text style={styles.link}>
-      Forgot Password?
+    <Text
+      style={[
+        styles.googleButtonText,
+        { color: "#FFFFFF" },
+      ]}
+    >
+      🔵 Continue with Google
     </Text>
   </TouchableOpacity>
-)}
-      <Text style={styles.orText}>OR</Text>
 
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={handleGoogleLogin}
-      >
-        <Text style={styles.googleButtonText}>
-          🔵 Continue with Google
-        </Text>
-      </TouchableOpacity>
+  <TouchableOpacity
+    onPress={() =>
+      setAuthMode(
+        authMode === "login" ? "signup" : "login"
+      )
+    }
+    style={{ marginTop: 20 }}
+  >
+    <Text
+      style={[
+        styles.link,
+        {
+          color: "#FFFFFF",
+          textAlign: "center",
+        },
+      ]}
+    >
+      {authMode === "login"
+        ? "New user? Create Account"
+        : "Already have an account? Login"}
+    </Text>
+  </TouchableOpacity>
+</ScrollView>
 
-      <TouchableOpacity
-        onPress={() =>
-          setAuthMode(
-            authMode === "login" ? "signup" : "login"
-          )
-        }
-      >
-        <Text style={styles.link}>
-          {authMode === "login"
-            ? "New user? Create Account"
-            : "Already have an account? Login"}
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
-  );
+);
 }
-
   function Seller() {
   
   async function chooseProductImage() {
