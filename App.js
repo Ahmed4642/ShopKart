@@ -1884,7 +1884,41 @@ try {
         style={styles.input}
         returnKeyType="next"
       />
+{authMode === "login" && (
+  <TouchableOpacity
+    style={styles.googleButton}
+    onPress={sendEmailOtp}
+    disabled={authLoading}
+  >
+    <Text style={styles.googleButtonText}>
+      {authLoading ? "Please wait..." : "Send Email OTP"}
+    </Text>
+  </TouchableOpacity>
+)}
 
+{authMode === "login" && otpSent && (
+  <>
+    <TextInput
+      value={emailOtp}
+      onChangeText={setEmailOtp}
+      placeholder="Enter 6-digit Email OTP"
+      placeholderTextColor="#777"
+      keyboardType="number-pad"
+      maxLength={6}
+      style={styles.input}
+    />
+
+    <TouchableOpacity
+      style={styles.primary}
+      onPress={verifyEmailOtp}
+      disabled={authLoading}
+    >
+      <Text style={styles.primaryText}>
+        {authLoading ? "Please wait..." : "Verify OTP & Login"}
+      </Text>
+    </TouchableOpacity>
+  </>
+)}
       <View style={styles.passwordRow}>
         <TextInput
           value={password}
