@@ -606,7 +606,7 @@ async function sendEmailOtp() {
   }
 }
 async function verifyEmailOtp() {
-  if (!emailOtp || !/^\d{6}$/.test(emailOtp.trim())) {
+  if (!emailOtp || !/^\d{8}$/.test(emailOtp.trim())) {
     Alert.alert(
       "Invalid OTP",
       "Email par aaya 6-digit OTP enter karo."
@@ -1936,10 +1936,10 @@ try {
     <TextInput
       value={emailOtp}
       onChangeText={setEmailOtp}
-      placeholder="Enter 6-digit Email OTP"
+      placeholder="Enter 8-digit Email OTP"
       placeholderTextColor="#777"
       keyboardType="number-pad"
-      maxLength={6}
+      maxLength={8}
       style={styles.input}
     />
 
