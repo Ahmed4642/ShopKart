@@ -605,6 +605,47 @@ async function sendEmailOtp() {
     setAuthLoading(false);
   }
 }
+async function verifyEmailOtp() {
+  if (!emailOtp || !/^\d{6}$/.test(emailOtp.trim())) {
+    Alert.alert(
+      "Invalid OTP",
+      "Email par aaya 6-digit OTP enter karo."
+    );
+    return;
+  }
+
+  setAuthLoading(true);
+
+  try {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: email.trim(),
+      token: emailOtp.trim(),
+      type: "email",
+    });
+
+    if (error) {
+      Alert.alert("OTP Verification Failed", error.message);
+      return;
+    }
+
+    if (data?.user) {
+      setUser(data.user);
+      await loadProfile(data.user.id);
+      setEmailOtp("");
+      setOtpSent(false);
+      setScreen("home");
+
+      Alert.alert("Success", "Email OTP se login successful.");
+    }
+  } catch (error) {
+    Alert.alert(
+      "Error",
+      error?.message || "OTP verify karne mein problem aayi."
+    );
+  } finally {
+    setAuthLoading(false);
+  }
+}
   async function login() {
   if (!email || !password) {
     Alert.alert("Login", "Email aur password enter karo.");
