@@ -569,7 +569,42 @@ product_id: product.id,
         .filter((x) => x.qty > 0)
     );
   }
+async function sendEmailOtp() {
+  if (!email || !email.includes("@")) {
+    Alert.alert("Email Required", "Valid Gmail enter karo.");
+    return;
+  }
 
+  setAuthLoading(true);
+
+  try {
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: {
+        shouldCreateUser: false,
+      },
+    });
+
+    if (error) {
+      Alert.alert("OTP Failed", error.message);
+      return;
+    }
+
+    setOtpSent(true);
+
+    Alert.alert(
+      "OTP Sent",
+      "Apne email ka Inbox aur Spam folder check karo."
+    );
+  } catch (error) {
+    Alert.alert(
+      "Error",
+      error?.message || "OTP bhejne mein problem aayi."
+    );
+  } finally {
+    setAuthLoading(false);
+  }
+}
   async function login() {
   if (!email || !password) {
     Alert.alert("Login", "Email aur password enter karo.");
