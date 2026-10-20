@@ -2215,31 +2215,96 @@ async function addProduct() {
 }
     if (!user) {
 return (
-<View style={styles.page}>
-<Text style={styles.pageTitle}>🏪 Become a Seller</Text>
-<Text style={styles.accountText}>
-Seller registration ke liye pehle login karein.
-</Text>
-<TouchableOpacity
-style={styles.primary}
-onPress={() => setScreen("auth")}
+<View
+style={[
+styles.page,
+{
+backgroundColor: "#000000",
+justifyContent: "center",
+},
+]}
 >
-<Text style={styles.primaryText}>Login</Text>
-</TouchableOpacity>
+<Text
+style={[
+styles.pageTitle,
+{
+color: "#FFFFFF",
+fontSize: 26,
+fontWeight: "bold",
+},
+]}
+>
+Become a Seller
+</Text>
+
+  <Text
+    style={[
+      styles.accountText,
+      {
+        color: "#A0A0A0",
+        textAlign: "center",
+        marginTop: 10,
+        marginBottom: 20,
+      },
+    ]}
+  >
+    Please log in first for seller registration.
+  </Text>
+
+  <TouchableOpacity
+    style={[
+      styles.primary,
+      {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 10,
+        paddingVertical: 14,
+      },
+    ]}
+    onPress={() => setScreen("auth")}
+  >
+    <Text
+      style={[
+        styles.primaryText,
+        {
+          color: "#000000",
+          fontWeight: "bold",
+        },
+      ]}
+    >
+      Login to Continue →
+    </Text>
+  </TouchableOpacity>
 </View>
+
 );
 }
 
 if (sellerLoading) {
 return (
-<View style={styles.page}>
-<ActivityIndicator size="large" />
-<Text style={styles.accountText}>
-Seller details load ho rahi hain...
-</Text>
+<View
+style={[
+styles.page,
+{
+backgroundColor: "#000000",
+justifyContent: "center",
+},
+]}
+>
+<ActivityIndicator size="large" color="#FFFFFF" />
+
+  <Text
+    style={[
+      styles.accountText,
+      { color: "#A0A0A0" },
+    ]}
+  >
+    Loading seller details...
+  </Text>
 </View>
+
 );
 }
+
 if (!seller) {
 return (
 <ScrollView
