@@ -646,6 +646,41 @@ async function verifyEmailOtp() {
     setAuthLoading(false);
   }
 }
+async function forgotPassword() {
+  if (!email || !email.includes("@")) {
+    Alert.alert(
+      "Email Required",
+      "Pehle apna registered email enter karo."
+    );
+    return;
+  }
+
+  setAuthLoading(true);
+
+  try {
+    const { error } =
+      await supabase.auth.resetPasswordForEmail(
+        email.trim()
+      );
+
+    if (error) {
+      Alert.alert("Reset Failed", error.message);
+      return;
+    }
+
+    Alert.alert(
+      "Check Your Email",
+      "Password reset link ke liye apna Gmail Inbox aur Spam folder check karo."
+    );
+  } catch (error) {
+    Alert.alert(
+      "Error",
+      error?.message || "Password reset email nahi bheja ja saka."
+    );
+  } finally {
+    setAuthLoading(false);
+  }
+}
   async function login() {
   if (!email || !password) {
     Alert.alert("Login", "Email aur password enter karo.");
