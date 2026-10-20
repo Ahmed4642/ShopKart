@@ -1987,7 +1987,17 @@ try {
             : "Create Account"}
         </Text>
       </TouchableOpacity>
-
+{authMode === "login" && (
+  <TouchableOpacity
+    onPress={forgotPassword}
+    disabled={authLoading}
+    style={{ alignSelf: "flex-end", marginBottom: 12 }}
+  >
+    <Text style={styles.link}>
+      Forgot Password?
+    </Text>
+  </TouchableOpacity>
+)}
       <Text style={styles.orText}>OR</Text>
 
       <TouchableOpacity
