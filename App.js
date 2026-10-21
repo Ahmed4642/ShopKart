@@ -2288,42 +2288,34 @@ try {
     );
   }
 return (
-    <ScrollView
-      style={styles.page}
-      contentContainerStyle={styles.authContainer}
-      keyboardShouldPersistTaps="handled"
+  <ScrollView
+    style={styles.page}
+    contentContainerStyle={styles.authContainer}
+    keyboardShouldPersistTaps="handled"
+  >
+    <Text
+      style={{
+        fontSize: 32,
+        fontWeight: "900",
+        color: "#FFFFFF",
+        textAlign: "center",
+        marginBottom: 25,
+      }}
     >
-      
-<Text
-style={{
-fontSize: 32,
-fontWeight: "900",
-color: "#FFFFFF",
-textAlign: "center",
-marginBottom: 25,
-}}
+      Shop<Text style={{ color: "#FFC400" }}>Kart</Text>
+    </Text>
 
-«»
-
-Shop<Text style={{ color: "#FFC400" }}>Kart</Text>
-</Text>
-
-<Text
-style={{
-fontSize: 24,
-fontWeight: "800",
-color: "#FFFFFF",
-textAlign: "center",
-marginBottom: 20,
-}}
-
-«»
-
-Sign in or create account
-</Text>
-
-Sign in or create account
-</Text>
+    <Text
+      style={{
+        fontSize: 24,
+        fontWeight: "800",
+        color: "#FFFFFF",
+        textAlign: "center",
+        marginBottom: 20,
+      }}
+    >
+      Sign in or create account
+    </Text>
 
       {authMode === "signup" && (
         <TextInput
