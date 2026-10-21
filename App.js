@@ -85,9 +85,25 @@ const CATEGORIES = [
 
 export default function App() {
   const [screen, setScreen] = useState("home");
-
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
+  const [showAccountEntry, setShowAccountEntry] = useState(false);
+const [accountEntryValue, setAccountEntryValue] = useState("");
+ const [newPassword, setNewPassword] = useState("");
+const [confirmNewPassword, setConfirmNewPassword] = useState("");
   useEffect(() => {
     const onBackPress = () => {
+      if (isPasswordRecovery) {
+        setIsPasswordRecovery(false);
+        setScreen("auth");
+        return true;
+      }
+
+      if (showAccountEntry) {
+        setShowAccountEntry(false);
+        setScreen("auth");
+        return true;
+      }
+
       if (screen === "home") {
         return false;
       }
@@ -102,7 +118,7 @@ export default function App() {
     );
 
     return () => subscription.remove();
-  }, [screen]);
+  }, [screen, isPasswordRecovery, showAccountEntry]);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
 const [editProfile, setEditProfile] = useState(false);
@@ -239,22 +255,32 @@ loadCategories();
 
       setUser(currentUser);
 
-      if (!currentUser) {
+if (event === "PASSWORD_RECOVERY") {
+  setIsPasswordRecovery(true);
+  setScreen("auth");
+}
+
+if (!currentUser) {
   setProfile(null);
   setWishlist([]);
   return;
 }
 
-      if (
-        event === "SIGNED_IN" ||
-        event === "INITIAL_SESSION" ||
-        event === "TOKEN_REFRESHED"
-      ) {
-        setTimeout(() => {
-          loadProfile(currentUser.id);
-       loadWishlist(currentUser.id);
-        }, 0);
-      }
+      if (event === "PASSWORD_RECOVERY") {
+  setIsPasswordRecovery(true);
+  setScreen("auth");
+}
+
+if (
+  event === "SIGNED_IN" ||
+  event === "INITIAL_SESSION" ||
+  event === "TOKEN_REFRESHED"
+) {
+  setTimeout(() => {
+    loadProfile(currentUser.id);
+    loadWishlist(currentUser.id);
+  }, 0);
+}
     });
 
     return () => subscription.unsubscribe();
@@ -650,7 +676,7 @@ async function verifyEmailOtp() {
   }
 }
 async function forgotPassword() {
-if (!email || !email.includes("@")) {
+if (!emailToReset || !emailToReset.includes("@")) {
 Alert.alert(
 "Email Required",
 "Please enter your registered email address."
@@ -662,7 +688,7 @@ setAuthLoading(true);
 
 try {
 const { error } = await supabase.auth.resetPasswordForEmail(
-email.trim(),
+emailToReset.trim(),
 {
 redirectTo: "shopkart://auth/callback",
 }
@@ -687,7 +713,52 @@ error?.message || "Unable to send the password reset email."
 setAuthLoading(false);
 }
 }
-async function login() {
+async function updateRecoveryPassword() {
+  if (!newPassword || !confirmNewPassword) {
+    Alert.alert("Password Required", "Please enter and confirm your new password.");
+    return;
+  }
+
+  if (newPassword.length < 8) {
+    Alert.alert("Weak Password", "Password must be at least 8 characters long.");
+    return;
+  }
+
+  if (newPassword !== confirmNewPassword) {
+    Alert.alert("Password Mismatch", "Both passwords must match.");
+    return;
+  }
+
+  setAuthLoading(true);
+
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) {
+      Alert.alert("Update Failed", error.message);
+      return;
+    }
+
+    setNewPassword("");
+    setConfirmNewPassword("");
+    setIsPasswordRecovery(false);
+    setShowAccountEntry(false);
+
+    Alert.alert(
+      "Password Updated",
+      "Your password has been changed successfully."
+    );
+
+    setScreen("account");
+  } catch (error) {
+    Alert.alert("Error", error?.message || "Unable to update your password.");
+  } finally {
+    setAuthLoading(false);
+  }
+}
+  async function login() {
   if (!email?.trim() || !password) {
     Alert.alert(
       "Login",
@@ -1902,8 +1973,245 @@ try {
     setAuthLoading(false);
   }
 }
+  if (showAccountEntry) {
+    return (
+      <ScrollView
+        style={styles.page}
+        contentContainerStyle={[
+          styles.authContainer,
+          { paddingTop: 35 }
+        ]}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text
+          style={{
+            fontSize: 32,
+            fontWeight: "900",
+            color: "#FFFFFF",
+            textAlign: "center",
+            marginBottom: 25,
+          }}
+        >
+          Shop
+          <Text style={{ color: "#FFC400" }}>Kart</Text>
+        </Text>
 
-  return (
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "800",
+            color: "#FFFFFF",
+            marginBottom: 10,
+          }}
+        >
+          Sign in or create account
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 14,
+            color: "#BBBBBB",
+            marginBottom: 20,
+          }}
+        >
+          Enter your mobile number or email address
+        </Text>
+
+        <TextInput
+          value={accountEntryValue}
+          onChangeText={setAccountEntryValue}
+          placeholder="Mobile number or email"
+          placeholderTextColor="#777777"
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="email-address"
+          style={styles.input}
+          returnKeyType="done"
+        />
+
+        <TouchableOpacity
+          style={[
+            styles.primary,
+            {
+              backgroundColor: "#FFC400",
+              borderRadius: 10,
+              paddingVertical: 15,
+              marginTop: 5,
+            },
+          ]}
+          disabled={authLoading}
+          onPress={async () => {
+            const value = accountEntryValue.trim();
+
+            if (!value) {
+              Alert.alert(
+                "Details Required",
+                "Please enter your email address or mobile number."
+              );
+              return;
+            }
+
+            if (value.includes("@")) {
+              await forgotPassword(value);
+            } else {
+              Alert.alert(
+                "Mobile OTP Not Available",
+                "Mobile OTP service is not available yet. Please enter your registered email address to reset your password."
+              );
+            }
+          }}
+        >
+          <Text
+            style={[
+              styles.primaryText,
+              { color: "#111111", fontWeight: "800" },
+            ]}
+          >
+            {authLoading ? "Please wait..." : "Continue"}
+          </Text>
+        </TouchableOpacity>
+
+        <Text
+          style={{
+            color: "#BBBBBB",
+            fontSize: 12,
+            textAlign: "center",
+            lineHeight: 19,
+            marginTop: 24,
+          }}
+        >
+          By continuing, you agree to ShopKart's Conditions of Use
+          and Privacy Notice.
+        </Text>
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            marginTop: 14,
+          }}
+        >
+          <Text style={{ color: "#FFC400", fontSize: 13 }}>
+            Conditions of Use
+          </Text>
+
+          <Text style={{ color: "#777777", marginHorizontal: 8 }}>
+            |
+          </Text>
+
+          <Text style={{ color: "#FFC400", fontSize: 13 }}>
+            Privacy Notice
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => {
+            setShowAccountEntry(false);
+          }}
+          style={{ marginTop: 28, alignItems: "center" }}
+        >
+          <Text
+            style={{
+              color: "#FFC400",
+              fontSize: 15,
+              fontWeight: "700",
+            }}
+          >
+            Help | Back to Login
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+          }
+    if (isPasswordRecovery) {
+    return (
+      <ScrollView
+        style={styles.page}
+        contentContainerStyle={[
+          styles.authContainer,
+          { paddingTop: 35 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text
+          style={{
+            fontSize: 32,
+            fontWeight: "900",
+            color: "#FFFFFF",
+            textAlign: "center",
+            marginBottom: 25,
+          }}
+        >
+          Shop<Text style={{ color: "#FFC400" }}>Kart</Text>
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "800",
+            color: "#FFFFFF",
+            marginBottom: 10,
+          }}
+        >
+          Create new password
+        </Text>
+
+        <Text
+          style={{
+            color: "#BBBBBB",
+            marginBottom: 20,
+          }}
+        >
+          Enter your new password below.
+        </Text>
+
+        <TextInput
+          value={newPassword}
+          onChangeText={setNewPassword}
+          placeholder="New Password"
+          placeholderTextColor="#777777"
+          secureTextEntry
+          autoCapitalize="none"
+          autoCorrect={false}
+          style={styles.input}
+        />
+
+        <TextInput
+          value={confirmNewPassword}
+          onChangeText={setConfirmNewPassword}
+          placeholder="Confirm New Password"
+          placeholderTextColor="#777777"
+          secureTextEntry
+          autoCapitalize="none"
+          autoCorrect={false}
+          style={styles.input}
+        />
+
+        <TouchableOpacity
+          style={[
+            styles.primary,
+            {
+              backgroundColor: "#FFC400",
+              borderRadius: 10,
+              paddingVertical: 15,
+            },
+          ]}
+          onPress={updateRecoveryPassword}
+          disabled={authLoading}
+        >
+          <Text
+            style={[
+              styles.primaryText,
+              { color: "#111111", fontWeight: "800" },
+            ]}
+          >
+            {authLoading ? "Please wait..." : "Update Password"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  }
+return (
     <ScrollView
       style={styles.page}
       contentContainerStyle={styles.authContainer}
@@ -2020,31 +2328,31 @@ fontWeight: "bold",
 : "Create Account"}
 </Text>
 </TouchableOpacity>
-
-  {authMode === "login" && (
-    <TouchableOpacity
-      onPress={forgotPassword}
-      disabled={authLoading}
+{authMode === "login" && (
+  <TouchableOpacity
+    onPress={() => {
+      setAccountEntryValue("");
+      setShowAccountEntry(true);
+    }}
+    disabled={authLoading}
+    style={{
+      alignSelf: "flex-end",
+      marginBottom: 12,
+      marginTop: 8,
+    }}
+  >
+    <Text
       style={{
-        alignSelf: "flex-end",
-        marginBottom: 12,
-        marginTop: 8,
+        color: "#FFC400",
+        fontWeight: "800",
+        fontSize: 15,
       }}
     >
-      <Text
-  style={[
-    styles.link,
-    {
-      color: "#FFC400",
-      fontWeight: "800",
-      fontSize: 15,
-    },
-  ]}
->
-  Forgot Password?
-</Text>
-    </TouchableOpacity>
-  )}
+      Forgot Password?
+    </Text>
+  </TouchableOpacity>
+)}
+    <TouchableOpacity
 
   <Text style={[styles.orText, { color: "#888888" }]}>
     OR
