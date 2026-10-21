@@ -285,7 +285,56 @@ if (
 
     return () => subscription.unsubscribe();
   }, []);
+useEffect(() => {
+  const handleRecoveryUrl = async (url) => {
+    if (!url || !url.includes("auth/reset-password")) {
+      return;
+    }
 
+    try {
+      const callbackUrl = new URL(url);
+      const code = callbackUrl.searchParams.get("code");
+
+      if (code) {
+        const { error } =
+          await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+          Alert.alert("Password Reset Error", error.message);
+          return;
+        }
+
+        setShowAccountEntry(false);
+        setIsPasswordRecovery(true);
+        setScreen("auth");
+        return;
+      }
+
+      Alert.alert(
+        "Reset Link Error",
+        "Password reset link invalid hai ya expire ho gaya hai. Naya reset email mangwayein."
+      );
+    } catch (error) {
+      Alert.alert(
+        "Password Reset Error",
+        error?.message || "Reset link open nahi ho saka."
+      );
+    }
+  };
+
+  const subscription = Linking.addEventListener(
+    "url",
+    ({ url }) => {
+      handleRecoveryUrl(url);
+    }
+  );
+
+  Linking.getInitialURL()
+    .then((url) => handleRecoveryUrl(url))
+    .catch(() => {});
+
+  return () => subscription.remove();
+}, []);
   async function loadSession() {
     const { data } = await supabase.auth.getSession();
 
@@ -690,7 +739,7 @@ async function forgotPassword(emailToReset = email) {
     const { error } = await supabase.auth.resetPasswordForEmail(
       emailToReset.trim(),
       {
-        redirectTo: "shopkart://auth/callback",
+        redirectTo: "shopkart://auth/reset-password",
       }
     );
 
