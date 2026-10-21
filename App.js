@@ -292,24 +292,51 @@ useEffect(() => {
     }
 
     try {
-      const callbackUrl = new URL(url);
-      const code = callbackUrl.searchParams.get("code");
+      
+const callbackUrl = new URL(url);
+const code = callbackUrl.searchParams.get("code");
+const hashParams = new URLSearchParams(
+callbackUrl.hash.startsWith("#")
+? callbackUrl.hash.slice(1)
+: callbackUrl.hash
+);
 
-      if (code) {
-        const { error } =
-          await supabase.auth.exchangeCodeForSession(code);
+if (code) {
+const { error } =
+await supabase.auth.exchangeCodeForSession(code);
 
-        if (error) {
-          Alert.alert("Password Reset Error", error.message);
-          return;
-        }
+if (error) {
+Alert.alert("Password Reset Error", error.message);
+return;
+}
+} else {
+const accessToken = hashParams.get("access_token");
+const refreshToken = hashParams.get("refresh_token");
+const tokenType = hashParams.get("type");
 
-        setShowAccountEntry(false);
-        setIsPasswordRecovery(true);
-        setScreen("auth");
-        return;
-      }
+if (!accessToken || !refreshToken) {
+Alert.alert(
+"Reset Link Error",
+"Reset link invalid ya expire ho gaya hai. Naya reset email mangwayein."
+);
+return;
+}
 
+const { error } = await supabase.auth.setSession({
+access_token: accessToken,
+refresh_token: refreshToken,
+});
+
+if (error) {
+Alert.alert("Password Reset Error", error.message);
+return;
+}
+}
+
+setShowAccountEntry(false);
+setIsPasswordRecovery(true);
+setScreen("auth");
+return;
       Alert.alert(
         "Reset Link Error",
         "Password reset link invalid hai ya expire ho gaya hai. Naya reset email mangwayein."
@@ -2265,11 +2292,33 @@ return (
       contentContainerStyle={styles.authContainer}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.pageTitle}>
-        {authMode === "login"
-          ? "🔐 Login"
-          : "📝 Create Account"}
-      </Text>
+      <Text
+style={{
+fontSize: 32,
+fontWeight: "900",
+color: "#FFFFFF",
+textAlign: "center",
+marginBottom: 25,
+}}
+
+«»
+
+Shop<Text style={{ color: "#FFC400" }}>Kart</Text>
+</Text>
+
+<Text
+style={{
+fontSize: 24,
+fontWeight: "800",
+color: "#FFFFFF",
+textAlign: "center",
+marginBottom: 20,
+}}
+
+«»
+
+Sign in or create account
+</Text>
 
       {authMode === "signup" && (
         <TextInput
