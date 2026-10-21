@@ -2301,8 +2301,6 @@ textAlign: "center",
 marginBottom: 25,
 }}
 
-«»
-
 Shop<Text style={{ color: "#FFC400" }}>Kart</Text>
 </Text>
 
