@@ -675,43 +675,42 @@ async function verifyEmailOtp() {
     setAuthLoading(false);
   }
 }
-async function forgotPassword() {
-if (!emailToReset || !emailToReset.includes("@")) {
-Alert.alert(
-"Email Required",
-"Please enter your registered email address."
-);
-return;
-}
+async function forgotPassword(emailToReset = email) {
+  if (!emailToReset || !emailToReset.includes("@")) {
+    Alert.alert(
+      "Email Required",
+      "Please enter your registered email address."
+    );
+    return;
+  }
 
-setAuthLoading(true);
+  setAuthLoading(true);
 
-try {
-const { error } = await supabase.auth.resetPasswordForEmail(
-emailToReset.trim(),
-{
-redirectTo: "shopkart://auth/callback",
-}
-);
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      emailToReset.trim(),
+      {
+        redirectTo: "shopkart://auth/callback",
+      }
+    );
 
-if (error) {
-  Alert.alert("Reset Failed", error.message);
-  return;
-}
+    if (error) {
+      Alert.alert("Reset Failed", error.message);
+      return;
+    }
 
-Alert.alert(
-  "Check Your Email",
-  "Please check your inbox and spam folder for the password reset link."
-);
-
-} catch (error) {
-Alert.alert(
-"Error",
-error?.message || "Unable to send the password reset email."
-);
-} finally {
-setAuthLoading(false);
-}
+    Alert.alert(
+      "Check Your Email",
+      "Please check your inbox and spam folder for the password reset link."
+    );
+  } catch (error) {
+    Alert.alert(
+      "Error",
+      error?.message || "Unable to send the password reset email."
+    );
+  } finally {
+    setAuthLoading(false);
+  }
 }
 async function updateRecoveryPassword() {
   if (!newPassword || !confirmNewPassword) {
@@ -2352,7 +2351,6 @@ fontWeight: "bold",
     </Text>
   </TouchableOpacity>
 )}
-    <TouchableOpacity
 
   <Text style={[styles.orText, { color: "#888888" }]}>
     OR
