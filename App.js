@@ -2196,9 +2196,10 @@ try {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-    );
-          }
-    if (isPasswordRecovery) {
+        );
+  }
+
+  if (isPasswordRecovery) {
     return (
       <ScrollView
         style={styles.page}
@@ -2292,7 +2293,8 @@ return (
       contentContainerStyle={styles.authContainer}
       keyboardShouldPersistTaps="handled"
     >
-      <Text
+      
+<Text
 style={{
 fontSize: 32,
 fontWeight: "900",
@@ -2302,9 +2304,7 @@ marginBottom: 25,
 }}
 
 Shop<Text style={{ color: "#FFC400" }}>Kart</Text>
-</Text>
 
-<Text
 style={{
 fontSize: 24,
 fontWeight: "800",
@@ -2312,8 +2312,6 @@ color: "#FFFFFF",
 textAlign: "center",
 marginBottom: 20,
 }}
-
-«»
 
 Sign in or create account
 </Text>
