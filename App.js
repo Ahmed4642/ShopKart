@@ -2303,8 +2303,12 @@ textAlign: "center",
 marginBottom: 25,
 }}
 
-Shop<Text style={{ color: "#FFC400" }}>Kart</Text>
+«»
 
+Shop<Text style={{ color: "#FFC400" }}>Kart</Text>
+</Text>
+
+<Text
 style={{
 fontSize: 24,
 fontWeight: "800",
@@ -2312,6 +2316,11 @@ color: "#FFFFFF",
 textAlign: "center",
 marginBottom: 20,
 }}
+
+«»
+
+Sign in or create account
+</Text>
 
 Sign in or create account
 </Text>
