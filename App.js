@@ -3129,76 +3129,119 @@ return (
         multiline
       />
       {/* Category Selection */}
-      <Text style={styles.sellerLabel}>
-        Select Category *
-      </Text>
+<Text style={styles.sellerLabel}>
+Select Category *
+</Text>
 
-      <TextInput
-        style={styles.sellerInput}
-        placeholder="Search category..."
-        placeholderTextColor="#888888"
-        value={categorySearch}
-        onChangeText={setCategorySearch}
-      />
+<TextInput
+style={styles.sellerInput}
+placeholder="Search category..."
+placeholderTextColor="#888888"
+value={categorySearch}
+onChangeText={setCategorySearch}
+/>
 
-      <Text
-        style={{
-          fontSize: 12,
-          color: "#666666",
-          marginBottom: 8,
-        }}
-      >
-        Choose the category for your product
-      </Text>
+<Text
+style={{
+fontSize: 12,
+color: "#666666",
+marginBottom: 8,
+}}
 
-      {categories
-        .filter((cat) =>
-          cat.name
-            .toLowerCase()
-            .includes(categorySearch.trim().toLowerCase())
-        )
-        .map((cat) => (
-          <TouchableOpacity
-            key={cat.id}
-            style={[
-              styles.accountOption,
-              {
-                marginHorizontal: 0,
-                marginTop: 5,
-                padding: 12,
-                backgroundColor:
-                  productCategory === cat.id
-                    ? "#111111"
-                    : "#FFFFFF",
-                borderWidth: 1,
-                borderColor:
-                  productCategory === cat.id
-                    ? "#111111"
-                    : "#DDDDDD",
-              },
-            ]}
-            onPress={() => {
-              setProductCategory(cat.id);
-              setCategorySearch("");
-            }}
-          >
-            <Text
-              style={{
-                flex: 1,
-                color:
-                  productCategory === cat.id
-                    ? "#FFFFFF"
-                    : "#222222",
-                fontSize: 14,
-                fontWeight: "700",
-              }}
-            >
-              {productCategory === cat.id ? "✓  " : "○  "}
-              {cat.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+«»
 
+Choose the category for your product
+</Text>
+
+{categories
+.filter((cat) =>
+cat.name
+.toLowerCase()
+.includes(categorySearch.trim().toLowerCase())
+)
+.map((cat) => {
+const categoryIcons = {
+"Mobiles": "📱",
+"Fashion": "👕",
+"Electronics": "💻",
+"Audio": "🎧",
+"Beauty": "💄",
+"Health Supplements": "🥤",
+"Home Essentials": "🪟",
+"Appliances": "🧺",
+"Toys & Baby": "🧸",
+"Food & Grocery": "🛒",
+"Auto Accessories": "🚗",
+"Sports & Fitness": "⚽",
+"Furniture": "🛋️",
+"Books & Stationery": "📚",
+"Jewellery": "💍",
+"Pet Supplies": "🐾",
+"Bags & Luggage": "🧳",
+};
+
+const selected = productCategory === cat.id;
+const icon =
+  categoryIcons[cat.name.trim()] || "🛍️";
+
+return (
+  <TouchableOpacity
+    key={cat.id}
+    style={[
+      styles.accountOption,
+      {
+        flexDirection: "row",
+        alignItems: "center",
+        marginHorizontal: 0,
+        marginTop: 5,
+        padding: 12,
+        backgroundColor: selected
+          ? "#111111"
+          : "#FFFFFF",
+        borderWidth: 1,
+        borderColor: selected
+          ? "#111111"
+          : "#DDDDDD",
+      },
+    ]}
+    onPress={() => {
+      setProductCategory(cat.id);
+      setCategorySearch("");
+    }}
+  >
+    <Text
+      style={{
+        fontSize: 22,
+        marginRight: 12,
+      }}
+    >
+      {icon}
+    </Text>
+
+    <Text
+      style={{
+        flex: 1,
+        color: selected ? "#FFFFFF" : "#222222",
+        fontSize: 14,
+        fontWeight: "700",
+      }}
+    >
+      {cat.name}
+    </Text>
+
+    <Text
+      style={{
+        fontSize: 17,
+        color: selected ? "#FFFFFF" : "#777777",
+      }}
+    >
+      {selected ? "✓" : "○"}
+    </Text>
+  </TouchableOpacity>
+);
+
+})}
+      
       {categories.filter((cat) =>
         cat.name
           .toLowerCase()
