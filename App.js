@@ -75,12 +75,22 @@ const PRODUCTS = [
 ];
 
 const CATEGORIES = [
-  { name: "All", icon: "🛍️" },
-  { name: "Mobiles", icon: "📱" },
-  { name: "Fashion", icon: "👕" },
-  { name: "Home", icon: "🏠" },
-  { name: "Electronics", icon: "💻" },
-  { name: "Audio", icon: "🎧" },
+  { name: "All", icon: "🛍️", color: "#FFF3CC" },
+  { name: "Mobiles", icon: "📱", color: "#E3F2FD" },
+  { name: "Fashion", icon: "👕", color: "#FCE4EC" },
+  { name: "Electronics", icon: "💻", color: "#EDE7F6" },
+  { name: "Beauty", icon: "💄", color: "#FBE9E7" },
+  { name: "Home", icon: "🏠", color: "#E8F5E9" },
+  { name: "Appliances", icon: "🧺", color: "#E0F7FA" },
+  { name: "Toys & Baby", icon: "🧸", color: "#FFF8E1" },
+  { name: "Food & Grocery", icon: "🛒", color: "#F1F8E9" },
+  { name: "Auto Accessories", icon: "🚗", color: "#ECEFF1" },
+  { name: "Sports & Fitness", icon: "⚽", color: "#FFF3E0" },
+  { name: "Furniture", icon: "🛋️", color: "#EFEBE9" },
+  { name: "Books & Stationery", icon: "📚", color: "#E8EAF6" },
+  { name: "Jewellery", icon: "💍", color: "#F3E5F5" },
+  { name: "Pet Supplies", icon: "🐾", color: "#E0F2F1" },
+  { name: "Bags & Luggage", icon: "🧳", color: "#FCE4EC" },
 ];
 
 export default function App() {
@@ -1176,30 +1186,62 @@ const orderItems = cart.map((item) => ({
           horizontal
           showsHorizontalScrollIndicator={false}
           >
-          {CATEGORIES.map((c) => (
-            <TouchableOpacity
-              key={c.name}
-              style={[
-                styles.category,
-                category === c.name && styles.categoryActive,
-              ]}
-              onPress={() => setCategory(c.name)}
-            >
-              <Text style={styles.categoryIcon}>
-                {c.icon}
-              </Text>
-              <Text
-                style={[
-                  styles.categoryText,
-                  category === c.name &&
-                    styles.categoryTextActive,
-                ]}
-              >
-                {c.name}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+          <ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={{
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  }}
+>
+  {CATEGORIES.map((c) => (
+    <TouchableOpacity
+      key={c.name}
+      style={{
+        width: 88,
+        alignItems: "center",
+        marginRight: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 4,
+        borderRadius: 14,
+        backgroundColor: "#FFFFFF",
+        borderWidth: category === c.name ? 2 : 1,
+        borderColor:
+          category === c.name ? "#F5B400" : "#EEEEEE",
+      }}
+      onPress={() => setCategory(c.name)}
+      activeOpacity={0.75}
+    >
+      <View
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: 18,
+          backgroundColor: c.color || "#FFF3CC",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 7,
+        }}
+      >
+        <Text style={{ fontSize: 27 }}>
+          {c.icon}
+        </Text>
+      </View>
+
+      <Text
+        style={{
+          fontSize: 11,
+          fontWeight: category === c.name ? "800" : "600",
+          color: "#222222",
+          textAlign: "center",
+        }}
+        numberOfLines={2}
+      >
+        {c.name}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</ScrollView>
 
         <View style={styles.rowBetween}>
           <Text style={styles.sectionTitle}>
