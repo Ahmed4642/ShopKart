@@ -3128,50 +3128,92 @@ return (
         onChangeText={setProductDescription}
         multiline
       />
-
       {/* Category Selection */}
       <Text style={styles.sellerLabel}>
         Select Category *
       </Text>
 
-      {categories.map((cat) => (
-        <TouchableOpacity
-          key={cat.id}
-          style={[
-            styles.accountOption,
-            {
-              marginHorizontal: 0,
-              marginTop: 5,
-              padding: 12,
-              backgroundColor:
-                productCategory === cat.id
-                  ? "#111111"
-                  : "#FFFFFF",
-              borderWidth: 1,
-              borderColor:
-                productCategory === cat.id
-                  ? "#111111"
-                  : "#DDDDDD",
-            },
-          ]}
-          onPress={() => setProductCategory(cat.id)}
-        >
-          <Text
-            style={{
-              flex: 1,
-              color:
-                productCategory === cat.id
-                  ? "#FFFFFF"
-                  : "#222222",
-              fontSize: 14,
-              fontWeight: "700",
+      <TextInput
+        style={styles.sellerInput}
+        placeholder="Search category..."
+        placeholderTextColor="#888888"
+        value={categorySearch}
+        onChangeText={setCategorySearch}
+      />
+
+      <Text
+        style={{
+          fontSize: 12,
+          color: "#666666",
+          marginBottom: 8,
+        }}
+      >
+        Choose the category for your product
+      </Text>
+
+      {categories
+        .filter((cat) =>
+          cat.name
+            .toLowerCase()
+            .includes(categorySearch.trim().toLowerCase())
+        )
+        .map((cat) => (
+          <TouchableOpacity
+            key={cat.id}
+            style={[
+              styles.accountOption,
+              {
+                marginHorizontal: 0,
+                marginTop: 5,
+                padding: 12,
+                backgroundColor:
+                  productCategory === cat.id
+                    ? "#111111"
+                    : "#FFFFFF",
+                borderWidth: 1,
+                borderColor:
+                  productCategory === cat.id
+                    ? "#111111"
+                    : "#DDDDDD",
+              },
+            ]}
+            onPress={() => {
+              setProductCategory(cat.id);
+              setCategorySearch("");
             }}
           >
-            {productCategory === cat.id ? "✓  " : "○  "}
-            {cat.name}
-          </Text>
-        </TouchableOpacity>
-      ))}
+            <Text
+              style={{
+                flex: 1,
+                color:
+                  productCategory === cat.id
+                    ? "#FFFFFF"
+                    : "#222222",
+                fontSize: 14,
+                fontWeight: "700",
+              }}
+            >
+              {productCategory === cat.id ? "✓  " : "○  "}
+              {cat.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
+
+      {categories.filter((cat) =>
+        cat.name
+          .toLowerCase()
+          .includes(categorySearch.trim().toLowerCase())
+      ).length === 0 && (
+        <Text
+          style={{
+            color: "#666666",
+            padding: 12,
+            textAlign: "center",
+          }}
+        >
+          No matching categories found.
+        </Text>
+      )}
 
       {/* Product Photo */}
       <Text style={[styles.sellerLabel, { marginTop: 18 }]}>
