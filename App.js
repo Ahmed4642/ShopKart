@@ -2621,7 +2621,8 @@ async function addProduct() {
   const price = Number(productPrice);
 const mrp = Number(productMrp);
 const stock = Number(productStock);
- 
+ const stock = Number(productStock);
+
 if (
 !Number.isFinite(price) ||
 price <= 0 ||
@@ -2636,19 +2637,12 @@ Alert.alert(
 );
 return;
 }
-  
-    Alert.alert(
-      "Invalid Information",
-      "Please enter a valid price and stock quantity."
-    );
-    return;
-  }
 
-  let uploadedPath = null;
+let uploadedPath = null;
 
-  try {
-    // 1. Selected image ko Blob mein convert karein
-    const response = await fetch(productImage.uri);
+try {
+// 1. Selected image ko Blob mein convert karein
+const response = await fetch(productImage.uri);
 
     if (!response.ok) {
       throw new Error("Selected photo could not be read.");
