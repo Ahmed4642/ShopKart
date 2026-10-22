@@ -2621,7 +2621,7 @@ async function addProduct() {
   const price = Number(productPrice);
 const mrp = Number(productMrp);
 const stock = Number(productStock);
- const stock = Number(productStock);
+ 
 
 if (
 !Number.isFinite(price) ||
