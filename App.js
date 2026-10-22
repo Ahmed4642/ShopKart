@@ -2623,13 +2623,19 @@ const mrp = Number(productMrp);
 const stock = Number(productStock);
  
 if (
-  !Number.isFinite(price) ||
-  price <= 0 ||
-  !Number.isFinite(mrp) ||
-  mrp < price ||
-  !Number.isInteger(stock) ||
-  stock < 0
-)
+!Number.isFinite(price) ||
+price <= 0 ||
+!Number.isFinite(mrp) ||
+mrp < price ||
+!Number.isInteger(stock) ||
+stock < 0
+) {
+Alert.alert(
+"Invalid Information",
+"MRP selling price se kam nahi ho sakta. Please valid price aur stock enter karein."
+);
+return;
+}
   
     Alert.alert(
       "Invalid Information",
@@ -2693,15 +2699,15 @@ if (
     const { data, error } = await supabase
       .from("products")
       .insert({
-        seller_id: seller.id,
-        
-        stock,name: productName.trim(),
+seller_id: seller.id,
+name: productName.trim(),
 price,
 mrp,
 category_id: productCategory,
-        description: productDescription.trim() || null,
-        image_url: imageUrl,
-      })
+stock,
+description: productDescription.trim() || null,
+image_url: imageUrl,
+})
       .select()
       .single();
 
