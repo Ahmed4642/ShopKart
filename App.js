@@ -245,7 +245,8 @@ const productDiscount =
 const [productCategory, setProductCategory] = useState("");
 const [categories, setCategories] = useState([]);
 const [productStock, setProductStock] = useState("");
-const [productDescription, setProductDescription] = useState("");
+const [categorySearch, setCategorySearch] = useState("");
+  const [productDescription, setProductDescription] = useState("");
  const [productImage, setProductImage] = useState(null);
   useEffect(() => {
 async function loadCategories() {
