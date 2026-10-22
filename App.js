@@ -3140,17 +3140,14 @@ placeholderTextColor="#888888"
 value={categorySearch}
 onChangeText={setCategorySearch}
 />
-
 <Text
-style={{
-fontSize: 12,
-color: "#666666",
-marginBottom: 8,
-}}
-
-«»
-
-Choose the category for your product
+  style={{
+    fontSize: 12,
+    color: "#666666",
+    marginBottom: 8,
+  }}
+>
+  Choose the category for your product
 </Text>
 
 {categories
