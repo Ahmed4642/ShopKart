@@ -1181,19 +1181,15 @@ const orderItems = cart.map((item) => ({
           </View>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>Categories</Text>
-
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          >
-          <ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={{
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  }}
->
+          contentContainerStyle={{
+            paddingHorizontal: 12,
+            paddingVertical: 10,
+          }}
+        >
+        
   {CATEGORIES.map((c) => (
     <TouchableOpacity
       key={c.name}
