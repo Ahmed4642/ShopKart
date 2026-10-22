@@ -73,18 +73,14 @@ category: "Home Essentials",
 icon: "🪟",
   },
 ];
-
 const CATEGORIES = [
   { name: "All", icon: "🛍️", color: "#FFF3CC" },
   { name: "Mobiles", icon: "📱", color: "#E3F2FD" },
   { name: "Fashion", icon: "👕", color: "#FCE4EC" },
   { name: "Electronics", icon: "💻", color: "#EDE7F6" },
+  { name: "Audio", icon: "🎧", color: "#E8EAF6" },
   { name: "Beauty", icon: "💄", color: "#FBE9E7" },
-  {
-  name: "Health Supplements",
-  icon: "🥤",
-  color: "#E8F5E9",
-},
+  { name: "Health Supplements", icon: "🥤", color: "#E8F5E9" },
   { name: "Home Essentials", icon: "🪟", color: "#E8F5E9" },
   { name: "Appliances", icon: "🧺", color: "#E0F7FA" },
   { name: "Toys & Baby", icon: "🧸", color: "#FFF8E1" },
@@ -3055,25 +3051,23 @@ return (
       <Text style={styles.sellerSectionTitle}>
         Add New Product
       </Text>
-
-      <Text style={styles.sellerLabel}>
-        Product Name *
+<Text style={styles.sellerLabel}>
+        MRP (₹) *
       </Text>
 
       <TextInput
         style={styles.sellerInput}
-        placeholder="Enter product name"
+        placeholder="Enter MRP"
         placeholderTextColor="#888888"
-        value={productName}
-        onChangeText={setProductName}
+        value={productMrp}
+        onChangeText={setProductMrp}
+        keyboardType="decimal-pad"
       />
 
       <Text style={styles.sellerLabel}>
         Selling Price (₹) *
       </Text>
-<Text style={styles.sellerLabel}>
-  MRP (₹) *
-</Text>
+
       <TextInput
         style={styles.sellerInput}
         placeholder="Enter selling price"
@@ -3083,6 +3077,31 @@ return (
         keyboardType="decimal-pad"
       />
 
+      <View
+        style={{
+          backgroundColor: "#E8F5E9",
+          borderRadius: 10,
+          padding: 12,
+          marginBottom: 14,
+        }}
+      >
+        <Text
+          style={{
+            color: "#176B35",
+            fontSize: 15,
+            fontWeight: "800",
+          }}
+        >
+          {Number(productMrp) > 0 &&
+          Number(productPrice) > 0 &&
+          Number(productMrp) >= Number(productPrice)
+            ? `Discount: ${productDiscount}% (₹${(
+                Number(productMrp) - Number(productPrice)
+              ).toFixed(2)})`
+            : "Discount: 0% (₹0.00)"}
+        </Text>
+      </View>
+      
       <Text style={styles.sellerLabel}>
         Stock Quantity *
       </Text>
