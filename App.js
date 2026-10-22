@@ -80,6 +80,11 @@ const CATEGORIES = [
   { name: "Fashion", icon: "👕", color: "#FCE4EC" },
   { name: "Electronics", icon: "💻", color: "#EDE7F6" },
   { name: "Beauty", icon: "💄", color: "#FBE9E7" },
+  {
+  name: "Health Supplements",
+  icon: "🥤",
+  color: "#E8F5E9",
+},
   { name: "Home Essentials", icon: "🪟", color: "#E8F5E9" },
   { name: "Appliances", icon: "🧺", color: "#E0F7FA" },
   { name: "Toys & Baby", icon: "🧸", color: "#FFF8E1" },
