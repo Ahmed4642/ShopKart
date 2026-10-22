@@ -228,13 +228,24 @@ const [sellerIfsc, setSellerIfsc] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
 const [emailOtp, setEmailOtp] = useState("");
 const [otpSent, setOtpSent] = useState(false);
-const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
-  const [commissionRate, setCommissionRate] = useState(10);
+const [forgotPasswordMode, setForgotPasswordMode] = useState(false); const [commissionRate, setCommissionRate] = useState(10);
 const [seller, setSeller] = useState(null);
 const [sellerProducts, setSellerProducts] = useState([]);
 const [sellerLoading, setSellerLoading] = useState(false);
 const [productName, setProductName] = useState("");
 const [productPrice, setProductPrice] = useState("");
+const [productMrp, setProductMrp] = useState("");
+
+const productDiscount =
+  Number(productMrp) > 0 &&
+  Number(productMrp) >= Number(productPrice) &&
+  Number(productPrice) > 0
+    ? Math.round(
+        ((Number(productMrp) - Number(productPrice)) /
+          Number(productMrp)) *
+          10000
+      ) / 100
+    : 0;
 const [productCategory, setProductCategory] = useState("");
 const [categories, setCategories] = useState([]);
 const [productStock, setProductStock] = useState("");
@@ -2608,14 +2619,18 @@ async function addProduct() {
   }
 
   const price = Number(productPrice);
-  const stock = Number(productStock);
-
-  if (
-    !Number.isFinite(price) ||
-    price <= 0 ||
-    !Number.isInteger(stock) ||
-    stock < 0
-  ) {
+const mrp = Number(productMrp);
+const stock = Number(productStock);
+ 
+if (
+  !Number.isFinite(price) ||
+  price <= 0 ||
+  !Number.isFinite(mrp) ||
+  mrp < price ||
+  !Number.isInteger(stock) ||
+  stock < 0
+)
+  
     Alert.alert(
       "Invalid Information",
       "Please enter a valid price and stock quantity."
@@ -2679,10 +2694,11 @@ async function addProduct() {
       .from("products")
       .insert({
         seller_id: seller.id,
-        name: productName.trim(),
-        price,
-        category_id: productCategory,
-        stock,
+        
+        stock,name: productName.trim(),
+price,
+mrp,
+category_id: productCategory,
         description: productDescription.trim() || null,
         image_url: imageUrl,
       })
@@ -2700,6 +2716,7 @@ async function addProduct() {
     setProductImage(null);
     setProductName("");
     setProductPrice("");
+    setProductMrp("");
     setProductCategory("");
     setProductStock("");
     setProductDescription("");
@@ -3054,7 +3071,9 @@ return (
       <Text style={styles.sellerLabel}>
         Selling Price (₹) *
       </Text>
-
+<Text style={styles.sellerLabel}>
+  MRP (₹) *
+</Text>
       <TextInput
         style={styles.sellerInput}
         placeholder="Enter selling price"
