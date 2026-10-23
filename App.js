@@ -1276,10 +1276,23 @@ const orderItems = cart.map((item) => ({
         ) : (
           visibleProducts.map((p) => (
             <View style={styles.product} key={p.id}>
-              <Text style={styles.productIcon}>
-                {p.icon || "🛍️"}
-              </Text>
-
+              
+{p.image_url ? (
+  <Image
+    source={{ uri: p.image_url }}
+    style={{
+      width: 90,
+      height: 90,
+      borderRadius: 10,
+      backgroundColor: "#F2F2F2",
+    }}
+    resizeMode="cover"
+  />
+) : (
+  <Text style={styles.productIcon}>
+    {p.icon || "🛍️"}
+  </Text>
+)}
               <View style={styles.productInfo}>
                 <Text style={styles.productName}>
                   {p.name || "Product"}
