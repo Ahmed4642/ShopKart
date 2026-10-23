@@ -1,14 +1,20 @@
 {
-  "expo": {
-    "name": "ShopKart",
-    "slug": "shopkart",
-    "scheme": "shopkart",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "android": {
-      "package": "com.ahmed4642.shopkart"
-    }
-  }
+"expo": {
+"name": "ShopKart",
+"slug": "shopkart",
+"scheme": "shopkart",
+"version": "1.0.0",
+"orientation": "portrait",
+"userInterfaceStyle": "light",
+"newArchEnabled": true,
+"icon": "./assets/1000256979.png",
+"splash": {
+"image": "./assets/Screenshot_20261024-015227_Chrome (1).png",
+"resizeMode": "contain",
+"backgroundColor": "#ffffff"
+},
+"android": {
+"package": "com.ahmed4642.shopkart"
+}
+}
 }
