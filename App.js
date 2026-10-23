@@ -562,7 +562,59 @@ async function loadSellerStatusHistory() {
       setCommissionRate(Number(data.commission_rate));
     }
   }
+async function saveCommission() {
+const rate = Number(newCommissionRate);
 
+if (
+newCommissionRate.trim() === "" ||
+!Number.isFinite(rate) ||
+rate < 0 ||
+rate > 100
+) {
+Alert.alert(
+"Invalid Commission",
+"Commission 0 se 100 ke beech hona chahiye."
+);
+return;
+}
+
+if (profile?.role !== "admin") {
+Alert.alert("Access Denied", "Sirf admin commission badal sakta hai.");
+return;
+}
+
+const { data, error } = await supabase
+.from("marketplace_settings")
+.update({
+commission_rate: rate,
+currency: "INR",
+updated_at: new Date().toISOString(),
+})
+.eq("id", "83b61b0e-569b-422b-bd87-e2b1a8282b23")
+.select("commission_rate")
+.maybeSingle();
+
+if (error) {
+Alert.alert("Save Failed", error.message);
+return;
+}
+
+if (!data) {
+Alert.alert(
+"Save Failed",
+"Setting update nahi hui. Supabase permissions aur record check karein."
+);
+return;
+}
+
+setCommissionRate(Number(data.commission_rate));
+setNewCommissionRate(String(data.commission_rate));
+
+Alert.alert(
+"Success",
+"Marketplace commission ${data.commission_rate}% save ho gaya."
+);
+}
   const visibleProducts = useMemo(() => {
     const q = search.trim().toLowerCase();
 
