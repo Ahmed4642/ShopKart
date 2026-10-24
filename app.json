@@ -1,22 +1,25 @@
+
 {
-"expo": {
-"name": "ShopKart",
-"slug": "shopkart",
-"scheme": "shopkart",
-"version": "1.0.0",
-"orientation": "portrait",
-"userInterfaceStyle": "light",
-"newArchEnabled": true,
-"icon": "./assets/unnamed.png",
-"splash": {
-"image": "./assets/Screenshot_20261024-015227_Chrome (1).png",
-"resizeMode": "contain",
-"backgroundColor": "#ffffff"
-},
-"android": {
-  "package": "com.ahmed4642.shopkart",
-  "adaptiveIcon": {
-    "foregroundImage": "./assets/unnamed.png",
-    "backgroundColor": "#16A34A"
+  "expo": {
+    "name": "ShopKart",
+    "slug": "shopkart",
+    "scheme": "shopkart",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "icon": "./assets/unnamed.png",
+    "splash": {
+      "image": "./assets/Screenshot_20261024-015227_Chrome (1).png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.ahmed4642.shopkart",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/unnamed.png",
+        "backgroundColor": "#16A34A"
+      }
+    }
   }
 }
