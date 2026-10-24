@@ -14,7 +14,9 @@
 "backgroundColor": "#ffffff"
 },
 "android": {
-"package": "com.ahmed4642.shopkart"
-}
-}
+  "package": "com.ahmed4642.shopkart",
+  "adaptiveIcon": {
+    "foregroundImage": "./assets/unnamed.png",
+    "backgroundColor": "#16A34A"
+  }
 }
